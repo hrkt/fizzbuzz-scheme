@@ -103,7 +103,7 @@ MIT
 
 ## CI
 
-TBD
+![GitHub Actions](https://github.com/hrkt/fizzbuzz-scheme/actions/workflows/node.js.yml/badge.svg)
 
 ## Appendix
 
