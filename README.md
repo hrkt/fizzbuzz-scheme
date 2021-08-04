@@ -116,3 +116,4 @@ TBD
 
 - This repository use [Jest](https://jestjs.io/).
 - Also use [Majestic](https://github.com/Raathigesh/majestic) for Jest UI.
+- Cross-checking by running code in [Gauche](http://practical-scheme.net/gauche/) scheme interpreter. 
