@@ -9,10 +9,11 @@ export class FsParser {
     const tokenList = []
     let buf = ''
     let i = 0
+    log.debug('tokenizing:')
     log.debug(code)
     while (i < code.length) {
       let c = code.charAt(i)
-      if (c === ' ') {
+      if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
         i++
         continue
       }
@@ -21,7 +22,7 @@ export class FsParser {
         i++
         continue
       }
-      while (i < code.length && c !== ' ' && c !== ')') {
+      while (i < code.length && c !== ' ' && c !== '\t' && c !== '\n' && c !== '\r' && c !== ')') {
         buf += c
         i++
         c = code.charAt(i)
@@ -63,10 +64,10 @@ export class FsParser {
     log.debug('parse: ' + code)
     const tokenized = this.tokenize(code)
     log.debug('------')
-    log.debug('tokenized: tokenized' + tokenized)
+    log.debug('tokenized: ' + tokenized)
     const parsed = this.readTokens(this.tokenize(code))
     log.debug('------')
-    log.debug('parsed: tokenized' + parsed)
+    log.debug('parsed: ' + parsed)
     return parsed
   }
 }
