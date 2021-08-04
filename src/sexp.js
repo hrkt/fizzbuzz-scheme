@@ -146,7 +146,7 @@ export class FsDefine extends FsList {
 
 export class FsQuote extends FsList {
   static proc (arg) {
-    console.debug('arg.length = ' + arg.length)
+    log.debug('arg.length = ' + arg.length)
     if (!Array.isArray(arg[0])) {
       return arg
     } else {
