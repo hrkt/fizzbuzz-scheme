@@ -10,7 +10,7 @@ import log from 'loglevel'
 log.setLevel('debug')
 
 test('executing fizz-buzz sample success', () => {
-  const code = FS.readFileSync('./sample/fizzbuzz.fbs', 'utf8')
+  const code = FS.readFileSync('./sample/fizzbuzz.scm', 'utf8')
 
   const env = getGlobalEnv()
 
