@@ -25,4 +25,3 @@ test('evaluating (define p (lambda (x) (+ x x))), then (p 1)', () => {
   expect(ret2).not.toBeNull()
   expect(ret2).toStrictEqual(new FsNumber(2))
 })
-
