@@ -4,7 +4,7 @@
 import { FsEvaluator } from './evaluator.js'
 import log from 'loglevel'
 import { FsEnv } from './env.js'
-import { FsException } from './common.js'
+import { FsError, FsException } from './common.js'
 
 export class SExpFactory {
   static build (s) {
@@ -201,6 +201,40 @@ export class FsOperatorPlus extends FsList {
   }
 }
 
+export class FsOperatorMultiply extends FsList {
+  static proc (list) {
+    return new FsNumber(list.map(n => n.value).reduce((a, b) => a * b, 1))
+  }
+}
+
+export class FsOperatorMinus extends FsList {
+  static proc (list) {
+    if (list.length === 1) {
+      return new FsNumber(-1 * (list[0].value))
+    } else {
+      return new FsNumber(list[0].value - FsOperatorPlus.proc(list.slice(1)))
+    }
+  }
+}
+
+export class FsOperatorDivide extends FsList {
+  static proc (list) {
+    if (list.length === 1) {
+      if (list[0].value !== 0) {
+        return list[0]
+      } else {
+        throw new FsError('divide by 0')
+      }
+    } else {
+      const divisor = FsOperatorMultiply.proc(list.slice(1))
+      if (divisor.value !== 0) {
+        return new FsNumber(list[0].value / divisor.value)
+      } else {
+        throw new FsError('divide by 0')
+      }
+    }
+  }
+}
 export class FsOperatorMod extends FsList {
   static proc (list) {
     ensureListContainsTwo(list)
@@ -223,6 +257,35 @@ export class FsEquals extends FsList {
     return FsEvaluator.eval(lhs, env).toString() === FsEvaluator.eval(rhs, env).toString() ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
+
+export class FsOperatorLt extends FsList {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    return list[0].value < list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsOperatorLte extends FsList {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    return list[0].value <= list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsOperatorGt extends FsList {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    return list[0].value > list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsOperatorGte extends FsList {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    return list[0].value >= list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
 
 export class FsAnd extends FsList {
   static proc (list, env) {
