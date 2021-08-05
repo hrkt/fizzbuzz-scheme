@@ -10,3 +10,14 @@ export class FsException {
     return `${this.name}: "${this.message}"`
   }
 }
+
+export class FsError extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'FsError'
+  }
+
+  toString () {
+    return `${this.name}: "${this.message}"`
+  }
+}
