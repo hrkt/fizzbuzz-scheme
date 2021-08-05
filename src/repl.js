@@ -14,7 +14,7 @@ const promptSync = PromptSync({ sigint: true })
 
 function loadSample () {
   try {
-    const data = FS.readFileSync('sample/fizzbuzz.fbs', 'utf8')
+    const data = FS.readFileSync('sample/fizzbuzz.scm', 'utf8')
     console.log('read:' + data)
     const exp = data
     FE.eval(FP.parse(exp), env)
