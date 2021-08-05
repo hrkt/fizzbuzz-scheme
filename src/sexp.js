@@ -286,7 +286,6 @@ export class FsOperatorGte extends FsList {
   }
 }
 
-
 export class FsAnd extends FsList {
   static proc (list, env) {
     ensureListContainsTwo(list)
