@@ -59,15 +59,19 @@ export class FsList extends FsSExp {
   }
 
   toString () {
-    log.debug(this.value)
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug(this.value)
+    }
     return '(' + this.value.map(v => FsEvaluator.eval(v)).join(' ') + ')'
   }
 }
 
 export class FsIf extends FsList {
   static proc (list, env) {
-    log.debug('fsIf')
-    log.debug(list)
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('fsIf')
+      log.debug(list)
+    }
     const [test, conseq, alt] = list
     if (FsEvaluator.eval(test, env).value) {
       return FsEvaluator.eval(conseq, env)
@@ -148,7 +152,9 @@ export class FsDefine extends FsList {
 
 export class FsQuote extends FsList {
   static proc (arg) {
-    log.debug('arg.length = ' + arg.length)
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('arg.length = ' + arg.length)
+    }
     if (!Array.isArray(arg[0])) {
       return arg
     } else {

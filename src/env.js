@@ -23,15 +23,19 @@ export class FsEnv {
   }
 
   set (k, v) {
-    log.debug('---------------------------------')
-    log.debug('env-set k=:' + k + ',v:' + v + ',in:id=' + this.id)
-    log.debug('---------------------------------')
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('---------------------------------')
+      log.debug('env-set k=:' + k + ',v:' + v + ',in:id=' + this.id)
+      log.debug('---------------------------------')
+    }
     this.vars.set(this.toKey(k), v)
   }
 
   find (symbol) {
     const key = this.toKey(symbol)
-    log.debug('env-find:' + symbol + ' in:' + this + ' key:' + key)
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('env-find:' + symbol + ' in:' + this + ' key:' + key)
+    }
 
     if (this.vars.has(key)) {
       return this.vars.get(key)

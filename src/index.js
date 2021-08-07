@@ -10,7 +10,9 @@ import { getGlobalEnv } from './env.js'
 export class FizzBuzzScheme {
   constructor () {
     this.env = getGlobalEnv()
-    log.debug('=======================================================================-')
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('=======================================================================-')
+    }
   }
 
   eval (code) {
