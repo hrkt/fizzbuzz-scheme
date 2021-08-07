@@ -12,6 +12,6 @@ export function expse (code, obj) {
   expect(new FBS().eval(code)).toStrictEqual(obj)
 }
 
-export function sepByCat() {
+export function sepByCat () {
   console.dir('🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈')
 }
