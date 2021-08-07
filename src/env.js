@@ -5,9 +5,11 @@ import log from 'loglevel'
 
 // Environment
 export class FsEnv {
+  static counter = 0
   constructor (outer = null, vars = new Map()) {
     this.outer = outer
     this.vars = vars
+    this.id = FsEnv.counter++
   }
 
   // Object keys in JS Map are compared by its ref.
@@ -22,7 +24,7 @@ export class FsEnv {
 
   set (k, v) {
     log.debug('---------------------------------')
-    log.debug('env-set k=:' + k + ',v:' + v)
+    log.debug('env-set k=:' + k + ',v:' + v + ',in:id=' + this.id)
     log.debug('---------------------------------')
     this.vars.set(this.toKey(k), v)
   }
@@ -45,23 +47,28 @@ export class FsEnv {
     if (this.outer !== null) {
       buf += '[' + this.outer.toString() + ']'
     }
-    return buf + '>>[' + Array.from(this.vars.keys()) + ']'
+    // return buf + '>>[' + Array.from(this.vars.keys()) + ']'
+    if (this.outer === null) {
+      return '>>ROOT'
+    } else {
+      return buf + '>>id' + this.id + ' [' + Array.from(this.vars.keys()).map(k => k + '=' + this.vars.get(k)) + ']'
+    }
   }
 }
 
 // get global environment
 export function getGlobalEnv () {
   const env = new FsEnv()
-  env.set(new FsSymbol('+'), FsOperatorPlus.proc)
-  env.set(new FsSymbol('-'), FsOperatorMinus.proc)
-  env.set(new FsSymbol('*'), FsOperatorMultiply.proc)
-  env.set(new FsSymbol('/'), FsOperatorDivide.proc)
-  env.set(new FsSymbol('mod'), FsOperatorMod.proc)
-  env.set(new FsSymbol('='), FsEquals.proc)
-  env.set(new FsSymbol('<'), FsOperatorLt.proc)
-  env.set(new FsSymbol('<='), FsOperatorLte.proc)
-  env.set(new FsSymbol('>'), FsOperatorGt.proc)
-  env.set(new FsSymbol('>='), FsOperatorGte.proc)
-  env.set(new FsSymbol('and'), FsAnd.proc)
+  env.set(new FsSymbol('+'), FsOperatorPlus)
+  env.set(new FsSymbol('-'), FsOperatorMinus)
+  env.set(new FsSymbol('*'), FsOperatorMultiply)
+  env.set(new FsSymbol('/'), FsOperatorDivide)
+  env.set(new FsSymbol('mod'), FsOperatorMod)
+  env.set(new FsSymbol('='), FsEquals)
+  env.set(new FsSymbol('<'), FsOperatorLt)
+  env.set(new FsSymbol('<='), FsOperatorLte)
+  env.set(new FsSymbol('>'), FsOperatorGt)
+  env.set(new FsSymbol('>='), FsOperatorGte)
+  env.set(new FsSymbol('and'), FsAnd)
   return env
 }
