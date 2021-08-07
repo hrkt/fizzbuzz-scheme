@@ -3,8 +3,8 @@
 
 import { FsEvaluator } from './evaluator.js'
 import log from 'loglevel'
-import { FsEnv } from './env.js'
 import { FsError, FsException } from './common.js'
+import { FsEnv } from './env.js'
 
 export class SExpFactory {
   static build (s) {
@@ -59,15 +59,19 @@ export class FsList extends FsSExp {
   }
 
   toString () {
-    log.debug(this.value)
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug(this.value)
+    }
     return '(' + this.value.map(v => FsEvaluator.eval(v)).join(' ') + ')'
   }
 }
 
 export class FsIf extends FsList {
   static proc (list, env) {
-    log.debug('fsIf')
-    log.debug(list)
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('fsIf')
+      log.debug(list)
+    }
     const [test, conseq, alt] = list
     if (FsEvaluator.eval(test, env).value) {
       return FsEvaluator.eval(conseq, env)
@@ -79,53 +83,55 @@ export class FsIf extends FsList {
 
 export class FsLambda extends FsList {
   static proc (list, env) {
-    const car = list.shift()
-    const cdr = list.shift()
+    const params = list.shift()
+    const body = list.shift()
+
     if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('exec lambda with car:' + car + ',cdr:' + cdr)
-      log.debug('--car--')
-      log.debug(car)
-      log.debug('--car--')
-      log.debug(cdr)
+      log.debug('defining lambda with params:' + params + ',body:' + body)
+      log.debug('--params--')
+      log.debug(params)
+      log.debug('--body--')
+      log.debug(body)
       log.debug('------')
     }
 
-    if (!Array.isArray(car)) {
+    if (!Array.isArray(params)) {
       // single variable not suppoted
-      throw new Error('non-arry type arg is not implemented')
+      throw new Error('non-array type arg is not implemented')
     }
-    // car is a variable symbol in this closure
-    const innerEnv = new FsEnv(env)
 
-    const f = (x) => {
-      log.debug('executing f with param:' + x)
-
-      if (!Array.isArray(x)) {
-        throw new Error('arg type do not match')
-      }
-      for (let i = 0; i < car.length; i++) {
-        innerEnv.set(car[i], x[i])
-      }
-
-      if (log.getLevel() <= log.levels.DEBUG) {
-        log.debug('outer env:' + env.toString())
-        log.debug('inner env:' + innerEnv.toString())
-        log.debug('executing eval parsed:' + cdr + ' in env:' + innerEnv.toString())
-        console.dir(cdr)
-      }
-      return FsEvaluator.eval(cdr, innerEnv)
+    const procedure = new FsProcedure(params, body, env)
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨')
+      console.dir(procedure)
     }
-    return f
+    return procedure
+  }
+}
+
+export class FsProcedure {
+  constructor (params, body, env) {
+    this.params = params
+    this.body = body
+    this.env = env
+  }
+
+  proc (execParams) {
+    const innerEnv = new FsEnv(this.env)
+    if (!Array.isArray(execParams)) {
+      throw new Error('arg type do not match')
+    }
+    for (let i = 0; i < this.params.length; i++) {
+      innerEnv.set(this.params[i], execParams[i])
+    }
+
+    return FsEvaluator.eval(this.body, innerEnv)
   }
 }
 
 export class FsDefine extends FsList {
   static proc (list, env) {
-    if (!Array.isArray(list)) {
-      throw new Error('arg is not List')
-    } else if (list.length !== 2) {
-      throw new Error('length of arg for define is not 2 ')
-    }
+    ensureListContainsTwo(list)
     const car = list.shift()
     const cdr = list.shift()
 
@@ -146,7 +152,9 @@ export class FsDefine extends FsList {
 
 export class FsQuote extends FsList {
   static proc (arg) {
-    log.debug('arg.length = ' + arg.length)
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('arg.length = ' + arg.length)
+    }
     if (!Array.isArray(arg[0])) {
       return arg
     } else {

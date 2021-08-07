@@ -6,7 +6,6 @@ import log from 'loglevel'
 import { FsNumber } from '../src/sexp.js'
 log.setLevel('trace')
 
-
 test('evaluating (* 1) yields 1', () => {
   const code = '(* 1)'
   util.expse(code, new FsNumber(1))

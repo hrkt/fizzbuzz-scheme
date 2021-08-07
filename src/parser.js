@@ -16,6 +16,12 @@ export class FsParser {
       if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
         i++
         continue
+      } else if (c === ';') {
+        while (i < code.length && c !== '\n') {
+          i++
+          c = code.charAt(i)
+        }
+        continue
       }
       if (c === '(' || c === ')') {
         tokenList.push(c)
