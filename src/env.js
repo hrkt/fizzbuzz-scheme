@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsEquals, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsSymbol } from './sexp.js'
+import { FsAnd, FsEquals, FsNewline, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 
 // Environment
@@ -74,5 +74,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('>'), FsOperatorGt)
   env.set(new FsSymbol('>='), FsOperatorGte)
   env.set(new FsSymbol('and'), FsAnd)
+  env.set(new FsSymbol('write'), FsWrite)
+  env.set(new FsSymbol('newline'), FsNewline)
   return env
 }
