@@ -1,8 +1,8 @@
 'use strict'
 
 import { FsIf, FsDefine, FsLambda, FsSymbol, FsQuote } from './sexp.js'
-
 import { getGlobalEnv } from './env.js'
+
 import log from 'loglevel'
 
 // Evaluator
@@ -14,7 +14,7 @@ export class FsEvaluator {
     }
     const ret = FsEvaluator.evalInternal(sexp, env)
     if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('RETURNS:' + ret)
+      log.debug('RETURNS:' + ret + ' for sexp:' + sexp)
       log.debug('----------------------------------------------------')
     }
     return ret
@@ -35,8 +35,9 @@ export class FsEvaluator {
     } else if (sexp[0].value === 'lambda') {
       return FsLambda.proc(sexp.slice(1), env)
     } else {
-      const evaluated = sexp.map(s => this.eval(s, env))
-      return evaluated[0](evaluated.slice(1))
+      const p = FsEvaluator.eval(sexp[0], env)
+      const args = sexp.slice(1).map(s => this.eval(s, env))
+      return p.proc(args)
     }
   }
 }
