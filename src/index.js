@@ -10,6 +10,7 @@ import { getGlobalEnv } from './env.js'
 export class FizzBuzzScheme {
   constructor () {
     this.env = getGlobalEnv()
+    log.debug('=======================================================================-')
   }
 
   eval (code) {
@@ -20,7 +21,7 @@ export class FizzBuzzScheme {
     return this.eval(code, this.env).toString()
   }
 
-  enableDevMode () {
+  enableDebugMode () {
     log.setLevel('trace')
   }
 }
