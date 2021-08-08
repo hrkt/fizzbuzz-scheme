@@ -53,16 +53,27 @@ export class FsParser {
     const t = tokenized.shift()
     if (t === '(') {
       const l = []
-      while (tokenized[0] !== ')') {
-        l.push(this.readTokens(tokenized))
+      while (tokenized[0] !== ')' && tokenized.length > 0) {
+        l.push(FsParser.readTokens(tokenized))
       }
       tokenized.shift()
       return l
     } else if (t === ')') {
-      //
+      throw Error('came here')
     } else {
-      return this.element(t)
+      return FsParser.element(t)
     }
+  }
+
+  static readTokensOuter (tokenized) {
+    log.debug('length: ' + tokenized.length)
+
+    const orders = []
+    while (tokenized.length > 0) {
+      const ret = this.readTokens(tokenized)
+      orders.push(ret)
+    }
+    return orders
   }
 
   static parse (code) {
@@ -71,9 +82,11 @@ export class FsParser {
     const tokenized = this.tokenize(code)
     log.debug('------')
     log.debug('tokenized: ' + tokenized)
-    const parsed = this.readTokens(this.tokenize(code))
+    const orders = FsParser.readTokensOuter(this.tokenize(code))
     log.debug('------')
-    log.debug('parsed: ' + parsed)
-    return parsed
+    log.debug(orders.length)
+    log.debug('parsed: ' + orders)
+
+    return orders
   }
 }

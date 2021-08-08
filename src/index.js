@@ -16,7 +16,14 @@ export class FizzBuzzScheme {
   }
 
   eval (code) {
-    return FE.eval(FP.parse(code), this.env)
+    const orders = FP.parse(code)
+    log.debug('(^^♪')
+    log.debug('orders.length = ' + orders.length)
+    let ret = null
+    for (let i = 0; i < orders.length; i++) {
+      ret = FE.eval(orders[i], this.env)
+    }
+    return ret
   }
 
   evalToJs (code) {
