@@ -8,8 +8,8 @@ export function enableDebugLog () {
   log.setLevel('debug')
 }
 
-export function expse (code, obj) {
-  expect(new FBS().eval(code)).toStrictEqual(obj)
+export function codeEvaledTo (code, obj, fbs = new FBS()) {
+  expect(fbs.eval(code)).toStrictEqual(obj)
 }
 
 export function sepByCat () {
