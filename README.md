@@ -15,19 +15,20 @@ This interpreter runs code like below(hand-formatted).
 	(lambda (x) 
 		(if 
 			(and (= (mod x 3) 0) (= (mod x 5) 0))
-			(quote fizzbuzz)
+			"fizzbuzz"
 			(if
 				(= (mod x 3) 0)
-				(quote fizz)
+				"fizz"
 				(if
 					(= (mod x 5) 0)
-					(quote buzz)
+					"buzz"
 					x
 				)
 			)
 		)
 	)
 )
+(define fizzbuzz (lambda (x) (display (fb x))))
 ```
 
 The code this interpreter runs now is in sample/fizzbuzz.fbs .
