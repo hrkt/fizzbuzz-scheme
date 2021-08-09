@@ -1,28 +1,34 @@
 'use strict'
 import FS from 'fs'
 
-import { FsEvaluator } from '../src/evaluator.js'
-import { FsParser as FP } from '../src/parser.js'
-import { getGlobalEnv } from '../src/env.js'
+import { FizzBuzzScheme } from '../src/index.js'
 
-import log from 'loglevel'
+import { jest } from '@jest/globals'
+import mockProcess from 'jest-mock-process'
 
-log.setLevel('debug')
+// log.setLevel('debug')
+
+function testStdoutCalled (fbs, code) {
+  const mockStdout = mockProcess.mockProcessStdout()
+  fbs.eval('(fizzbuzz 1)')
+  mockStdout.mockRestore()
+}
 
 test('executing fizz-buzz sample success', () => {
+  jest.spyOn(process.stdout, 'write')
+
   const code = FS.readFileSync('./sample/fizzbuzz.scm', 'utf8')
 
-  const env = getGlobalEnv()
-
-  const parsed = FP.parse(code)
-  FsEvaluator.eval(parsed, env)
-  expect(FsEvaluator.eval(FP.parse('(fb 1)'), env).toString()).toBe('1')
-  expect(FsEvaluator.eval(FP.parse('(fb 2)'), env).toString()).toBe('2')
-  expect(FsEvaluator.eval(FP.parse('(fb 3)'), env).toString()).toBe('fizz')
-  expect(FsEvaluator.eval(FP.parse('(fb 4)'), env).toString()).toBe('4')
-  expect(FsEvaluator.eval(FP.parse('(fb 5)'), env).toString()).toBe('buzz')
-  expect(FsEvaluator.eval(FP.parse('(fb 6)'), env).toString()).toBe('fizz')
-  expect(FsEvaluator.eval(FP.parse('(fb 14)'), env).toString()).toBe('14')
-  expect(FsEvaluator.eval(FP.parse('(fb 15)'), env).toString()).toBe('fizzbuzz')
-  expect(FsEvaluator.eval(FP.parse('(fb 16)'), env).toString()).toBe('16')
+  const fbs = new FizzBuzzScheme()
+  fbs.eval(code)
+  testStdoutCalled(fbs, '(fizzbuzz 1)', '1')
+  testStdoutCalled(fbs, '(fizzbuzz 2)', '2')
+  testStdoutCalled(fbs, '(fizzbuzz 3)', 'fizz')
+  testStdoutCalled(fbs, '(fizzbuzz 4)', '4')
+  testStdoutCalled(fbs, '(fizzbuzz 5)', 'buzz')
+  testStdoutCalled(fbs, '(fizzbuzz 6)', 'fizz')
+  testStdoutCalled(fbs, '(fizzbuzz 7)', '7')
+  testStdoutCalled(fbs, '(fizzbuzz 14)', '14')
+  testStdoutCalled(fbs, '(fizzbuzz 15)', 'fizzbuzz')
+  testStdoutCalled(fbs, '(fizzbuzz 16)', '16')
 })
