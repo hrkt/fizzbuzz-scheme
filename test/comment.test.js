@@ -2,13 +2,14 @@
 
 import FS from 'fs'
 
-import { FsEvaluator } from '../src/evaluator.js'
-import { FsParser as FP } from '../src/parser.js'
+import * as util from './testutil.js'
+
 import log from 'loglevel'
+import { FsNumber } from '../src/sexp.js'
 
 log.setLevel('debug')
 
 test('evaluating comment.test.1.scm', () => {
   const code1 = FS.readFileSync('test/code/comment.test.1.scm', 'utf8')
-  expect(FsEvaluator.eval(FP.parse(code1)).toString()).toBe('2')
+  util.codeEvaledTo(code1, new FsNumber(2))
 })

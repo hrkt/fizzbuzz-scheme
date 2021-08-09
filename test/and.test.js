@@ -1,21 +1,20 @@
 'use strict'
 
-import { FsEvaluator } from '../src/evaluator.js'
-import { FsParser as FP } from '../src/parser.js'
-import log from 'loglevel'
+import { FsBoolean } from '../src/sexp.js'
+import * as util from './testutil.js'
 
 test('evaluating (and #t #t) yields #t', () => {
-  expect(FsEvaluator.eval(FP.parse('(and #t #t)')).toString()).toBe('#t')
+  util.codeEvaledTo('(and #t #t)', FsBoolean.TRUE)
 })
 
 test('evaluating (and #t #f) yields #f', () => {
-  expect(FsEvaluator.eval(FP.parse('(and #f #f)')).toString()).toBe('#f')
+  util.codeEvaledTo('(and #t #f)', FsBoolean.FALSE)
 })
 
 test('evaluating (and #f #t) yields #f', () => {
-  expect(FsEvaluator.eval(FP.parse('(and #f #f)')).toString()).toBe('#f')
+  util.codeEvaledTo('(and #f #t)', FsBoolean.FALSE)
 })
 
 test('evaluating (and #f #f) yields #f', () => {
-  expect(FsEvaluator.eval(FP.parse('(and #f #f)')).toString()).toBe('#f')
+  util.codeEvaledTo('(and #f #f)', FsBoolean.FALSE)
 })

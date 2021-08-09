@@ -8,15 +8,15 @@ log.setLevel('trace')
 
 test('evaluating (- 1) yields 0', () => {
   const code = '(- 1)'
-  util.expse(code, new FsNumber(-1))
+  util.codeEvaledTo(code, new FsNumber(-1))
 })
 
 test('evaluating (- 1 1) yields 0', () => {
   const code = '(- 1 1)'
-  util.expse(code, new FsNumber(0))
+  util.codeEvaledTo(code, new FsNumber(0))
 })
 
 test('evaluating (- 3 1 1) yields 1', () => {
   const code = '(- 3 1 1)'
-  util.expse(code, new FsNumber(1))
+  util.codeEvaledTo(code, new FsNumber(1))
 })

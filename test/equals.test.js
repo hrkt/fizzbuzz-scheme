@@ -1,14 +1,15 @@
 'use strict'
 
-import { FsParser as FP } from '../src/parser.js'
-import { FsEvaluator as FE } from '../src/evaluator.js'
+import * as util from './testutil.js'
+
+import { FsBoolean } from '../src/sexp.js'
 
 test('evaluating (= 1 1) yields true', () => {
   const code = '(= 1 1)'
-  expect(FE.eval(FP.parse(code)).toString()).toBe('#t')
+  util.codeEvaledTo(code, FsBoolean.TRUE)
 })
 
 test('evaluating (= 1 2) yields false', () => {
   const code = '(= 1 2)'
-  expect(FE.eval(FP.parse(code)).toString()).toBe('#f')
+  util.codeEvaledTo(code, FsBoolean.FALSE)
 })

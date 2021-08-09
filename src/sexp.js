@@ -12,6 +12,8 @@ export class SExpFactory {
       return new FsNumber(+s)
     } else if (FsBoolean.isFsBooleanString(s)) {
       return FsBoolean.fromString(s)
+    } else if (s.startsWith('"')) {
+      return new FsString(s)
     } else {
       return new FsSymbol(s)
     }
@@ -197,6 +199,16 @@ export class FsString extends FsAtom {}
 
 export class FsSymbol extends FsAtom {}
 
+export class FsUndefined extends FsAtom {
+  static UNDEFINED_ = new FsUndefined()
+
+  static get UNDEFINED () { return FsUndefined.UNDEFINED_ }
+
+  toString () {
+    return '#undefined'
+  }
+}
+
 function ensureListContainsTwo (list) {
   if (!Array.isArray(list) || list.length !== 2) {
     throw new Error('mod must take 2 arguments as list')
@@ -299,5 +311,26 @@ export class FsAnd extends FsList {
     ensureListContainsTwo(list)
     const [lhs, rhs] = list
     return FsEvaluator.eval(lhs, env).value === true && FsEvaluator.eval(rhs, env).value === true ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsWrite {
+  static proc (list) {
+    process.stdout.write(list.map(s => s.value).join(' '))
+    return FsUndefined.UNDEFINED
+  }
+}
+
+export class FsNewline {
+  static proc (list) {
+    console.log()
+    return FsUndefined.UNDEFINED
+  }
+}
+
+export class FsDisplay {
+  static proc (list) {
+    process.stdout.write(list.map(s => s.value).join(' '))
+    return FsUndefined.UNDEFINED
   }
 }
