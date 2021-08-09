@@ -12,6 +12,8 @@ export class SExpFactory {
       return new FsNumber(+s)
     } else if (FsBoolean.isFsBooleanString(s)) {
       return FsBoolean.fromString(s)
+    } else if (s.startsWith('"')) {
+      return new FsString(s)
     } else {
       return new FsSymbol(s)
     }
@@ -322,6 +324,13 @@ export class FsWrite {
 export class FsNewline {
   static proc (list) {
     console.log()
+    return FsUndefined.UNDEFINED
+  }
+}
+
+export class FsDisplay {
+  static proc (list) {
+    process.stdout.write(list.map(s => s.value).join(' '))
     return FsUndefined.UNDEFINED
   }
 }
