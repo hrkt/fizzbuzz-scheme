@@ -7,6 +7,9 @@ import log from 'loglevel'
 
 // Evaluator
 export class FsEvaluator {
+  // if you want to dump environment for debugging purpose, comment out these and change
+  // existing evalInternal() to eval()
+  //
   static eval (sexp, env = getGlobalEnv()) {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('----------------------------------------------------')
@@ -20,7 +23,8 @@ export class FsEvaluator {
     return ret
   }
 
-  static evalInternal (sexp, env) {
+  // static eval (sexp, env = getGlobalEnv()) { // if you want to remove codes for the speed purpose.
+  static evalInternal (sexp, env) { // for debugging purpose, use this line
     if (sexp instanceof FsSymbol) {
       return env.find(sexp)
     } else if (!Array.isArray(sexp)) {
