@@ -13,7 +13,8 @@ export class SExpFactory {
     } else if (FsBoolean.isFsBooleanString(s)) {
       return FsBoolean.fromString(s)
     } else if (s.startsWith('"')) {
-      return new FsString(s)
+      const extracted = s.substring(1, s.length - 1)
+      return new FsString(extracted)
     } else {
       return new FsSymbol(s)
     }
@@ -129,6 +130,10 @@ export class FsProcedure {
 
     return FsEvaluator.eval(this.body, innerEnv)
   }
+
+  toString () {
+    return 'FsProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+  }
 }
 
 export class FsDefine extends FsList {
@@ -137,17 +142,31 @@ export class FsDefine extends FsList {
     const car = list.shift()
     const cdr = list.shift()
 
-    log.debug('car:' + car + ',cdr:' + cdr)
     if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('DUMP-IN-DEFINE')
+      log.debug('car:' + car + ',cdr:' + cdr)
+      log.debug('DUMP-IN-DEFINE car')
+      console.dir(car)
+      log.debug('DUMP-IN-DEFINE cdr')
       console.dir(cdr)
     }
 
     if (!Array.isArray(car)) {
+      // ex)
+      // (define x1 (lambda (x) (* x 2)))
       env.set(car, FsEvaluator.eval(cdr, env))
       return car
     } else {
-      throw new Error('not implemented')
+      // ex)
+      // (define (x2 x) (* x 2))
+      const funcName = car.shift()
+      const params = car
+      const body = cdr
+      const procedure = new FsProcedure(params, body, env)
+      if (log.getLevel() <= log.levels.DEBUG) {
+        log.debug('define funciton - funcName:' + funcName + ' procedure:' + procedure)
+      }
+      env.set(funcName, procedure)
+      return funcName
     }
   }
 }
@@ -195,7 +214,11 @@ export class FsBoolean extends FsAtom {
 
 export class FsNumber extends FsAtom {}
 
-export class FsString extends FsAtom {}
+export class FsString extends FsAtom {
+  toString () {
+    return '"' + this.value + '"'
+  }
+}
 
 export class FsSymbol extends FsAtom {}
 
