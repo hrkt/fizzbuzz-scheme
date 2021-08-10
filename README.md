@@ -77,7 +77,7 @@ $ npm run majestic
 
 - ✅[Variable references](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.1)
 - ✅constants and quote[Literal expressions](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.2)
-- ✅define [Assignments](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6)(with 1 variable, not closure)
+- ✅define [Assignments](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6)
 - ✅basic arithmetic operators (+,-,*,/,mod) within basic accuracy of JavaScript.
 - ✅basic comparison operators (=,<,<=,>,>=)
 - ✅basic operators for FizzBuzz (and)
