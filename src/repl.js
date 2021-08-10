@@ -10,12 +10,17 @@ log.setLevel('info')
 
 const promptSync = PromptSync({ sigint: true })
 
+// load samples, ignoring the files that contain ';SAMPLE_IGNORE' comment
 function loadSamples (fbs) {
   try {
     FS.readdirSync('sample').forEach(file => {
       const data = FS.readFileSync('sample/' + file, 'utf8')
-      console.log('read:' + data)
-      fbs.eval(data)
+      log.debug('read:' + data)
+      if (!data.includes(';SAMPLE_IGNORE')) {
+        fbs.eval(data)
+      } else {
+        log.debug('ignored:' + file)
+      }
     })
   } catch (err) {
     console.error(err)
@@ -25,7 +30,7 @@ function loadSamples (fbs) {
 let loop = true
 let fbs = new FBS()
 while (loop) {
-  const exp = promptSync('fbs>')
+  const exp = promptSync('fbs> ')
   if (exp === '') {
     // do nothing
   } else if (exp === 'clear') {
