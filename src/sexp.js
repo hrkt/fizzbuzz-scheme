@@ -233,6 +233,13 @@ export class FsOperatorMinus extends FsList {
       return new FsNumber(-1 * (list[0].value))
     } else {
       return new FsNumber(list[0].value - FsOperatorPlus.proc(list.slice(1)))
+      // for the performance, use lines below. it may be bit faster.
+      //
+      // let buf = list[0].value
+      // for (let i = 1; i < list.length; i++) {
+      //   buf -= list[i]
+      // }
+      // return new FsNumber(buf)
     }
   }
 }
@@ -310,7 +317,7 @@ export class FsAnd extends FsList {
   static proc (list, env) {
     ensureListContainsTwo(list)
     const [lhs, rhs] = list
-    return FsEvaluator.eval(lhs, env).value === true && FsEvaluator.eval(rhs, env).value === true ? FsBoolean.TRUE : FsBoolean.FALSE
+    return FsEvaluator.eval(lhs, env) === FsBoolean.TRUE && FsEvaluator.eval(rhs, env) === FsBoolean.TRUE ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
