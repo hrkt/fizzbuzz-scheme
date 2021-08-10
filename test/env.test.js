@@ -3,6 +3,7 @@
 import { FsNumber, FsSymbol } from '../src/sexp.js'
 import { FsEnv, getGlobalEnv } from '../src/env'
 import log from 'loglevel'
+import { FsError } from '../src/common.js'
 log.setLevel('trace')
 
 test('define env success', () => {
@@ -49,4 +50,8 @@ test('define env multiple times and get increased id success', () => {
   expect(env1.id === env2.id).not.toBe(true)
   expect(env1.id === env3.id).not.toBe(true)
   expect(env2.id === env3.id).not.toBe(true)
+})
+
+test('calling toKey with null parameter throws FsError ', () => {
+  expect(() => { FsEnv.toKey(null) }).toThrow(FsError)
 })

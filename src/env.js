@@ -2,10 +2,12 @@
 
 import { FsAnd, FsDisplay, FsEquals, FsNewline, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
+import { FsError } from './common.js'
 
 // Environment
 export class FsEnv {
   static counter = 0
+
   constructor (outer = null, vars = new Map()) {
     this.outer = outer
     this.vars = vars
@@ -14,11 +16,13 @@ export class FsEnv {
 
   // Object keys in JS Map are compared by its ref.
   // Here we convert FsSymbol to string in case we don't have its reference.
-  toKey (obj) {
+  static toKey (obj) {
     if (obj instanceof FsSymbol) {
-      return obj.toString()
+      // return obj.toString()
+      // value of FsSymbole is not falcy. simply use its value as key.
+      return obj.value
     } else {
-      throw new Error('cannot use as key:' + obj)
+      throw new FsError('cannot use as key:' + obj)
     }
   }
 
@@ -28,11 +32,11 @@ export class FsEnv {
       log.debug('env-set k=:' + k + ',v:' + v + ',in:id=' + this.id)
       log.debug('---------------------------------')
     }
-    this.vars.set(this.toKey(k), v)
+    this.vars.set(FsEnv.toKey(k), v)
   }
 
   find (symbol) {
-    const key = this.toKey(symbol)
+    const key = FsEnv.toKey(symbol)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('env-find:' + symbol + ' in:' + this + ' key:' + key)
     }
@@ -42,7 +46,7 @@ export class FsEnv {
     } else if (this.outer !== null) {
       return this.outer.find(symbol)
     } else {
-      throw new Error('Symbol [' + symbol + '] is not found.')
+      throw new FsError('Symbol [' + symbol + '] is not found.')
     }
   }
 
