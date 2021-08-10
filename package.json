@@ -7,7 +7,10 @@
     "lint": "npx eslint",
     "repl": "node src/repl",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest",
-    "majestic": "cross-env NODE_OPTIONS=--experimental-vm-modules npx majestic"
+    "majestic": "cross-env NODE_OPTIONS=--experimental-vm-modules npx majestic",
+    "show-opt-deopt-win": "node --trace-deopt --trace-opt .\\src\\fbs.js .\\sample\\fibonacci.scm .\\sample\\fib30.scm",
+    "perf-get-prof-win": "node --prof .\\src\\fbs.js .\\sample\\fibonacci.scm .\\sample\\fib30.scm",
+    "perf-parse-prof-win": "node --prof-process (Get-Item .\\isolate-*)"
   },
   "keywords": [
     "scheme",
