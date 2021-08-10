@@ -11,24 +11,22 @@ It runs the 'Fizz-Buzz' program written in this scheme-subset.
 This interpreter runs code like below(hand-formatted).
 
 ```
-(define fb
-	(lambda (x) 
-		(if 
-			(and (= (mod x 3) 0) (= (mod x 5) 0))
-			"fizzbuzz"
+(define (fb x)
+	(if
+		(and (= (mod x 3) 0) (= (mod x 5) 0))
+		"fizzbuzz"
+		(if
+			(= (mod x 3) 0)
+			"fizz"
 			(if
-				(= (mod x 3) 0)
-				"fizz"
-				(if
-					(= (mod x 5) 0)
-					"buzz"
-					x
-				)
+				(= (mod x 5) 0)
+				"buzz"
+				x
 			)
 		)
 	)
 )
-(define fizzbuzz (lambda (x) (display (fb x))))
+(define (fizzbuzz x) (display (fb x)))
 ```
 
 The code this interpreter runs now is in sample/fizzbuzz.fbs .
@@ -36,22 +34,21 @@ The code this interpreter runs now is in sample/fizzbuzz.fbs .
 ## results
 
 ```console
-> npm run repl
+PS C:\Users\hrkt\work\fizzbuzz-scheme> npm run repl
 
-fbs>sample
-read:(define fb (lambda (x) (if (and (= (mod x 3) 0) (= (mod x 5) 0)) (quote fizzbuzz) (if (= (mod x 3) 0) (quote fizz) (if (= (mod x 5) 0) (quote buzz) x )))))
-
-fbs>(fb 1)
-1
-fbs>(fb 3)
-arg.length = 1
-fizz
-fbs>(fb 5)
-arg.length = 1
-buzz
-fbs>(fb 15)
-arg.length = 1
-fizzbuzz
+fbs> (display "aaa")
+aaa#undefined
+fbs> samples
+fbs> (fizzbuzz 2)
+2#undefined
+fbs> (fizzbuzz 3)
+fizz#undefined
+fbs> (fizzbuzz 4)
+4#undefined
+fbs> (fizzbuzz 5)
+buzz#undefined
+fbs> (fizzbuzz 15)
+fizzbuzz#undefined
 ```
 
 # how-to

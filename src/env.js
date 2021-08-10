@@ -11,7 +11,11 @@ export class FsEnv {
   constructor (outer = null, vars = new Map()) {
     this.outer = outer
     this.vars = vars
-    this.id = FsEnv.counter++
+    this._id = FsEnv.counter++
+  }
+
+  get id () {
+    return this._id
   }
 
   // Object keys in JS Map are compared by its ref.
