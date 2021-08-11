@@ -4,7 +4,7 @@
   "description": "A tiny scheme subset interpreter that can evaluate fizz-buzz code.",
   "main": "src/repl.js",
   "scripts": {
-    "lint": "npx eslint",
+    "lint": "npx eslint src/ test/",
     "repl": "node src/repl",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest",
     "majestic": "cross-env NODE_OPTIONS=--experimental-vm-modules npx majestic",
