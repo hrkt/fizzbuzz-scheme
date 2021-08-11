@@ -1,7 +1,5 @@
 'use strict'
 
-import * as util from './testutil.js'
-
 import { FsNumber } from '../src/sexp.js'
 import { FizzBuzzScheme } from '../src/index.js'
 import { FsError } from '../src/common.js'
