@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsIf, FsDefine, FsLambda, FsSymbol, FsQuote } from './sexp.js'
+import { FsIf, FsDefine, FsLambda, FsSymbol, FsQuote, FsSet } from './sexp.js'
 import { getGlobalEnv } from './env.js'
 
 import log from 'loglevel'
@@ -36,6 +36,8 @@ export class FsEvaluator {
       return FsQuote.proc(sexp.slice(1))
     } else if (sexp[0].value === 'define') {
       return FsDefine.proc(sexp.slice(1), env)
+    } else if (sexp[0].value === 'set!') {
+      return FsSet.proc(sexp.slice(1), env)
     } else if (sexp[0].value === 'lambda') {
       return FsLambda.proc(sexp.slice(1), env)
     } else {
