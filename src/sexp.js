@@ -136,6 +136,7 @@ export class FsProcedure {
   }
 }
 
+// https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6
 export class FsDefine extends FsList {
   static proc (list, env) {
     ensureListContainsTwo(list)
@@ -167,6 +168,26 @@ export class FsDefine extends FsList {
       }
       env.set(funcName, procedure)
       return funcName
+    }
+  }
+}
+
+// https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6
+export class FsSet extends FsList {
+  static proc (list, env) {
+    ensureListContainsTwo(list)
+    const symbol = list.shift()
+    const newValue = list.shift()
+
+    try {
+      const prev = env.find(symbol)
+      if (log.getLevel() <= log.levels.DEBUG) {
+        log.debug('set! - pref:' + prev + ' new:' + newValue)
+      }
+      env.set(symbol, newValue)
+      return FsUndefined.UNDEFINED
+    } catch (e) {
+      throw new FsError('symbol must be defined before calling "set!"')
     }
   }
 }
