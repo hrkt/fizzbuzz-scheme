@@ -192,6 +192,16 @@ export class FsSet extends FsList {
   }
 }
 
+export class FsBegin extends FsList {
+  static proc (list, env) {
+    let ret = null
+    for (let i = 0; i < list.length; i++) {
+      ret = FsEvaluator.eval(list[i], env)
+    }
+    return ret
+  }
+}
+
 export class FsQuote extends FsList {
   static proc (arg) {
     if (log.getLevel() <= log.levels.DEBUG) {
