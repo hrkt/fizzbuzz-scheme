@@ -5,7 +5,7 @@ import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { FsNumber } from '../src/sexp.js'
 
 import log from 'loglevel'
-log.setLevel('trace')
+log.setLevel('info')
 
 const fibonacci = '(define fib (lambda (n) (if (< n 2)' +
 ' n' +
