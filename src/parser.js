@@ -33,7 +33,16 @@ export class FsParser {
         i++
         c = code.charAt(i)
       }
-      tokenList.push(buf)
+
+      if (buf.startsWith('\'')) {
+        tokenList.push('(')
+        tokenList.push('quote')
+        tokenList.push(buf.slice(1))
+        tokenList.push(')')
+      } else {
+        tokenList.push(buf)
+      }
+
       buf = ''
       if (c === ')') {
         tokenList.push(c)

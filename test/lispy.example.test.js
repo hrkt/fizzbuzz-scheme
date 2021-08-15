@@ -2,6 +2,7 @@
 
 import log from 'loglevel'
 import { FizzBuzzScheme } from '../src/index.js'
+import { FsNumber } from '../src/sexp.js'
 log.setLevel('debug')
 
 test('evaluating area', () => {
@@ -10,7 +11,7 @@ test('evaluating area', () => {
   fbs.eval(code)
   const ret = fbs.eval('(area 3)')
   console.dir(ret)
-  expect(ret.toString()).toBe('28.274333877')
+  expect(ret).toStrictEqual(new FsNumber(28.274333877))
 })
 
 test('evaluating fact', () => {
@@ -19,5 +20,5 @@ test('evaluating fact', () => {
   fbs.eval(code)
   const ret = fbs.eval('(fact 10)')
   console.dir(ret)
-  expect(ret.toString()).toBe('3628800')
+  expect(ret).toStrictEqual(new FsNumber(3628800))
 })
