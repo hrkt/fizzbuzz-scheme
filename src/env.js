@@ -71,6 +71,8 @@ export class FsEnv {
 // get global environment
 export function getGlobalEnv () {
   const env = new FsEnv()
+  const prev = log.getLevel()
+  log.setLevel('error')
   env.set(new FsSymbol('+'), FsOperatorPlus)
   env.set(new FsSymbol('-'), FsOperatorMinus)
   env.set(new FsSymbol('*'), FsOperatorMultiply)
@@ -85,5 +87,6 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('write'), FsWrite)
   env.set(new FsSymbol('newline'), FsNewline)
   env.set(new FsSymbol('display'), FsDisplay)
+  log.setLevel(prev)
   return env
 }
