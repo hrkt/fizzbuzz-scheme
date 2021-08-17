@@ -1,8 +1,5 @@
 'use strict'
 
-import * as util from './testutil.js'
-
-import { FsNumber, FsValue } from '../src/sexp.js'
 import { FizzBuzzScheme } from '../src/index.js'
 
 test('evaluating (quote 1) yields 1', () => {
