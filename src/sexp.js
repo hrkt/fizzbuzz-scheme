@@ -191,10 +191,19 @@ export class FsBegin extends FsSExp {
 
 export class FsQuote extends FsSExp {
   static proc (arg) {
-    if (!Array.isArray(arg)) {
-      return new FsValue(arg)
+    // arg ... ex) [{"_value":"'"},{"_value":"a"}]
+    const quoteList = arg
+    if (quoteList[0] instanceof Array) {
+      const innerList = quoteList[0]
+      if (innerList[0] instanceof FsSingleQuoteSymbol) {
+        log.debug('returning FsList starting with FsSingleQuoteSymbol')
+        return new FsList([innerList[0], FsQuote.proc(innerList.slice(1))])
+      } else {
+        log.debug('returning FsList')
+        return new FsList(innerList)
+      }
     } else {
-      return new FsValue(arg[0])
+      return new FsSingleItem(arg)
     }
   }
 }
@@ -241,6 +250,11 @@ export class FsString extends FsAtom {
 
 export class FsSymbol extends FsAtom {}
 
+export class FsSingleQuoteSymbol extends FsSymbol {
+  constructor () {
+    super('\'')
+  }
+}
 export class FsUndefined extends FsAtom {
   static UNDEFINED_ = new FsUndefined()
 
@@ -384,33 +398,48 @@ export class FsDisplay extends FsSExp {
   }
 }
 
-export class FsValue extends FsSExp {
+export class FsValue {}
+export class FsList extends FsValue {
   constructor (value) {
     super()
     this.value_ = value
+    log.debug('ctor FsList called with:' + value)
   }
 
   get length () {
-    if (this.value_ instanceof Array) {
-      return this.value_.length
-    } else {
-      return 1
-    }
+    return this.value_.length
   }
 
   evaled () {
-    if (this.value_ instanceof Array) {
-      return this.value_.map(v => FsEvaluator.eval(v))
-    } else {
-      return FsEvaluator.eval(this.value_)
-    }
+    // return this.value_.map(v => FsEvaluator.eval(v))
+    return 'EVALED:' + this.toString()
   }
 
   toString () {
-    if (this.value_ instanceof Array) {
-      return '(' + this.value_.map(v => FsEvaluator.eval(v)).join(' ') + ')'
+    if (this.value_[0] instanceof FsSingleQuoteSymbol) {
+      return '\'' + this.value_[1].toString()
     } else {
-      return FsEvaluator.eval(this.value_)
+      return '(' + this.value_.map(v => v.toString()).join(' ') + ')'
     }
+  }
+}
+
+export class FsSingleItem extends FsValue {
+  constructor (value) {
+    super()
+    this.value_ = value
+    log.debug('ctor FsSingleItem called with:' + value)
+  }
+
+  get length () {
+    return 1
+  }
+
+  evaled () {
+    return FsEvaluator.eval(this.value_)
+  }
+
+  toString () {
+    return this.value_.toString()
   }
 }
