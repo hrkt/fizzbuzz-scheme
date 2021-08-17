@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsIf, FsDefine, FsLambda, FsSymbol, FsQuote, FsSet, FsBegin } from './sexp.js'
+import { FsIf, FsDefine, FsLambda, FsSymbol, FsQuote, FsSet, FsBegin, FsValue, FsSingleQuoteSymbol } from './sexp.js'
 import { getGlobalEnv } from './env.js'
 
 import log from 'loglevel'
@@ -14,10 +14,11 @@ export class FsEvaluator {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('----------------------------------------------------')
       log.debug('EVAL:' + sexp + ' in ' + env.toString())
+      log.debug(JSON.stringify(sexp))
     }
     const ret = FsEvaluator.evalInternal(sexp, env)
     if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('RETURNS:' + ret + ' for sexp:' + sexp)
+      log.debug('RETURNS:' + ret.toString() + ' for sexp:' + sexp)
       log.debug('----------------------------------------------------')
     }
     return ret
@@ -30,9 +31,13 @@ export class FsEvaluator {
     } else if (!Array.isArray(sexp)) {
       // i.e. FsNumber, FsBoolean...
       return sexp
+    } else if (sexp instanceof FsValue) {
+      return sexp.evaled()
     } else if (sexp[0].value === 'if') {
       return FsIf.proc(sexp.slice(1), env)
     } else if (sexp[0].value === 'quote') {
+      return FsQuote.proc(sexp.slice(1))
+    } else if (sexp[0] instanceof FsSingleQuoteSymbol) {
       return FsQuote.proc(sexp.slice(1))
     } else if (sexp[0].value === 'define') {
       return FsDefine.proc(sexp.slice(1), env)

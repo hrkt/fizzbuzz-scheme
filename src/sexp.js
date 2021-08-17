@@ -27,6 +27,10 @@ export class FsSExp {
       throw new FsException('FsSexp class can\'t be instantiated.')
     }
   }
+
+  toString () {
+    return this.constructor.name
+  }
 }
 
 export class FsAtom extends FsSExp {
@@ -51,25 +55,7 @@ export class FsAtom extends FsSExp {
   }
 }
 
-export class FsList extends FsSExp {
-  constructor (list = []) {
-    super()
-    this.value = list
-  }
-
-  get length () {
-    return this.value.length
-  }
-
-  toString () {
-    if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug(this.value)
-    }
-    return '(' + this.value.map(v => FsEvaluator.eval(v)).join(' ') + ')'
-  }
-}
-
-export class FsIf extends FsList {
+export class FsIf extends FsSExp {
   static proc (list, env) {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('fsIf')
@@ -84,7 +70,7 @@ export class FsIf extends FsList {
   }
 }
 
-export class FsLambda extends FsList {
+export class FsLambda extends FsSExp {
   static proc (list, env) {
     const params = list.shift()
     const body = list.shift()
@@ -112,8 +98,9 @@ export class FsLambda extends FsList {
   }
 }
 
-export class FsProcedure {
+export class FsProcedure extends FsSExp {
   constructor (params, body, env) {
+    super()
     this.params = params
     this.body = body
     this.env = env
@@ -137,7 +124,7 @@ export class FsProcedure {
 }
 
 // https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6
-export class FsDefine extends FsList {
+export class FsDefine extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
     const car = list.shift()
@@ -173,7 +160,7 @@ export class FsDefine extends FsList {
 }
 
 // https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6
-export class FsSet extends FsList {
+export class FsSet extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
     const symbol = list.shift()
@@ -192,7 +179,7 @@ export class FsSet extends FsList {
   }
 }
 
-export class FsBegin extends FsList {
+export class FsBegin extends FsSExp {
   static proc (list, env) {
     let ret = null
     for (let i = 0; i < list.length; i++) {
@@ -202,15 +189,21 @@ export class FsBegin extends FsList {
   }
 }
 
-export class FsQuote extends FsList {
+export class FsQuote extends FsSExp {
   static proc (arg) {
-    if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('arg.length = ' + arg.length)
-    }
-    if (!Array.isArray(arg[0])) {
-      return arg
+    // arg ... ex) [{"_value":"'"},{"_value":"a"}]
+    const quoteList = arg
+    if (quoteList[0] instanceof Array) {
+      const innerList = quoteList[0]
+      if (innerList[0] instanceof FsSingleQuoteSymbol) {
+        log.debug('returning FsList starting with FsSingleQuoteSymbol')
+        return new FsList([innerList[0], FsQuote.proc(innerList.slice(1))])
+      } else {
+        log.debug('returning FsList')
+        return new FsList(innerList)
+      }
     } else {
-      return new FsList(arg[0])
+      return new FsSingleItem(arg)
     }
   }
 }
@@ -243,7 +236,11 @@ export class FsBoolean extends FsAtom {
   }
 }
 
-export class FsNumber extends FsAtom {}
+export class FsNumber extends FsAtom {
+  toString () {
+    return this.value
+  }
+}
 
 export class FsString extends FsAtom {
   toString () {
@@ -253,6 +250,11 @@ export class FsString extends FsAtom {
 
 export class FsSymbol extends FsAtom {}
 
+export class FsSingleQuoteSymbol extends FsSymbol {
+  constructor () {
+    super('\'')
+  }
+}
 export class FsUndefined extends FsAtom {
   static UNDEFINED_ = new FsUndefined()
 
@@ -269,19 +271,19 @@ function ensureListContainsTwo (list) {
   }
 }
 
-export class FsOperatorPlus extends FsList {
+export class FsOperatorPlus extends FsSExp {
   static proc (list) {
     return new FsNumber(list.map(n => n.value).reduce((a, b) => a + b, 0))
   }
 }
 
-export class FsOperatorMultiply extends FsList {
+export class FsOperatorMultiply extends FsSExp {
   static proc (list) {
     return new FsNumber(list.map(n => n.value).reduce((a, b) => a * b, 1))
   }
 }
 
-export class FsOperatorMinus extends FsList {
+export class FsOperatorMinus extends FsSExp {
   static proc (list) {
     if (list.length === 1) {
       return new FsNumber(-1 * (list[0].value))
@@ -298,7 +300,7 @@ export class FsOperatorMinus extends FsList {
   }
 }
 
-export class FsOperatorDivide extends FsList {
+export class FsOperatorDivide extends FsSExp {
   static proc (list) {
     if (list.length === 1) {
       if (list[0].value !== 0) {
@@ -316,7 +318,7 @@ export class FsOperatorDivide extends FsList {
     }
   }
 }
-export class FsOperatorMod extends FsList {
+export class FsOperatorMod extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
     const dividend = list[0].value
@@ -325,7 +327,7 @@ export class FsOperatorMod extends FsList {
   }
 }
 
-export class FsEquals extends FsList {
+export class FsEquals extends FsSExp {
   static proc (param, env) {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('FsEquals')
@@ -339,35 +341,35 @@ export class FsEquals extends FsList {
   }
 }
 
-export class FsOperatorLt extends FsList {
+export class FsOperatorLt extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
     return list[0].value < list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
-export class FsOperatorLte extends FsList {
+export class FsOperatorLte extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
     return list[0].value <= list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
-export class FsOperatorGt extends FsList {
+export class FsOperatorGt extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
     return list[0].value > list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
-export class FsOperatorGte extends FsList {
+export class FsOperatorGte extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
     return list[0].value >= list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
-export class FsAnd extends FsList {
+export class FsAnd extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
     const [lhs, rhs] = list
@@ -375,23 +377,69 @@ export class FsAnd extends FsList {
   }
 }
 
-export class FsWrite {
+export class FsWrite extends FsSExp {
   static proc (list) {
     process.stdout.write(list.map(s => s.value).join(' '))
     return FsUndefined.UNDEFINED
   }
 }
 
-export class FsNewline {
+export class FsNewline extends FsSExp {
   static proc (list) {
     console.log()
     return FsUndefined.UNDEFINED
   }
 }
 
-export class FsDisplay {
+export class FsDisplay extends FsSExp {
   static proc (list) {
     process.stdout.write(list.map(s => s.value).join(' '))
     return FsUndefined.UNDEFINED
+  }
+}
+
+export class FsValue {}
+export class FsList extends FsValue {
+  constructor (value) {
+    super()
+    this.value_ = value
+    log.debug('ctor FsList called with:' + value)
+  }
+
+  get length () {
+    return this.value_.length
+  }
+
+  evaled () {
+    // return this.value_.map(v => FsEvaluator.eval(v))
+    return 'EVALED:' + this.toString()
+  }
+
+  toString () {
+    if (this.value_[0] instanceof FsSingleQuoteSymbol) {
+      return '\'' + this.value_[1].toString()
+    } else {
+      return '(' + this.value_.map(v => v.toString()).join(' ') + ')'
+    }
+  }
+}
+
+export class FsSingleItem extends FsValue {
+  constructor (value) {
+    super()
+    this.value_ = value
+    log.debug('ctor FsSingleItem called with:' + value)
+  }
+
+  get length () {
+    return 1
+  }
+
+  evaled () {
+    return FsEvaluator.eval(this.value_)
+  }
+
+  toString () {
+    return this.value_.toString()
   }
 }

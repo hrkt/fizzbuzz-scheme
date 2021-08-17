@@ -1,7 +1,7 @@
 'use strict'
 
 import log from 'loglevel'
-import { SExpFactory } from './sexp.js'
+import { FsSingleQuoteSymbol, SExpFactory } from './sexp.js'
 
 // Parser
 export class FsParser {
@@ -23,7 +23,7 @@ export class FsParser {
         }
         continue
       }
-      if (c === '(' || c === ')') {
+      if (c === '(' || c === ')' || c === '\'') {
         tokenList.push(c)
         i++
         continue
@@ -34,6 +34,7 @@ export class FsParser {
         c = code.charAt(i)
       }
       tokenList.push(buf)
+
       buf = ''
       if (c === ')') {
         tokenList.push(c)
@@ -49,12 +50,20 @@ export class FsParser {
     return SExpFactory.build(token)
   }
 
-  static readTokens (tokenized) {
+  static readTokens (tokenized, inQuoted = false) {
     const t = tokenized.shift()
+    if (t === '\'') {
+      const l = []
+      // l.push(FsParser.element('\''))
+      l.push(new FsSingleQuoteSymbol())
+      l.push(FsParser.readTokens(tokenized, true))
+      log.debug('created array : ' + l.length)
+      return l
+    }
     if (t === '(') {
       const l = []
       while (tokenized[0] !== ')' && tokenized.length > 0) {
-        l.push(FsParser.readTokens(tokenized))
+        l.push(FsParser.readTokens(tokenized, inQuoted))
       }
       tokenized.shift()
       return l
@@ -82,7 +91,7 @@ export class FsParser {
     const tokenized = this.tokenize(code)
     log.debug('------')
     log.debug('tokenized: ' + tokenized)
-    const orders = FsParser.readTokensOuter(this.tokenize(code))
+    const orders = FsParser.readTokensOuter(tokenized)
     log.debug('------')
     log.debug(orders.length)
     log.debug('parsed: ' + orders)
