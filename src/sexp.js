@@ -57,10 +57,6 @@ export class FsAtom extends FsSExp {
 
 export class FsIf extends FsSExp {
   static proc (list, env) {
-    if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('fsIf')
-      log.debug(list)
-    }
     const [test, conseq, alt] = list
     if (FsEvaluator.eval(test, env).value) {
       return FsEvaluator.eval(conseq, env)
@@ -240,6 +236,10 @@ export class FsNumber extends FsAtom {
   toString () {
     return this.value
   }
+
+  equals (target) {
+    return this.value === target.value
+  }
 }
 
 export class FsString extends FsAtom {
@@ -336,16 +336,15 @@ export class FsOperatorMod extends FsSExp {
 }
 
 export class FsEquals extends FsSExp {
-  static proc (param, env) {
-    if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('FsEquals')
-      console.dir(param)
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const [lhs, rhs] = list
+    if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
+      return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else {
+      // prerequisites: only ascii characters are permitted
+      return lhs.toString() === rhs.toString() ? FsBoolean.TRUE : FsBoolean.FALSE
     }
-    if (!Array.isArray(param) || param.length !== 2) {
-      throw new Error('equals must take 2 arguments as list')
-    }
-    const [lhs, rhs] = param
-    return FsEvaluator.eval(lhs, env).toString() === FsEvaluator.eval(rhs, env).toString() ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
@@ -378,15 +377,15 @@ export class FsOperatorGte extends FsSExp {
 }
 
 export class FsAnd extends FsSExp {
-  static proc (list, env) {
+  static proc (list) {
     ensureListContainsTwo(list)
     const [lhs, rhs] = list
-    return FsEvaluator.eval(lhs, env) === FsBoolean.TRUE && FsEvaluator.eval(rhs, env) === FsBoolean.TRUE ? FsBoolean.TRUE : FsBoolean.FALSE
+    return lhs === FsBoolean.TRUE && rhs === FsBoolean.TRUE ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsNot extends FsSExp {
-  static proc (list, env) {
+  static proc (list) {
     ensureListContainsOne(list)
     const target = list[0]
     if (target instanceof FsBoolean) {
