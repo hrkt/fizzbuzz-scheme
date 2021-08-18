@@ -265,10 +265,18 @@ export class FsUndefined extends FsAtom {
   }
 }
 
-function ensureListContainsTwo (list) {
-  if (!Array.isArray(list) || list.length !== 2) {
-    throw new Error('mod must take 2 arguments as list')
+function ensureListContains (list, length) {
+  if (!Array.isArray(list) || list.length !== length) {
+    throw new Error('mod must take ' + length + '  argument(s) as list')
   }
+}
+
+function ensureListContainsTwo (list) {
+  ensureListContains(list, 2)
+}
+
+function ensureListContainsOne (list) {
+  ensureListContains(list, 1)
 }
 
 export class FsOperatorPlus extends FsSExp {
@@ -374,6 +382,18 @@ export class FsAnd extends FsSExp {
     ensureListContainsTwo(list)
     const [lhs, rhs] = list
     return FsEvaluator.eval(lhs, env) === FsBoolean.TRUE && FsEvaluator.eval(rhs, env) === FsBoolean.TRUE ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsNot extends FsSExp {
+  static proc (list, env) {
+    ensureListContainsOne(list)
+    const target = list[0]
+    if (target instanceof FsBoolean) {
+      return target.value ? FsBoolean.FALSE : FsBoolean.TRUE
+    } else {
+      return FsBoolean.FALSE
+    }
   }
 }
 
