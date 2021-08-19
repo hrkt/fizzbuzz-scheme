@@ -25,3 +25,24 @@ test('2.2', () => {
   const fbs = new FizzBuzzScheme()
   expect(fbs.eval(code)).toStrictEqual(new FsNumber(3628800))
 })
+
+test('4.1.1', () => {
+  const fbs = new FizzBuzzScheme()
+  fbs.eval('(define x 28)')
+  expect(fbs.eval('x')).toStrictEqual(new FsNumber(28))
+})
+
+test('4.1.2', () => {
+  const fbs = new FizzBuzzScheme()
+  expect(fbs.eval('(quote a)').toString()).toBe('a')
+
+  // TODO:
+  // expect(fbs.eval('(quote #(a b c))').toString()).toBe('#(a b c)')
+
+  expect(fbs.eval('(quote (+ 1 2))').toString()).toBe('(+ 1 2)')
+})
+
+test('4.2.2', () => {
+  const fbs = new FizzBuzzScheme()
+  expect(fbs.eval('(let ((x 2) (y 3)) (* x y))')).toStrictEqual(new FsNumber(6))
+})
