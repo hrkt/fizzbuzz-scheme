@@ -119,6 +119,32 @@ export class FsProcedure extends FsSExp {
   }
 }
 
+export class FsLet extends FsSExp {
+  static proc (list, env) {
+    ensureListContainsTwo(list)
+    let varDefs = null
+    if (list[0] instanceof Array && !(list[0][0] instanceof Array)) {
+      // varDefs = [list[0]]
+      throw new FsError('syntax error: bindings should have the form ((k 1) ..')
+    } else {
+      varDefs = list[0]
+    }
+
+    const innerEnv = new FsEnv(env)
+    for (let i = 0; i < varDefs.length; i++) {
+      innerEnv.set(varDefs[i][0], FsEvaluator.eval(varDefs[i][1], env))
+    }
+
+    const body = list[1]
+
+    return FsEvaluator.eval(body, innerEnv)
+  }
+
+  toString () {
+    return 'FsProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+  }
+}
+
 // https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6
 export class FsDefine extends FsSExp {
   static proc (list, env) {
@@ -344,6 +370,9 @@ export class FsEquals extends FsSExp {
     } else {
       // prerequisites: only ascii characters are permitted
       return lhs.toString() === rhs.toString() ? FsBoolean.TRUE : FsBoolean.FALSE
+      // non-ascii
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
+      // return lhs.toString().normalize() === rhs.toString().normalize()? FsBoolean.TRUE : FsBoolean.FALSE
     }
   }
 }
