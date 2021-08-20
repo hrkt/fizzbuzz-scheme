@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsIf, FsDefine, FsLambda, FsSymbol, FsQuote, FsSet, FsBegin, FsValue, FsSingleQuoteSymbol, FsLet } from './sexp.js'
+import { FsIf, FsDefine, FsLambda, FsSymbol, FsQuote, FsSet, FsBegin, FsValue, FsSingleQuoteSymbol, FsLet, FsList } from './sexp.js'
 import { getGlobalEnv } from './env.js'
 
 import log from 'loglevel'
@@ -33,6 +33,8 @@ export class FsEvaluator {
       return sexp
     } else if (sexp instanceof FsValue) {
       return sexp.evaled()
+    } else if (Array.isArray(sexp) && sexp.length === 0) {
+      return new FsList([])
     } else if (sexp[0].value === 'if') {
       return FsIf.proc(sexp.slice(1), env)
     } else if (sexp[0].value === 'quote') {
