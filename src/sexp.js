@@ -491,3 +491,9 @@ export class FsSingleItem extends FsValue {
     return this.value_.toString()
   }
 }
+
+export class FsPredicateNull extends FsSExp {
+  static proc (list) {
+    return list[0] instanceof FsList && (list[0]).length === 0 ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
