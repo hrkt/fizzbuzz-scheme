@@ -33,7 +33,7 @@ export class FsEvaluator {
       return sexp
     } else if (sexp instanceof FsValue) {
       return sexp.evaled()
-    } else if (sexp instanceof Array && sexp.length === 0) {
+    } else if (Array.isArray(sexp) && sexp.length === 0) {
       return new FsList([])
     } else if (sexp[0].value === 'if') {
       return FsIf.proc(sexp.slice(1), env)

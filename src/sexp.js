@@ -123,7 +123,7 @@ export class FsLet extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
     let varDefs = null
-    if (list[0] instanceof Array && !(list[0][0] instanceof Array)) {
+    if (Array.isArray(list) && !(Array.isArray(list[0][0]))) {
       // varDefs = [list[0]]
       throw new FsError('syntax error: bindings should have the form ((k 1) ..')
     } else {
@@ -215,7 +215,7 @@ export class FsQuote extends FsSExp {
   static proc (arg) {
     // arg ... ex) [{"_value":"'"},{"_value":"a"}]
     const quoteList = arg
-    if (quoteList[0] instanceof Array) {
+    if (Array.isArray(quoteList[0])) {
       const innerList = quoteList[0]
       if (innerList[0] instanceof FsSingleQuoteSymbol) {
         log.debug('returning FsList starting with FsSingleQuoteSymbol')
