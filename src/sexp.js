@@ -497,3 +497,9 @@ export class FsPredicateNull extends FsSExp {
     return list[0] instanceof FsList && (list[0]).length === 0 ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
+
+export class FsPredicateBoolean extends FsSExp {
+  static proc (list) {
+    return list[0] instanceof FsBoolean ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
