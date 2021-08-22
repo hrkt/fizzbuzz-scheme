@@ -3,12 +3,14 @@
 'use strict'
 
 import { FizzBuzzScheme } from '../src/index.js'
-import { FsNumber } from '../src/sexp.js'
+
+function myexpect (code, expectedStr, fbs = new FizzBuzzScheme()) {
+  expect(fbs.eval(code).toString()).toBe(expectedStr)
+}
 
 test('1.3.4', () => {
   const code = '(* 5 8)'
-  const fbs = new FizzBuzzScheme()
-  expect(fbs.eval(code)).toStrictEqual(new FsNumber(40))
+  myexpect(code, 40)
 })
 
 test('2.2', () => {
@@ -22,27 +24,57 @@ test('2.2', () => {
   (fact 10)
   `
 
-  const fbs = new FizzBuzzScheme()
-  expect(fbs.eval(code)).toStrictEqual(new FsNumber(3628800))
+  myexpect(code, 3628800)
 })
 
 test('4.1.1', () => {
   const fbs = new FizzBuzzScheme()
   fbs.eval('(define x 28)')
-  expect(fbs.eval('x')).toStrictEqual(new FsNumber(28))
+  myexpect('x', 28, fbs)
 })
 
 test('4.1.2', () => {
-  const fbs = new FizzBuzzScheme()
-  expect(fbs.eval('(quote a)').toString()).toBe('a')
+  myexpect('(quote a)', 'a')
 
   // TODO:
-  // expect(fbs.eval('(quote #(a b c))').toString()).toBe('#(a b c)')
+  // myexpect('(quote #(a b c))','#(a b c)')
 
-  expect(fbs.eval('(quote (+ 1 2))').toString()).toBe('(+ 1 2)')
+  myexpect('(quote (+ 1 2))', '(+ 1 2)')
+})
+
+test('4.1.4', () => {
+  const code = `(define add4
+    (let ((x 4))
+      (lambda (y) (+ x y))))
+  (add4 6)
+  `
+  myexpect(code, 10)
 })
 
 test('4.2.2', () => {
-  const fbs = new FizzBuzzScheme()
-  expect(fbs.eval('(let ((x 2) (y 3)) (* x y))')).toStrictEqual(new FsNumber(6))
+  myexpect('(let ((x 2) (y 3)) (* x y))', 6)
+})
+
+test('6.3.1', () => {
+  myexpect('#t', '#t')
+  myexpect('#f', '#f')
+  myexpect('\'#f', '#f')
+
+  myexpect('(not #t)', '#f')
+  myexpect('(not 3)', '#f')
+  // TODO: implement list
+  // myexpect('(not (list 3))', '#f')
+  myexpect('(not #f)', '#t')
+  myexpect('(not \'())', '#f')
+  // myexpect('(not (list))','#f')
+  myexpect('(not \'nil)', '#f')
+  myexpect('\'#f', '#f')
+
+  myexpect('(boolean? #f)', '#t')
+  myexpect('(boolean? 0)', '#f')
+  myexpect('(boolean? \'())', '#f')
+})
+
+test('6.3.2', () => {
+  myexpect('(let ((x 2) (y 3)) (* x y))', 6)
 })
