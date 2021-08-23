@@ -48,6 +48,9 @@ export class FsEnv {
     if (this.vars.has(key)) {
       return this.vars.get(key)
     } else if (this.outer !== null) {
+      // calling outer like below results in exeeding maximum call stack,
+      // so we simply use foo-loop in this method, and do nut use recursive call.
+      //
       // return this.outer.find(symbol)
       let nextOuter = this.outer
       while (nextOuter !== null) {
