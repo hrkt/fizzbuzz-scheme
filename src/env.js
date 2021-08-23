@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsDisplay, FsEquals, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateNull, FsQuote, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsDisplay, FsEquals, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError } from './common.js'
 
@@ -101,6 +101,9 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('\''), FsQuote)
   env.set(new FsSymbol('null?'), FsPredicateNull)
   env.set(new FsSymbol('boolean?'), FsPredicateBoolean)
+  env.set(new FsSymbol('list?'), FsPredicateList)
+  env.set(new FsSymbol('list'), FsList)
+
   log.setLevel(prev)
   return env
 }

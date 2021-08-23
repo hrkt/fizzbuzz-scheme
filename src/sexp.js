@@ -463,6 +463,10 @@ export class FsList extends FsValue {
     return 'EVALED:' + this.toString()
   }
 
+  static proc (arg) {
+    return new FsList(arg)
+  }
+
   toString () {
     if (this.value_[0] instanceof FsSingleQuoteSymbol) {
       return '\'' + this.value_[1].toString()
@@ -501,5 +505,11 @@ export class FsPredicateNull extends FsSExp {
 export class FsPredicateBoolean extends FsSExp {
   static proc (list) {
     return list[0] instanceof FsBoolean ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateList extends FsSExp {
+  static proc (list) {
+    return list[0] instanceof FsList ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
