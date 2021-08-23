@@ -55,3 +55,19 @@ test('define env multiple times and get increased id success', () => {
 test('calling toKey with null parameter throws FsError ', () => {
   expect(() => { FsEnv.toKey(null) }).toThrow(FsError)
 })
+
+test('do not exceed maximum call stack size', () => {
+  console.time('loop')
+  const environments = []
+  environments[0] = getGlobalEnv()
+  const max = 10000
+  for (let i = 1; i < max; i++) {
+    // counter += Array.isArray([]) ? 1 : 0
+    environments[i] = new FsEnv(environments[i - 1])
+  }
+  console.timeEnd('loop')
+
+  console.time('find')
+  expect(environments[max - 1].find(new FsSymbol('+'))).not.toBeNull()
+  console.timeEnd('find')
+})

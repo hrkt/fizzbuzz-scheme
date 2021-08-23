@@ -48,22 +48,29 @@ export class FsEnv {
     if (this.vars.has(key)) {
       return this.vars.get(key)
     } else if (this.outer !== null) {
-      return this.outer.find(symbol)
+      // return this.outer.find(symbol)
+      let nextOuter = this.outer
+      while (nextOuter !== null) {
+        if (nextOuter.vars.has(key)) {
+          return nextOuter.vars.get(key)
+        }
+        nextOuter = nextOuter.outer
+      }
     } else {
       throw new FsError('Symbol [' + symbol + '] is not found.')
     }
   }
 
   toString () {
-    let buf = ''
-    if (this.outer !== null) {
-      buf += '[' + this.outer.toString() + ']'
-    }
+    // let buf = ''
+    // if (this.outer !== null) {
+    //   buf += '[' + this.outer.toString() + ']'
+    // }
     // return buf + '>>[' + Array.from(this.vars.keys()) + ']'
     if (this.outer === null) {
       return '>>ROOT'
     } else {
-      return buf + '>>id' + this.id + ' [' + Array.from(this.vars.keys()).map(k => k + '=' + this.vars.get(k)) + ']'
+      return '>>id' + this.id + ' [' + Array.from(this.vars.keys()).map(k => k + '=' + this.vars.get(k)) + ']'
     }
   }
 }
