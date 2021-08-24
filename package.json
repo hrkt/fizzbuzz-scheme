@@ -8,6 +8,7 @@
     "lint": "npx eslint src/ test/",
     "repl": "node src/repl",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest",
+    "coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --collectCoverage",
     "majestic": "cross-env NODE_OPTIONS=--experimental-vm-modules npx majestic",
     "show-opt-deopt-win": "node --trace-deopt --trace-opt .\\src\\fbs.js .\\sample\\fibonacci.scm .\\sample\\fib30.scm",
     "perf-get-prof-win": "node --prof .\\src\\fbs.js .\\sample\\fibonacci.scm .\\sample\\fib30.scm",
@@ -36,5 +37,10 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "jest-mock-process": "^1.4.1"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/{!(ignore-me),}.js"
+    ]
   }
 }
