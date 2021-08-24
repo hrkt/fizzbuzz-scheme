@@ -13,35 +13,34 @@ export class FsParser {
     log.debug(code)
     while (i < code.length) {
       let c = code.charAt(i)
-      if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
-        i++
-        continue
-      } else if (c === ';') {
+      // found comment char, then read to the end of line ignoring comments.
+      if (c === ';') {
         while (i < code.length && c !== '\n') {
           i++
           c = code.charAt(i)
         }
         continue
       }
+
+      // found brackets or quote chars, then use it as token and continue.
       if (c === '(' || c === ')' || c === '\'') {
         tokenList.push(c)
         i++
         continue
       }
+
+      if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
+        i++
+        continue
+      }
+
       while (i < code.length && c !== ' ' && c !== '\t' && c !== '\n' && c !== '\r' && c !== ')') {
         buf += c
         i++
         c = code.charAt(i)
       }
       tokenList.push(buf)
-
       buf = ''
-      if (c === ')') {
-        tokenList.push(c)
-      } else {
-        //
-      }
-      i++
     }
     return tokenList
   }
