@@ -9,10 +9,14 @@ export class FsParser {
     const tokenList = []
     let buf = ''
     let i = 0
-    log.debug('tokenizing:')
+    log.debug('tokenizing: length=' + code.length)
     log.debug(code)
+
+    // eslint-disable-next-line no-labels
+    nextLoop:
     while (i < code.length) {
       let c = code.charAt(i)
+      log.debug('i: ' + i + '\tc:' + c)
       // found comment char, then read to the end of line ignoring comments.
       if (c === ';') {
         while (i < code.length && c !== '\n') {
@@ -29,20 +33,51 @@ export class FsParser {
         continue
       }
 
-      if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
+      // found double quote, then read eager.
+      if (c === '"') {
+        buf += c
+        i++
+
+        while (i < code.length) {
+          log.debug('\ti: ' + i + '\tc:' + code.charAt(i))
+          if (code.charAt(i) === '\\' && code.charAt(i + 1) === '"') {
+            buf += '\\"'
+            i += 2
+          } else if (code.charAt(i) === '"') {
+            buf += '"'
+            tokenList.push(buf)
+            buf = ''
+            i++
+            log.debug('continue to nextLoop:, i=' + i)
+            // eslint-disable-next-line no-labels
+            continue nextLoop
+          } else {
+            buf += code.charAt(i)
+            i++
+          }
+        }
+      }
+
+      if (c === ' ' || FsParser.isControlChar(c)) {
         i++
         continue
       }
 
-      while (i < code.length && c !== ' ' && c !== '\t' && c !== '\n' && c !== '\r' && c !== ')') {
+      while (i < code.length && c !== ' ' && !FsParser.isControlChar(c) && c !== ')') {
         buf += c
         i++
         c = code.charAt(i)
       }
+
       tokenList.push(buf)
+
       buf = ''
     }
     return tokenList
+  }
+
+  static isControlChar (c) {
+    return c === '\t' || c === '\n' || c === '\r'
   }
 
   static element (token) {
