@@ -63,10 +63,10 @@ test('6.3.1', () => {
   myexpect('(not #t)', '#f')
   myexpect('(not 3)', '#f')
   // TODO: implement list
-  // myexpect('(not (list 3))', '#f')
+  myexpect('(not (list 3))', '#f')
   myexpect('(not #f)', '#t')
   myexpect('(not \'())', '#f')
-  // myexpect('(not (list))','#f')
+  myexpect('(not (list))', '#f')
   myexpect('(not \'nil)', '#f')
   myexpect('\'#f', '#f')
 

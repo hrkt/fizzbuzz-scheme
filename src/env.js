@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsDisplay, FsEquals, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateNull, FsQuote, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsDisplay, FsEquals, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError } from './common.js'
 
@@ -48,6 +48,9 @@ export class FsEnv {
     if (this.vars.has(key)) {
       return this.vars.get(key)
     } else if (this.outer !== null) {
+      // calling outer like below results in exeeding maximum call stack,
+      // so we simply use foo-loop in this method, and do nut use recursive call.
+      //
       // return this.outer.find(symbol)
       let nextOuter = this.outer
       while (nextOuter !== null) {
@@ -98,6 +101,9 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('\''), FsQuote)
   env.set(new FsSymbol('null?'), FsPredicateNull)
   env.set(new FsSymbol('boolean?'), FsPredicateBoolean)
+  env.set(new FsSymbol('list?'), FsPredicateList)
+  env.set(new FsSymbol('list'), FsList)
+
   log.setLevel(prev)
   return env
 }
