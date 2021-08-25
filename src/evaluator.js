@@ -31,8 +31,6 @@ export class FsEvaluator {
     } else if (!Array.isArray(sexp)) {
       // i.e. FsNumber, FsBoolean...
       return sexp
-    } else if (sexp instanceof FsValue) {
-      return sexp.evaled()
     } else if (Array.isArray(sexp) && sexp.length === 0) {
       return new FsList([])
     } else if (sexp[0].value === 'if') {

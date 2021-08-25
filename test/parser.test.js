@@ -1,5 +1,6 @@
 'use strict'
 
+import { FsException } from '../src/common.js'
 import { FsParser } from '../src/parser.js'
 import { FsString } from '../src/sexp.js'
 
@@ -46,8 +47,19 @@ test('tokenizing (list "a b") yields a list of 4 token', () => {
   expect(tokenized).toHaveLength(4)
 })
 
+test('tokenizing (list "a\\" b") yields a list of 4 token', () => {
+  const code = '(list "a\\" b")'
+  const tokenized = FsParser.tokenize(code)
+  expect(tokenized).toHaveLength(4)
+})
+
 test('tokenizing (list "a b")(list "c d") yields 2 lists', () => {
   const code = '(list "a b")(list "c d")'
   const tokenized = FsParser.tokenize(code)
   expect(tokenized).toHaveLength(8)
+})
+
+test('tokenizing (+ 1 2)) throws FsException', () => {
+  const code = '(+ 1 2))'
+  expect(() => { FsParser.parse(code) }).toThrow(FsException)
 })

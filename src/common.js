@@ -1,5 +1,6 @@
 'use strict'
 
+/** Represents a Scheme "Error" */
 export class FsException {
   constructor (message) {
     this.message = message
@@ -11,6 +12,7 @@ export class FsException {
   }
 }
 
+/** Represents a system error */
 export class FsError extends Error {
   constructor (message) {
     super(message)
