@@ -40,7 +40,10 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "src/**/{!(ignore-me),}.js"
-    ]
+      "src/**/*.js",
+      "!src/**/fbs.js",
+      "!src/**/repl.js"
+    ],
+    "coverageReporters": ["json", "html"]
   }
 }
