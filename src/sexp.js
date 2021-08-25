@@ -46,10 +46,6 @@ export class FsAtom extends FsSExp {
     return this._value
   }
 
-  set value (v) {
-    this._value = v
-  }
-
   toString () {
     return this._value === null ? 'null' : this._value.toString()
   }
@@ -249,10 +245,6 @@ export class FsBoolean extends FsAtom {
     }
   }
 
-  static fromValue (v) {
-    return v ? FsBoolean.TRUE : FsBoolean.FALSE
-  }
-
   toString () {
     return this.value ? '#t' : '#f'
   }
@@ -293,7 +285,7 @@ export class FsUndefined extends FsAtom {
 
 function ensureListContains (list, length) {
   if (!Array.isArray(list) || list.length !== length) {
-    throw new Error('mod must take ' + length + '  argument(s) as list')
+    throw new Error('this procedure must take ' + length + ' argument(s) as list')
   }
 }
 
@@ -337,6 +329,7 @@ export class FsOperatorMinus extends FsSExp {
 export class FsOperatorDivide extends FsSExp {
   static proc (list) {
     if (list.length === 1) {
+      // TODO: support rational number
       if (list[0].value !== 0) {
         return list[0]
       } else {
@@ -352,6 +345,7 @@ export class FsOperatorDivide extends FsSExp {
     }
   }
 }
+
 export class FsOperatorMod extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
@@ -458,11 +452,6 @@ export class FsList extends FsValue {
     return this.value_.length
   }
 
-  evaled () {
-    // return this.value_.map(v => FsEvaluator.eval(v))
-    return 'EVALED:' + this.toString()
-  }
-
   static proc (arg) {
     return new FsList(arg)
   }
@@ -481,14 +470,6 @@ export class FsSingleItem extends FsValue {
     super()
     this.value_ = value
     log.debug('ctor FsSingleItem called with:' + value)
-  }
-
-  get length () {
-    return 1
-  }
-
-  evaled () {
-    return FsEvaluator.eval(this.value_)
   }
 
   toString () {
