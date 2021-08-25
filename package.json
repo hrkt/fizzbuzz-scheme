@@ -44,6 +44,6 @@
       "!src/**/fbs.js",
       "!src/**/repl.js"
     ],
-    "coverageReporters": ["json", "html"]
+    "coverageReporters": ["json", "html", "text"]
   }
 }
