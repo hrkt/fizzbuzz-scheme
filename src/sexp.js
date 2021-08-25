@@ -3,7 +3,7 @@
 
 import { FsEvaluator } from './evaluator.js'
 import log from 'loglevel'
-import { FsError, FsException } from './common.js'
+import { FsError } from './common.js'
 import { FsEnv } from './env.js'
 
 export class SExpFactory {
@@ -24,7 +24,7 @@ export class SExpFactory {
 export class FsSExp {
   constructor (value = null) {
     if (this.constructor === FsSExp) {
-      throw new FsException('FsSexp class can\'t be instantiated.')
+      throw new FsError('FsSexp class can\'t be instantiated.')
     }
   }
 
@@ -37,7 +37,7 @@ export class FsAtom extends FsSExp {
   constructor (value = null) {
     super()
     if (this.constructor === FsAtom) {
-      throw new FsException('FsAtom class can\'t be instantiated.')
+      throw new FsError('FsAtom class can\'t be instantiated.')
     }
     this._value = value
   }
