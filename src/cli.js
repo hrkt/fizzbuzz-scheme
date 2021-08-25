@@ -14,14 +14,14 @@ export class FsCli {
     if (argv.length <= 2) {
       console.log('usage: node fbs.js {file}')
       process.exit(0)
-    } else {
-      const engine = new FizzBuzzScheme()
-      for (let i = 2; i < argv.length; i++) {
-        log.debug('executing:' + argv[i])
-        const file = argv[i]
-        const data = FS.readFileSync(file, 'utf8')
-        engine.eval(data)
-      }
     }
+    const engine = new FizzBuzzScheme()
+    for (let i = 2; i < argv.length; i++) {
+      log.debug('executing:' + argv[i])
+      const file = argv[i]
+      const data = FS.readFileSync(file, 'utf8')
+      engine.eval(data)
+    }
+    process.exit(0)
   }
 }
