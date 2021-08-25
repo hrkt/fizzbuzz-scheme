@@ -1,6 +1,7 @@
 'use strict'
 
 import log from 'loglevel'
+import { FsException } from './common.js'
 import { FsSingleQuoteSymbol, SExpFactory } from './sexp.js'
 
 // Parser
@@ -102,7 +103,7 @@ export class FsParser {
       tokenized.shift()
       return l
     } else if (t === ')') {
-      throw Error('came here')
+      throw new FsException('syntax error: too much ")"')
     } else {
       return FsParser.element(t)
     }
