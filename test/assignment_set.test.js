@@ -2,15 +2,15 @@
 
 import { FsNumber } from '../src/sexp.js'
 import { FizzBuzzScheme } from '../src/index.js'
-import { FsError } from '../src/common.js'
+import { FsException } from '../src/common.js'
 
-test('evaluating (set a 1) before defining symbol throws FsError', () => {
+test('evaluating (set! a 1) before defining symbol throws FsException', () => {
   const code = '(set! a 1)'
   const fbs = new FizzBuzzScheme()
-  expect(() => { fbs.eval(code) }).toThrow(FsError)
+  expect(() => { fbs.eval(code) }).toThrow(FsException)
 })
 
-test('evaluating (set a 1) after defining symbol throws FsError', () => {
+test('evaluating (set! a 1) after defining symbol success', () => {
   const code = '(set! a 1)'
   const fbs = new FizzBuzzScheme()
   fbs.eval('(define a 0)')

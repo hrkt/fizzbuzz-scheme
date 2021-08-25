@@ -3,7 +3,7 @@
 
 import { FsEvaluator } from './evaluator.js'
 import log from 'loglevel'
-import { FsError } from './common.js'
+import { FsError, FsException } from './common.js'
 import { FsEnv } from './env.js'
 
 export class SExpFactory {
@@ -125,7 +125,7 @@ export class FsLet extends FsSExp {
     let varDefs = null
     if (Array.isArray(list) && !(Array.isArray(list[0][0]))) {
       // varDefs = [list[0]]
-      throw new FsError('syntax error: bindings should have the form ((k 1) ..')
+      throw new FsException('syntax error: bindings should have the form ((k 1) ..')
     } else {
       varDefs = list[0]
     }
@@ -196,7 +196,7 @@ export class FsSet extends FsSExp {
       env.set(symbol, newValue)
       return FsUndefined.UNDEFINED
     } catch (e) {
-      throw new FsError('symbol must be defined before calling "set!"')
+      throw new FsException('symbol must be defined before calling "set!"')
     }
   }
 }
@@ -340,14 +340,14 @@ export class FsOperatorDivide extends FsSExp {
       if (list[0].value !== 0) {
         return list[0]
       } else {
-        throw new FsError('divide by 0')
+        throw new FsException('divide by 0')
       }
     } else {
       const divisor = FsOperatorMultiply.proc(list.slice(1))
       if (divisor.value !== 0) {
         return new FsNumber(list[0].value / divisor.value)
       } else {
-        throw new FsError('divide by 0')
+        throw new FsException('divide by 0')
       }
     }
   }

@@ -2,7 +2,7 @@
 
 import { FsAnd, FsDisplay, FsEquals, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
-import { FsError } from './common.js'
+import { FsError, FsException } from './common.js'
 
 // Environment
 export class FsEnv {
@@ -60,7 +60,7 @@ export class FsEnv {
         nextOuter = nextOuter.outer
       }
     } else {
-      throw new FsError('Symbol [' + symbol + '] is not found.')
+      throw new FsException('Symbol [' + symbol + '] is not found.')
     }
   }
 
