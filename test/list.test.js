@@ -20,3 +20,8 @@ test('evaluating (list? (list 1 2)) yields #t', () => {
   const code = '(list? (list 1 2))'
   util.codeEvaledTo(code, FsBoolean.TRUE)
 })
+
+test('evaluating (list? 1) yields #f', () => {
+  const code = '(list? 1)'
+  util.codeEvaledTo(code, FsBoolean.FALSE)
+})

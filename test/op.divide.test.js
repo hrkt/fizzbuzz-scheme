@@ -28,3 +28,8 @@ test('evaluating (/ 1 0) throws error', () => {
   const code = '(/ 1 0)'
   expect(() => { new FBS().eval(code) }).toThrow(FsException)
 })
+
+test('evaluating (/ 0) throws error', () => {
+  const code = '(/ 0)'
+  expect(() => { new FBS().eval(code) }).toThrow(FsException)
+})
