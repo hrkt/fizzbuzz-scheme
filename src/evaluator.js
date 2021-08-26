@@ -32,7 +32,7 @@ export class FsEvaluator {
       // i.e. FsNumber, FsBoolean...
       return sexp
     } else if (Array.isArray(sexp) && sexp.length === 0) {
-      return new FsList([])
+      return FsList.EMPTY
     } else if (FsSymbol.IF === sexp[0]) {
       return FsIf.proc(sexp.slice(1), env)
     } else if (FsSymbol.QUOTE === sexp[0]) {
