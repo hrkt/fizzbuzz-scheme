@@ -9,11 +9,13 @@ function myexpect (code, expectedStr, fbs = new FizzBuzzScheme()) {
   expect(fbs.eval(code).toString()).toBe(expectedStr)
 }
 
+// all cleared 😊
 test('1.3.4', () => {
   const code = '(* 5 8)'
   myexpect(code, 40)
 })
 
+// all cleared 😊
 test('2.2', () => {
   const code = `;;; The FACT procedure computes the factorial
   ;;; of a non-negative integer.
@@ -28,6 +30,7 @@ test('2.2', () => {
   myexpect(code, 3628800)
 })
 
+// all cleared 😊
 test('4.1.1', () => {
   const fbs = new FizzBuzzScheme()
   fbs.eval('(define x 28)')
@@ -41,6 +44,12 @@ test('4.1.2', () => {
   // myexpect('(quote #(a b c))','#(a b c)')
 
   myexpect('(quote (+ 1 2))', '(+ 1 2)')
+})
+
+// all cleared 😊
+test('4.1.3', () => {
+  myexpect('(+ 3 4)', 7)
+  myexpect('((if #f + *) 3 4)', 12)
 })
 
 test('4.1.4', () => {
@@ -79,6 +88,7 @@ test('4.2.3_2', () => {
   mockStdoutWrite.mockRestore()
 })
 
+// all cleared 😊
 test('6.3.1', () => {
   myexpect('#t', '#t')
   myexpect('#f', '#f')
@@ -86,7 +96,6 @@ test('6.3.1', () => {
 
   myexpect('(not #t)', '#f')
   myexpect('(not 3)', '#f')
-  // TODO: implement list
   myexpect('(not (list 3))', '#f')
   myexpect('(not #f)', '#t')
   myexpect('(not \'())', '#f')
