@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsDisplay, FsEquals, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSet, FsSingleQuoteSymbol, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -83,6 +83,15 @@ export function getGlobalEnv () {
   const env = new FsEnv()
   const prev = log.getLevel()
   log.setLevel('error')
+  // used in eval-each-switches
+  env.set(new FsSymbol('if'), FsIf)
+  env.set(new FsSymbol('quote'), FsQuote)
+  env.set(new FsSymbol('define'), FsDefine)
+  env.set(new FsSymbol('set!'), FsSet)
+  env.set(new FsSymbol('begin'), FsBegin)
+  env.set(new FsSymbol('lambda'), FsLambda)
+  env.set(new FsSymbol('let'), FsLet)
+  // used in eval-last
   env.set(new FsSymbol('+'), FsOperatorPlus)
   env.set(new FsSymbol('-'), FsOperatorMinus)
   env.set(new FsSymbol('*'), FsOperatorMultiply)
@@ -98,7 +107,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('write'), FsWrite)
   env.set(new FsSymbol('newline'), FsNewline)
   env.set(new FsSymbol('display'), FsDisplay)
-  env.set(new FsSymbol('\''), FsQuote)
+  env.set(new FsSymbol('\''), FsSingleQuoteSymbol)
   env.set(new FsSymbol('null?'), FsPredicateNull)
   env.set(new FsSymbol('boolean?'), FsPredicateBoolean)
   env.set(new FsSymbol('list?'), FsPredicateList)
