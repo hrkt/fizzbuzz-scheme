@@ -511,6 +511,16 @@ export class FsCar extends FsSExp {
   }
 }
 
+export class FsCdr extends FsSExp {
+  static proc (arg) {
+    const target = arg[0]
+    if (!(target instanceof FsList)) {
+      throw new FsException('arg must be list')
+    }
+    return new FsList(target.value.slice(1))
+  }
+}
+
 export class FsSingleItem extends FsValue {
   constructor (value) {
     super()

@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -113,6 +113,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('list?'), FsPredicateList)
   env.set(new FsSymbol('list'), FsList)
   env.set(new FsSymbol('car'), FsCar)
+  env.set(new FsSymbol('cdr'), FsCdr)
 
   log.setLevel(prev)
   return env
