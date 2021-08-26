@@ -2,7 +2,7 @@
 
 import log from 'loglevel'
 import { FsException } from './common.js'
-import { FsSingleQuoteSymbol, SExpFactory } from './sexp.js'
+import { FsSymbol, SExpFactory } from './sexp.js'
 
 // Parser
 export class FsParser {
@@ -90,7 +90,7 @@ export class FsParser {
     if (t === '\'') {
       const l = []
       // l.push(FsParser.element('\''))
-      l.push(new FsSingleQuoteSymbol())
+      l.push(FsSymbol.SINGLE_QUOTE)
       l.push(FsParser.readTokens(tokenized, true))
       log.debug('created array : ' + l.length)
       return l

@@ -16,7 +16,8 @@ export class SExpFactory {
       const extracted = s.substring(1, s.length - 1)
       return new FsString(extracted)
     } else {
-      return new FsSymbol(s)
+      // return new FsSymbol(s)
+      return FsSymbol.intern(s)
     }
   }
 }
@@ -26,6 +27,10 @@ export class FsSExp {
     if (this.constructor === FsSExp) {
       throw new FsError('FsSexp class can\'t be instantiated.')
     }
+  }
+
+  equals (that) {
+    return undefined !== that && (this.value === that.value)
   }
 
   toString () {
@@ -213,8 +218,8 @@ export class FsQuote extends FsSExp {
     const quoteList = arg
     if (Array.isArray(quoteList[0])) {
       const innerList = quoteList[0]
-      if (innerList[0] instanceof FsSingleQuoteSymbol) {
-        log.debug('returning FsList starting with FsSingleQuoteSymbol')
+      if (FsSymbol.SINGLE_QUOTE.equals(innerList[0])) {
+        log.debug('returning FsList starting with FsSybol.SINGLE_QUOTE')
         return new FsList([innerList[0], FsQuote.proc(innerList.slice(1))])
       } else {
         log.debug('returning FsList')
@@ -266,13 +271,39 @@ export class FsString extends FsAtom {
   }
 }
 
-export class FsSymbol extends FsAtom {}
-
-export class FsSingleQuoteSymbol extends FsSymbol {
-  constructor () {
-    super('\'')
+export class FsSymbol extends FsAtom {
+  static IF = new FsSymbol('if')
+  static QUOTE = new FsSymbol('quote')
+  static SINGLE_QUOTE = new FsSymbol('\'')
+  static DEFINE = new FsSymbol('define')
+  static SET_ = new FsSymbol('set!')
+  static BEGIN = new FsSymbol('begin')
+  static LAMBDA = new FsSymbol('lambda')
+  static LET = new FsSymbol('let')
+  static intern (str) {
+    switch (str) {
+      case 'if':
+        return this.IF
+      case 'quote':
+        return this.QUOTE
+      case '\'':
+        return this.SINGLE_QUOTE
+      case 'define':
+        return this.DEFINE
+      case 'set!':
+        return this.SET_
+      case 'begin':
+        return this.BEGIN
+      case 'lambda':
+        return this.LAMBDA
+      case 'let':
+        return this.LET
+      default:
+        return new FsSymbol(str)
+    }
   }
 }
+
 export class FsUndefined extends FsAtom {
   static UNDEFINED_ = new FsUndefined()
 
@@ -444,12 +475,12 @@ export class FsValue {}
 export class FsList extends FsValue {
   constructor (value) {
     super()
-    this.value_ = value
+    this.value = value
     log.debug('ctor FsList called with:' + value)
   }
 
   get length () {
-    return this.value_.length
+    return this.value.length
   }
 
   static proc (arg) {
@@ -457,10 +488,10 @@ export class FsList extends FsValue {
   }
 
   toString () {
-    if (this.value_[0] instanceof FsSingleQuoteSymbol) {
-      return '\'' + this.value_[1].toString()
+    if (FsSymbol.SINGLE_QUOTE.equals(this.value[0])) {
+      return '\'' + this.value[1].toString()
     } else {
-      return '(' + this.value_.map(v => v.toString()).join(' ') + ')'
+      return '(' + this.value.map(v => v.toString()).join(' ') + ')'
     }
   }
 }
