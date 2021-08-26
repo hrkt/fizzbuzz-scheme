@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSet, FsSingleQuoteSymbol, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -107,7 +107,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('write'), FsWrite)
   env.set(new FsSymbol('newline'), FsNewline)
   env.set(new FsSymbol('display'), FsDisplay)
-  env.set(new FsSymbol('\''), FsSingleQuoteSymbol)
+  env.set(new FsSymbol('\''), FsSymbol.SINGLE_QUOTE)
   env.set(new FsSymbol('null?'), FsPredicateNull)
   env.set(new FsSymbol('boolean?'), FsPredicateBoolean)
   env.set(new FsSymbol('list?'), FsPredicateList)

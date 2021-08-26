@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsIf, FsDefine, FsLambda, FsSymbol, FsQuote, FsSet, FsBegin, FsSingleQuoteSymbol, FsLet, FsList } from './sexp.js'
+import { FsIf, FsDefine, FsLambda, FsSymbol, FsQuote, FsSet, FsBegin, FsLet, FsList } from './sexp.js'
 import { getGlobalEnv } from './env.js'
 
 import log from 'loglevel'
@@ -33,21 +33,21 @@ export class FsEvaluator {
       return sexp
     } else if (Array.isArray(sexp) && sexp.length === 0) {
       return new FsList([])
-    } else if (sexp[0].value === 'if') {
+    } else if (FsSymbol.IF === sexp[0]) {
       return FsIf.proc(sexp.slice(1), env)
-    } else if (sexp[0].value === 'quote') {
+    } else if (FsSymbol.QUOTE === sexp[0]) {
       return FsQuote.proc(sexp.slice(1))
-    } else if (sexp[0] instanceof FsSingleQuoteSymbol) {
+    } else if (FsSymbol.SINGLE_QUOTE === sexp[0]) {
       return FsQuote.proc(sexp.slice(1))
-    } else if (sexp[0].value === 'define') {
+    } else if (FsSymbol.DEFINE === sexp[0]) {
       return FsDefine.proc(sexp.slice(1), env)
-    } else if (sexp[0].value === 'set!') {
+    } else if (FsSymbol.SET_ === sexp[0]) {
       return FsSet.proc(sexp.slice(1), env)
-    } else if (sexp[0].value === 'begin') {
+    } else if (FsSymbol.BEGIN === sexp[0]) {
       return FsBegin.proc(sexp.slice(1), env)
-    } else if (sexp[0].value === 'lambda') {
+    } else if (FsSymbol.LAMBDA === sexp[0]) {
       return FsLambda.proc(sexp.slice(1), env)
-    } else if (sexp[0].value === 'let') {
+    } else if (FsSymbol.LET === sexp[0]) {
       return FsLet.proc(sexp.slice(1), env)
     } else {
       const p = FsEvaluator.eval(sexp[0], env)
