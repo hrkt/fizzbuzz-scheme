@@ -484,6 +484,10 @@ export class FsList extends FsValue {
     return this.value.length
   }
 
+  at (index) {
+    return this.value[index]
+  }
+
   static proc (arg) {
     return new FsList(arg)
   }
@@ -494,6 +498,16 @@ export class FsList extends FsValue {
     } else {
       return '(' + this.value.map(v => v.toString()).join(' ') + ')'
     }
+  }
+}
+
+export class FsCar extends FsSExp {
+  static proc (arg) {
+    const target = arg[0]
+    if (!(target instanceof FsList)) {
+      throw new FsException('arg must be list')
+    }
+    return target.at(0)
   }
 }
 
