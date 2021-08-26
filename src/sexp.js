@@ -473,6 +473,7 @@ export class FsDisplay extends FsSExp {
 
 export class FsValue {}
 export class FsList extends FsValue {
+  static EMPTY = new FsList([])
   constructor (value) {
     super()
     this.value = value
