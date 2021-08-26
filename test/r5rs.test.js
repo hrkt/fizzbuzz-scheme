@@ -3,6 +3,7 @@
 'use strict'
 
 import { FizzBuzzScheme } from '../src/index.js'
+import { jest } from '@jest/globals'
 
 function myexpect (code, expectedStr, fbs = new FizzBuzzScheme()) {
   expect(fbs.eval(code).toString()).toBe(expectedStr)
@@ -53,6 +54,29 @@ test('4.1.4', () => {
 
 test('4.2.2', () => {
   myexpect('(let ((x 2) (y 3)) (* x y))', 6)
+})
+
+test('4.2.3_1', () => {
+  const code = `
+  (define x 0)
+  (begin (set! x 5)
+       (+ x 1))
+  `
+  myexpect(code, 6)
+})
+
+test('4.2.3_2', () => {
+  const code = `
+  (begin (display "4 plus 1 equals ")
+  (display (+ 4 1)))
+  `
+
+  const mockStdoutWrite = jest.spyOn(process.stdout, 'write').mockImplementation(() => {})
+  const fbs = new FizzBuzzScheme()
+  fbs.eval(code)
+  expect(mockStdoutWrite).toHaveBeenNthCalledWith(1, '4 plus 1 equals ')
+  expect(mockStdoutWrite).toHaveBeenNthCalledWith(2, '5')
+  mockStdoutWrite.mockRestore()
 })
 
 test('6.3.1', () => {
