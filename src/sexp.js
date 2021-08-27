@@ -70,29 +70,18 @@ export class FsIf extends FsSExp {
 export class FsLambda extends FsSExp {
   static proc (list, env) {
     const params = list.shift()
-    const body = list.shift()
 
-    if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('defining lambda with params:' + params + ',body:' + body)
-      log.debug('--params--')
-      log.debug(params)
-      log.debug('--body--')
-      log.debug(body)
-      log.debug('------')
-    }
-
-    if (!Array.isArray(params)) {
+    let body = null
+    if (params instanceof FsSymbol) {
       // single variable not suppoted
-      throw new Error('non-array type arg is not implemented')
+      // throw new Error('non-array type arg is not implemented')
+      body = list
+    } else {
+      body = list.shift()
     }
-
     const procedure = new FsProcedure(params, body, env)
-    if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨')
-      console.dir(procedure)
-    }
     return procedure
-  }
+}
 }
 
 export class FsProcedure extends FsSExp {
@@ -101,6 +90,15 @@ export class FsProcedure extends FsSExp {
     this.params = params
     this.body = body
     this.env = env
+
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('ctor. FsProcedure with params:' + params + ',body:' + body)
+      log.debug('--params--')
+      log.debug(params)
+      log.debug('--body--')
+      log.debug(body)
+      log.debug('------')
+    }
   }
 
   proc (execParams) {
@@ -108,11 +106,17 @@ export class FsProcedure extends FsSExp {
     if (!Array.isArray(execParams)) {
       throw new Error('arg type do not match')
     }
-    for (let i = 0; i < this.params.length; i++) {
-      innerEnv.set(this.params[i], execParams[i])
+    if (this.params instanceof FsSymbol) {
+      // ex. ((lambda x x) 3 4 5 6)
+      innerEnv.set(this.params, new FsList(execParams))
+      return FsEvaluator.eval(this.params, innerEnv)
+    } else {
+      // ex. (lambda (x) (+ 1 2))
+      for (let i = 0; i < this.params.length; i++) {
+        innerEnv.set(this.params[i], execParams[i])
+      }
+      return FsEvaluator.eval(this.body, innerEnv)
     }
-
-    return FsEvaluator.eval(this.body, innerEnv)
   }
 
   toString () {
