@@ -95,6 +95,15 @@ test('4.1.5', () => {
   }
 })
 
+// all cleared 😊
+test('4.1.6', () => {
+  const fbs = new FizzBuzzScheme()
+  fbs.eval('(define x 2)')
+  myexpect('(+ x 1)', 3, fbs)
+  fbs.eval('(set! x 4)')
+  myexpect('(+ x 1)', 5, fbs)
+})
+
 test('4.2.2', () => {
   myexpect('(let ((x 2) (y 3)) (* x y))', 6)
 })
