@@ -81,7 +81,7 @@ export class FsLambda extends FsSExp {
     }
     const procedure = new FsProcedure(params, body, env)
     return procedure
-}
+  }
 }
 
 export class FsProcedure extends FsSExp {
@@ -397,6 +397,9 @@ export class FsOperatorPow extends FsSExp {
   }
 }
 
+// in scheme,
+// '=' checks two numbers are equal,
+// eqv?, eq are described in 6.1 https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.1
 export class FsEquals extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
@@ -410,6 +413,17 @@ export class FsEquals extends FsSExp {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
       // return lhs.toString().normalize() === rhs.toString().normalize()? FsBoolean.TRUE : FsBoolean.FALSE
     }
+  }
+}
+
+export class FsNumberEquals extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const [lhs, rhs] = list
+    if (!(lhs instanceof FsNumber) || !(rhs instanceof FsNumber)) {
+      throw new FsException('parameter for "=" must be a number.')
+    }
+    return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
@@ -458,6 +472,18 @@ export class FsNot extends FsSExp {
     } else {
       return FsBoolean.FALSE
     }
+  }
+}
+
+export class FsMap extends FsSExp {
+  static proc (list, env) {
+    const p = list[0]
+    const body = list[1]
+    const ret = []
+    for (let i = 0; i < body.length; i++) {
+      ret.push(FsEvaluator.eval([p, body.at(i)], env))
+    }
+    return new FsList(ret)
   }
 }
 
@@ -529,6 +555,18 @@ export class FsCdr extends FsSExp {
       throw new FsException('arg must be list')
     }
     return new FsList(target.value.slice(1))
+  }
+}
+
+export class FsCons extends FsSExp {
+  static proc (arg) {
+    ensureListContainsTwo(arg)
+    // TODO dot pair
+    if (arg[1] instanceof FsList) {
+      return new FsList([arg[0]].concat(arg[1].value))
+    } else {
+      return new FsList([arg[0]].concat(arg[1]))
+    }
   }
 }
 
