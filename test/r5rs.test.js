@@ -82,6 +82,19 @@ test('4.1.4', () => {
   // myexpect('((lambda (x y . z) z) 3 4 5 6)', '(5 6)')
 })
 
+// all cleared 😊
+test('4.1.5', () => {
+  myexpect('(if (> 3 2) \'yes \'no)', 'yes')
+  myexpect('(if (> 2 3) \'yes \'no)', 'no')
+  {
+    const code = `(if (> 3 2)
+    (- 3 2)
+    (+ 3 2))
+    `
+    myexpect(code, 1)
+  }
+})
+
 test('4.2.2', () => {
   myexpect('(let ((x 2) (y 3)) (* x y))', 6)
 })
