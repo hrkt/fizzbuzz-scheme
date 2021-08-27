@@ -390,6 +390,13 @@ export class FsOperatorMod extends FsSExp {
   }
 }
 
+export class FsOperatorPow extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    return new FsNumber(Math.pow(list[0].value, list[1].value))
+  }
+}
+
 export class FsEquals extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)

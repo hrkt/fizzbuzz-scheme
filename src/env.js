@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsCdr, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -97,6 +97,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('*'), FsOperatorMultiply)
   env.set(new FsSymbol('/'), FsOperatorDivide)
   env.set(new FsSymbol('mod'), FsOperatorMod)
+  env.set(new FsSymbol('pow'), FsOperatorPow)
   env.set(new FsSymbol('='), FsEquals)
   env.set(new FsSymbol('<'), FsOperatorLt)
   env.set(new FsSymbol('<='), FsOperatorLte)
