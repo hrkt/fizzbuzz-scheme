@@ -88,6 +88,8 @@ $ npm run majestic
 - ✅[Procedure calls](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.3)
 - ✅[sequencing](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.3)
 
+Test cases for a few part of R5RS are in [r5rs.test.js]("./src/r5rs.test.js")
+
 ## not implemented
 
 - ❌[quasiquotation](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.6)
