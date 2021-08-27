@@ -52,7 +52,8 @@ export class FsEvaluator {
     } else {
       const p = FsEvaluator.eval(sexp[0], env)
       const args = sexp.slice(1).map(s => this.eval(s, env))
-      return p.proc(args)
+      // return p.proc(args)
+      return p.proc(args, env) // for testing map
     }
   }
 }
