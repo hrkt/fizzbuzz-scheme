@@ -4,6 +4,7 @@
 
 import { FizzBuzzScheme } from '../src/index.js'
 import { jest } from '@jest/globals'
+import { FsProcedure } from '../src/sexp.js'
 
 function myexpect (code, expectedStr, fbs = new FizzBuzzScheme()) {
   expect(fbs.eval(code).toString()).toBe(expectedStr)
@@ -53,12 +54,32 @@ test('4.1.3', () => {
 })
 
 test('4.1.4', () => {
-  const code = `(define add4
-    (let ((x 4))
-      (lambda (y) (+ x y))))
-  (add4 6)
-  `
-  myexpect(code, 10)
+  const fbs = new FizzBuzzScheme()
+  expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsProcedure).toBe(true)
+
+  myexpect('((lambda (x) (+ x x)) 4)', 8)
+
+  {
+    const code = `(define reverse-subtract
+      (lambda (x y) (- y x)))
+    (reverse-subtract 7 10)
+    `
+    myexpect(code, 3)
+  }
+
+  {
+    const code = `(define add4
+      (let ((x 4))
+        (lambda (y) (+ x y))))
+    (add4 6)
+    `
+    myexpect(code, 10)
+  }
+
+  myexpect('((lambda x x) 3 4 5 6)', '(3 4 5 6)')
+
+  // TODO: after adding dot-pair
+  // myexpect('((lambda (x y . z) z) 3 4 5 6)', '(5 6)')
 })
 
 test('4.2.2', () => {
