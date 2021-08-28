@@ -70,27 +70,16 @@ export class FsIf extends FsSExp {
 export class FsLambda extends FsSExp {
   static proc (list, env) {
     const params = list.shift()
-    const body = list.shift()
 
-    if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('defining lambda with params:' + params + ',body:' + body)
-      log.debug('--params--')
-      log.debug(params)
-      log.debug('--body--')
-      log.debug(body)
-      log.debug('------')
-    }
-
-    if (!Array.isArray(params)) {
+    let body = null
+    if (params instanceof FsSymbol) {
       // single variable not suppoted
-      throw new Error('non-array type arg is not implemented')
+      // throw new Error('non-array type arg is not implemented')
+      body = list
+    } else {
+      body = list.shift()
     }
-
     const procedure = new FsProcedure(params, body, env)
-    if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨🍨')
-      console.dir(procedure)
-    }
     return procedure
   }
 }
@@ -101,6 +90,15 @@ export class FsProcedure extends FsSExp {
     this.params = params
     this.body = body
     this.env = env
+
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('ctor. FsProcedure with params:' + params + ',body:' + body)
+      log.debug('--params--')
+      log.debug(params)
+      log.debug('--body--')
+      log.debug(body)
+      log.debug('------')
+    }
   }
 
   proc (execParams) {
@@ -108,11 +106,17 @@ export class FsProcedure extends FsSExp {
     if (!Array.isArray(execParams)) {
       throw new Error('arg type do not match')
     }
-    for (let i = 0; i < this.params.length; i++) {
-      innerEnv.set(this.params[i], execParams[i])
+    if (this.params instanceof FsSymbol) {
+      // ex. ((lambda x x) 3 4 5 6)
+      innerEnv.set(this.params, new FsList(execParams))
+      return FsEvaluator.eval(this.params, innerEnv)
+    } else {
+      // ex. (lambda (x) (+ 1 2))
+      for (let i = 0; i < this.params.length; i++) {
+        innerEnv.set(this.params[i], execParams[i])
+      }
+      return FsEvaluator.eval(this.body, innerEnv)
     }
-
-    return FsEvaluator.eval(this.body, innerEnv)
   }
 
   toString () {
@@ -386,6 +390,16 @@ export class FsOperatorMod extends FsSExp {
   }
 }
 
+export class FsOperatorPow extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    return new FsNumber(Math.pow(list[0].value, list[1].value))
+  }
+}
+
+// in scheme,
+// '=' checks two numbers are equal,
+// eqv?, eq are described in 6.1 https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.1
 export class FsEquals extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
@@ -399,6 +413,17 @@ export class FsEquals extends FsSExp {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
       // return lhs.toString().normalize() === rhs.toString().normalize()? FsBoolean.TRUE : FsBoolean.FALSE
     }
+  }
+}
+
+export class FsNumberEquals extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const [lhs, rhs] = list
+    if (!(lhs instanceof FsNumber) || !(rhs instanceof FsNumber)) {
+      throw new FsException('parameter for "=" must be a number.')
+    }
+    return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
@@ -447,6 +472,18 @@ export class FsNot extends FsSExp {
     } else {
       return FsBoolean.FALSE
     }
+  }
+}
+
+export class FsMap extends FsSExp {
+  static proc (list, env) {
+    const p = list[0]
+    const body = list[1]
+    const ret = []
+    for (let i = 0; i < body.length; i++) {
+      ret.push(FsEvaluator.eval([p, body.at(i)], env))
+    }
+    return new FsList(ret)
   }
 }
 
@@ -521,15 +558,27 @@ export class FsCdr extends FsSExp {
   }
 }
 
+export class FsCons extends FsSExp {
+  static proc (arg) {
+    ensureListContainsTwo(arg)
+    // TODO dot pair
+    if (arg[1] instanceof FsList) {
+      return new FsList([arg[0]].concat(arg[1].value))
+    } else {
+      return new FsList([arg[0]].concat(arg[1]))
+    }
+  }
+}
+
 export class FsSingleItem extends FsValue {
   constructor (value) {
     super()
-    this.value_ = value
+    this.value = value
     log.debug('ctor FsSingleItem called with:' + value)
   }
 
   toString () {
-    return this.value_.toString()
+    return this.value.toString()
   }
 }
 
@@ -548,5 +597,26 @@ export class FsPredicateBoolean extends FsSExp {
 export class FsPredicateList extends FsSExp {
   static proc (list) {
     return list[0] instanceof FsList ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateNumber extends FsSExp {
+  static proc (list) {
+    return list[0] instanceof FsNumber ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateSymbol extends FsSExp {
+  static proc (list, env) {
+    return (list[0] instanceof FsSingleItem && (list[0].value)[0] instanceof FsSymbol) ||
+     (list[0] instanceof FsSymbol)
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateProcedure extends FsSExp {
+  static proc (list) {
+    return list[0] instanceof FsProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }

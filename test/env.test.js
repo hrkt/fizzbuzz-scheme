@@ -2,9 +2,7 @@
 
 import { FsNumber, FsSymbol } from '../src/sexp.js'
 import { FsEnv, getGlobalEnv } from '../src/env'
-import log from 'loglevel'
 import { FsError } from '../src/common.js'
-log.setLevel('trace')
 
 test('define env success', () => {
   const env = new FsEnv(null)
@@ -27,7 +25,6 @@ test('define env success with outer env success', () => {
 test('getDefaultEnv success', () => {
   // eslint-disable-next-line no-unused-vars
   const env = getGlobalEnv()
-  console.dir(env)
   expect(env.find(new FsSymbol('+'))).not.toBeNull()
 })
 
@@ -57,7 +54,6 @@ test('calling toKey with null parameter throws FsError ', () => {
 })
 
 test('do not exceed maximum call stack size', () => {
-  console.time('loop')
   const environments = []
   environments[0] = getGlobalEnv()
   const max = 10000
@@ -65,9 +61,5 @@ test('do not exceed maximum call stack size', () => {
     // counter += Array.isArray([]) ? 1 : 0
     environments[i] = new FsEnv(environments[i - 1])
   }
-  console.timeEnd('loop')
-
-  console.time('find')
   expect(environments[max - 1].find(new FsSymbol('+'))).not.toBeNull()
-  console.timeEnd('find')
 })

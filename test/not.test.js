@@ -1,16 +1,16 @@
 'use strict'
 
+import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { FsBoolean } from '../src/sexp.js'
-import * as util from './testutil.js'
 
 test('evaluating (not #t) yields #f', () => {
-  util.codeEvaledTo('(not #t)', FsBoolean.FALSE)
+  expect(new FBS().eval('(not #t)')).toStrictEqual(FsBoolean.FALSE)
 })
 
 test('evaluating (not #f) yields #t', () => {
-  util.codeEvaledTo('(not #f)', FsBoolean.TRUE)
+  expect(new FBS().eval('(not #f)')).toStrictEqual(FsBoolean.TRUE)
 })
 
 test('evaluating (not 1) yields #f', () => {
-  util.codeEvaledTo('(not 1)', FsBoolean.FALSE)
+  expect(new FBS().eval('(not 1)')).toStrictEqual(FsBoolean.FALSE)
 })
