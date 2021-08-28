@@ -154,3 +154,12 @@ test('6.3.1', () => {
 test('6.3.2', () => {
   myexpect('(let ((x 2) (y 3)) (* x y))', 6)
 })
+
+test('6.3.3', () => {
+  myexpect('(symbol? \'foo)', '#t')
+  myexpect('(symbol? (car \'(a b))) ', '#t')
+  myexpect('(symbol? "bar")', '#f')
+  myexpect('(symbol? \'nil)', '#t')
+  myexpect('(symbol? \'())', '#f')
+  myexpect('(symbol? #f)', '#f')
+})

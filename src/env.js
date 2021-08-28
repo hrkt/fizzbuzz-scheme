@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsMap, FsNewline, FsNot, FsNumberEquals, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsMap, FsNewline, FsNot, FsNumberEquals, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicateSymbol, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -113,6 +113,8 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('null?'), FsPredicateNull)
   env.set(new FsSymbol('boolean?'), FsPredicateBoolean)
   env.set(new FsSymbol('list?'), FsPredicateList)
+  env.set(new FsSymbol('symbol?'), FsPredicateSymbol)
+  env.set(new FsSymbol('number?'), FsPredicateNumber)
   env.set(new FsSymbol('list'), FsList)
   env.set(new FsSymbol('car'), FsCar)
   env.set(new FsSymbol('cdr'), FsCdr)

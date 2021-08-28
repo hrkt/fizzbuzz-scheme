@@ -573,12 +573,12 @@ export class FsCons extends FsSExp {
 export class FsSingleItem extends FsValue {
   constructor (value) {
     super()
-    this.value_ = value
+    this.value = value
     log.debug('ctor FsSingleItem called with:' + value)
   }
 
   toString () {
-    return this.value_.toString()
+    return this.value.toString()
   }
 }
 
@@ -597,5 +597,20 @@ export class FsPredicateBoolean extends FsSExp {
 export class FsPredicateList extends FsSExp {
   static proc (list) {
     return list[0] instanceof FsList ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateNumber extends FsSExp {
+  static proc (list) {
+    return list[0] instanceof FsNumber ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateSymbol extends FsSExp {
+  static proc (list, env) {
+    return (list[0] instanceof FsSingleItem && (list[0].value)[0] instanceof FsSymbol) ||
+     (list[0] instanceof FsSymbol)
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
   }
 }
