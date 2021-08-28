@@ -1,9 +1,7 @@
 'use strict'
 
 import { jest } from '@jest/globals'
-import log from 'loglevel'
 import { FsCli } from '../src/cli.js'
-log.setLevel('info')
 
 test('no argv prints usage', () => {
   const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {})
