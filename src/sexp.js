@@ -332,9 +332,24 @@ function ensureListContainsOne (list) {
   ensureListContains(list, 1)
 }
 
+export class FsOperatorAbs extends FsSExp {
+  static proc (list) {
+    if (!(list[0] instanceof FsNumber)) {
+      throw new FsException('arg must be number')
+    }
+    return new FsNumber(Math.abs(list[0].value))
+  }
+}
+
 export class FsOperatorPlus extends FsSExp {
   static proc (list) {
     return new FsNumber(list.map(n => n.value).reduce((a, b) => a + b, 0))
+  }
+}
+
+export class FsOperatorRound extends FsSExp {
+  static proc (list) {
+    return new FsNumber(Math.round(list[0].value))
   }
 }
 

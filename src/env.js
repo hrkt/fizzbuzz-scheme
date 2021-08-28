@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsMap, FsNewline, FsNot, FsNumberEquals, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicateProcedure, FsPredicateSymbol, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsMap, FsNewline, FsNot, FsNumberEquals, FsOperatorAbs, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsOperatorRound, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicateProcedure, FsPredicateSymbol, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -105,6 +105,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('>='), FsOperatorGte)
   env.set(new FsSymbol('\''), FsSymbol.SINGLE_QUOTE)
   env.set(new FsSymbol('and'), FsAnd)
+  env.set(new FsSymbol('abs'), FsOperatorAbs)
   env.set(new FsSymbol('boolean?'), FsPredicateBoolean)
   env.set(new FsSymbol('car'), FsCar)
   env.set(new FsSymbol('cdr'), FsCdr)
@@ -119,6 +120,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('number?'), FsPredicateNumber)
   env.set(new FsSymbol('not'), FsNot)
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure)
+  env.set(new FsSymbol('round'), FsOperatorRound)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol)
   env.set(new FsSymbol('write'), FsWrite)
 
