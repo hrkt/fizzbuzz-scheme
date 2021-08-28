@@ -614,3 +614,9 @@ export class FsPredicateSymbol extends FsSExp {
       : FsBoolean.FALSE
   }
 }
+
+export class FsPredicateProcedure extends FsSExp {
+  static proc (list) {
+    return list[0] instanceof FsProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
