@@ -1,9 +1,7 @@
 'use strict'
 
 import { FsNumber } from '../src/sexp.js'
-import log from 'loglevel'
 import { FizzBuzzScheme } from '../src/index.js'
-log.setLevel('debug')
 
 test('evaluating (define p (lambda (x) (+ x x)))', () => {
   const code = '(define p (lambda (x) (+ x x)))'
