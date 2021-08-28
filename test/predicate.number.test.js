@@ -1,13 +1,12 @@
 'use strict'
 
-import * as util from './testutil.js'
-
+import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { FsBoolean } from '../src/sexp.js'
 
 test('evaluating (number? 1) yields #t', () => {
-  util.codeEvaledTo('(number? 1)', FsBoolean.TRUE)
+  expect(new FBS().eval('(number? 1)')).toStrictEqual(FsBoolean.TRUE)
 })
 
 test('evaluating (number? \'a) yields #f', () => {
-  util.codeEvaledTo('(number? \'a)', FsBoolean.FALSE)
+  expect(new FBS().eval('(number? \'a)')).toStrictEqual(FsBoolean.FALSE)
 })

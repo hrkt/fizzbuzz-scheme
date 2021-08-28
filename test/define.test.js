@@ -7,7 +7,6 @@ test('evaluating (define a 1)', () => {
   const code = '(define a 1)'
   const fbs = new FBS()
   const ret = fbs.eval(code)
-  console.dir(ret)
   expect(ret).not.toBeNull()
   expect(ret.value).toBe('a')
   expect(fbs.eval('a')).toStrictEqual(new FsNumber(1), fbs)
@@ -17,7 +16,6 @@ test('evaluating (define a (+ 1 2))', () => {
   const code = '(define a (+ 1 2))'
   const fbs = new FBS()
   const ret = fbs.eval(code)
-  console.dir(ret)
   expect(ret).not.toBeNull()
   expect(ret.value).toBe('a')
   expect(fbs.eval('a')).toStrictEqual(new FsNumber(3), fbs)

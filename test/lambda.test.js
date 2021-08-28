@@ -8,7 +8,6 @@ test('evaluating (define p (lambda (x) (+ x x)))', () => {
   const fbs = new FizzBuzzScheme()
 
   const ret = fbs.eval(code)
-  console.dir(ret)
   expect(ret).not.toBeNull()
 })
 
@@ -17,7 +16,6 @@ test('evaluating (define p (lambda (x) (+ x x))), then (p 1)', () => {
 
   const fbs = new FizzBuzzScheme()
   const ret1 = fbs.eval(code)
-  console.dir(ret1)
   expect(ret1).not.toBeNull()
   const ret2 = fbs.eval('(p 1)')
   expect(ret2).not.toBeNull()
