@@ -6,14 +6,10 @@ import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { jest } from '@jest/globals'
 import { FsProcedure } from '../src/sexp.js'
 
-function myexpect (code, expectedStr, fbs = new FBS()) {
-  expect(fbs.eval(code).toString()).toBe(expectedStr)
-}
-
 // all cleared 😊
 test('1.3.4', () => {
   const code = '(* 5 8)'
-  myexpect(code, 40)
+  expect(new FBS().eval(code).toString()).toBe(40)
 })
 
 // all cleared 😊
@@ -28,43 +24,43 @@ test('2.2', () => {
   (fact 10)
   `
 
-  myexpect(code, 3628800)
+  expect(new FBS().eval(code).toString()).toBe(3628800)
 })
 
 // all cleared 😊
 test('4.1.1', () => {
   const fbs = new FBS()
   fbs.eval('(define x 28)')
-  myexpect('x', 28, fbs)
+  expect(fbs.eval('x').toString()).toBe(28)
 })
 
 test('4.1.2', () => {
-  myexpect('(quote a)', 'a')
+  expect(new FBS().eval('(quote a)').toString()).toBe('a')
 
   // TODO:
-  // myexpect('(quote #(a b c))','#(a b c)')
+  // expect(new FBS().eval('(quote #(a b c))','#(a b c)')
 
-  myexpect('(quote (+ 1 2))', '(+ 1 2)')
+  expect(new FBS().eval('(quote (+ 1 2))').toString()).toBe('(+ 1 2)')
 })
 
 // all cleared 😊
 test('4.1.3', () => {
-  myexpect('(+ 3 4)', 7)
-  myexpect('((if #f + *) 3 4)', 12)
+  expect(new FBS().eval('(+ 3 4)').toString()).toBe(7)
+  expect(new FBS().eval('((if #f + *) 3 4)').toString()).toBe(12)
 })
 
 test('4.1.4', () => {
   const fbs = new FBS()
   expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsProcedure).toBe(true)
 
-  myexpect('((lambda (x) (+ x x)) 4)', 8)
+  expect(new FBS().eval('((lambda (x) (+ x x)) 4)').toString()).toBe(8)
 
   {
     const code = `(define reverse-subtract
       (lambda (x y) (- y x)))
     (reverse-subtract 7 10)
     `
-    myexpect(code, 3)
+    expect(new FBS().eval(code).toString()).toBe(3)
   }
 
   {
@@ -73,25 +69,25 @@ test('4.1.4', () => {
         (lambda (y) (+ x y))))
     (add4 6)
     `
-    myexpect(code, 10)
+    expect(new FBS().eval(code).toString()).toBe(10)
   }
 
-  myexpect('((lambda x x) 3 4 5 6)', '(3 4 5 6)')
+  expect(new FBS().eval('((lambda x x) 3 4 5 6)').toString()).toBe('(3 4 5 6)')
 
   // TODO: after adding dot-pair
-  // myexpect('((lambda (x y . z) z) 3 4 5 6)', '(5 6)')
+  // expect(new FBS().eval('((lambda (x y . z) z) 3 4 5 6)').toString()).toBe('(5 6)')
 })
 
 // all cleared 😊
 test('4.1.5', () => {
-  myexpect('(if (> 3 2) \'yes \'no)', 'yes')
-  myexpect('(if (> 2 3) \'yes \'no)', 'no')
+  expect(new FBS().eval('(if (> 3 2) \'yes \'no)').toString()).toBe('yes')
+  expect(new FBS().eval('(if (> 2 3) \'yes \'no)').toString()).toBe('no')
   {
     const code = `(if (> 3 2)
     (- 3 2)
     (+ 3 2))
     `
-    myexpect(code, 1)
+    expect(new FBS().eval(code).toString()).toBe(1)
   }
 })
 
@@ -99,13 +95,13 @@ test('4.1.5', () => {
 test('4.1.6', () => {
   const fbs = new FBS()
   fbs.eval('(define x 2)')
-  myexpect('(+ x 1)', 3, fbs)
+  expect(fbs.eval('(+ x 1)').toString()).toBe(3)
   fbs.eval('(set! x 4)')
-  myexpect('(+ x 1)', 5, fbs)
+  expect(fbs.eval('(+ x 1)').toString()).toBe(5)
 })
 
 test('4.2.2', () => {
-  myexpect('(let ((x 2) (y 3)) (* x y))', 6)
+  expect(new FBS().eval('(let ((x 2) (y 3)) (* x y))').toString()).toBe(6)
 })
 
 test('4.2.3_1', () => {
@@ -114,7 +110,7 @@ test('4.2.3_1', () => {
   (begin (set! x 5)
        (+ x 1))
   `
-  myexpect(code, 6)
+  expect(new FBS().eval(code).toString()).toBe(6)
 })
 
 test('4.2.3_2', () => {
@@ -162,45 +158,45 @@ test('6.1_2', () => {
 })
 
 test('6.1_3', () => {
-  myexpect('(equal? \'a \'a) ', '#t')
-  myexpect('(equal? \'(a) \'(a)) ', '#t')
-  myexpect('(equal? \'(a (b) c) \'(a (b) c))', '#t')
-  myexpect('(equal? "abc" "abc")', '#t')
-  myexpect('(equal? 2 2)', '#t')
+  expect(new FBS().eval('(equal? \'a \'a) ').toString()).toBe('#t')
+  expect(new FBS().eval('(equal? \'(a) \'(a)) ').toString()).toBe('#t')
+  expect(new FBS().eval('(equal? \'(a (b) c) \'(a (b) c))').toString()).toBe('#t')
+  expect(new FBS().eval('(equal? "abc" "abc")').toString()).toBe('#t')
+  expect(new FBS().eval('(equal? 2 2)').toString()).toBe('#t')
   // TODO: after adding make-vector
-  // myexpect('(equal? (make-vector 5 \'a) (make-vector 5 \'a))', '#t')
-  myexpect('(equal? (lambda (x) x) (lambda (y) y))', '#f') // unspecified
+  // expect(new FBS().eval('(equal? (make-vector 5 \'a) (make-vector 5 \'a))').toString()).toBe('#t')
+  expect(new FBS().eval('(equal? (lambda (x) x) (lambda (y) y))').toString()).toBe('#f') // unspecified
 })
 
 // all cleared 😊
 test('6.3.1', () => {
-  myexpect('#t', '#t')
-  myexpect('#f', '#f')
-  myexpect('\'#f', '#f')
+  expect(new FBS().eval('#t').toString()).toBe('#t')
+  expect(new FBS().eval('#f').toString()).toBe('#f')
+  expect(new FBS().eval('\'#f').toString()).toBe('#f')
 
-  myexpect('(not #t)', '#f')
-  myexpect('(not 3)', '#f')
-  myexpect('(not (list 3))', '#f')
-  myexpect('(not #f)', '#t')
-  myexpect('(not \'())', '#f')
-  myexpect('(not (list))', '#f')
-  myexpect('(not \'nil)', '#f')
-  myexpect('\'#f', '#f')
+  expect(new FBS().eval('(not #t)').toString()).toBe('#f')
+  expect(new FBS().eval('(not 3)').toString()).toBe('#f')
+  expect(new FBS().eval('(not (list 3))').toString()).toBe('#f')
+  expect(new FBS().eval('(not #f)').toString()).toBe('#t')
+  expect(new FBS().eval('(not \'())').toString()).toBe('#f')
+  expect(new FBS().eval('(not (list))').toString()).toBe('#f')
+  expect(new FBS().eval('(not \'nil)').toString()).toBe('#f')
+  expect(new FBS().eval('\'#f').toString()).toBe('#f')
 
-  myexpect('(boolean? #f)', '#t')
-  myexpect('(boolean? 0)', '#f')
-  myexpect('(boolean? \'())', '#f')
+  expect(new FBS().eval('(boolean? #f)').toString()).toBe('#t')
+  expect(new FBS().eval('(boolean? 0)').toString()).toBe('#f')
+  expect(new FBS().eval('(boolean? \'())').toString()).toBe('#f')
 })
 
 test('6.3.2', () => {
-  myexpect('(let ((x 2) (y 3)) (* x y))', 6)
+  expect(new FBS().eval('(let ((x 2) (y 3)) (* x y))').toString()).toBe(6)
 })
 
 test('6.3.3', () => {
-  myexpect('(symbol? \'foo)', '#t')
-  myexpect('(symbol? (car \'(a b))) ', '#t')
-  myexpect('(symbol? "bar")', '#f')
-  myexpect('(symbol? \'nil)', '#t')
-  myexpect('(symbol? \'())', '#f')
-  myexpect('(symbol? #f)', '#f')
+  expect(new FBS().eval('(symbol? \'foo)').toString()).toBe('#t')
+  expect(new FBS().eval('(symbol? (car \'(a b))) ').toString()).toBe('#t')
+  expect(new FBS().eval('(symbol? "bar")').toString()).toBe('#f')
+  expect(new FBS().eval('(symbol? \'nil)').toString()).toBe('#t')
+  expect(new FBS().eval('(symbol? \'())').toString()).toBe('#f')
+  expect(new FBS().eval('(symbol? #f)').toString()).toBe('#f')
 })
