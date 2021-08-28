@@ -431,6 +431,23 @@ export class FsEquals extends FsSExp {
   }
 }
 
+export class FsPredicateEqual extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const [lhs, rhs] = list
+    if (lhs instanceof FsList && rhs instanceof FsList) {
+      // TODO: this might not be fast, but works.
+      return JSON.stringify(lhs) === JSON.stringify(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else {
+      // prerequisites: only ascii characters are permitted
+      return lhs.toString() === rhs.toString() ? FsBoolean.TRUE : FsBoolean.FALSE
+      // non-ascii
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
+      // return lhs.toString().normalize() === rhs.toString().normalize()? FsBoolean.TRUE : FsBoolean.FALSE
+    }
+  }
+}
+
 export class FsNumberEquals extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)

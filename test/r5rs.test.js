@@ -131,6 +131,17 @@ test('4.2.3_2', () => {
   mockStdoutWrite.mockRestore()
 })
 
+test('6.1', () => {
+  myexpect('(equal? \'a \'a) ', '#t')
+  myexpect('(equal? \'(a) \'(a)) ', '#t')
+  myexpect('(equal? \'(a (b) c) \'(a (b) c))', '#t')
+  myexpect('(equal? "abc" "abc")', '#t')
+  myexpect('(equal? 2 2)', '#t')
+  // TODO: after adding make-vector
+  // myexpect('(equal? (make-vector 5 \'a) (make-vector 5 \'a))', '#t')
+  myexpect('(equal? (lambda (x) x) (lambda (y) y))', '#f') // unspecified
+})
+
 // all cleared 😊
 test('6.3.1', () => {
   myexpect('#t', '#t')
