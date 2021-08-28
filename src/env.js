@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsMap, FsNewline, FsNot, FsNumberEquals, FsOperatorAbs, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsOperatorRound, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicateProcedure, FsPredicateSymbol, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsOperatorAbs, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsOperatorRound, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicateProcedure, FsPredicateSymbol, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -115,7 +115,9 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('list'), FsList)
   env.set(new FsSymbol('list?'), FsPredicateList)
   env.set(new FsSymbol('newline'), FsNewline)
-  env.set(new FsSymbol('map'), FsMap)
+  env.set(new FsSymbol('map'), FsProcedureMap)
+  env.set(new FsSymbol('max'), FsProcedureMax)
+  env.set(new FsSymbol('min'), FsProcedureMin)
   env.set(new FsSymbol('null?'), FsPredicateNull)
   env.set(new FsSymbol('number?'), FsPredicateNumber)
   env.set(new FsSymbol('not'), FsNot)

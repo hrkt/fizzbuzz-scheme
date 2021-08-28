@@ -490,7 +490,7 @@ export class FsNot extends FsSExp {
   }
 }
 
-export class FsMap extends FsSExp {
+export class FsProcedureMap extends FsSExp {
   static proc (list, env) {
     const p = list[0]
     const body = list[1]
@@ -499,6 +499,20 @@ export class FsMap extends FsSExp {
       ret.push(FsEvaluator.eval([p, body.at(i)], env))
     }
     return new FsList(ret)
+  }
+}
+
+export class FsProcedureMax extends FsSExp {
+  static proc (list) {
+    const target = list.map(fsn => fsn.value)
+    return new FsNumber(Math.max(...target))
+  }
+}
+
+export class FsProcedureMin extends FsSExp {
+  static proc (list) {
+    const target = list.map(fsn => fsn.value)
+    return new FsNumber(Math.min(...target))
   }
 }
 
