@@ -227,7 +227,8 @@ export class FsQuote extends FsSExp {
         return new FsList([innerList[0], FsQuote.proc(innerList.slice(1))])
       } else {
         log.debug('returning FsList')
-        return new FsList(innerList)
+        // return new FsList(innerList)
+        return FsList.proc(innerList)
       }
     } else {
       return new FsSingleItem(arg)
@@ -431,6 +432,25 @@ export class FsEquals extends FsSExp {
   }
 }
 
+export class FsPredicateEq extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const [lhs, rhs] = list
+    if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
+      return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else if (lhs instanceof FsSingleItem && rhs instanceof FsSingleItem) {
+      // ex. (eq? 'a 'a)
+      return lhs.value.value === rhs.value.value ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else {
+      // prerequisites: only ascii characters are permitted
+      return lhs === rhs ? FsBoolean.TRUE : FsBoolean.FALSE
+      // non-ascii
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
+      // return lhs.toString().normalize() === rhs.toString().normalize()? FsBoolean.TRUE : FsBoolean.FALSE
+    }
+  }
+}
+
 export class FsPredicateEqual extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
@@ -572,7 +592,7 @@ export class FsList extends FsValue {
   }
 
   static proc (arg) {
-    return new FsList(arg)
+    return arg.length === 0 ? this.EMPTY : new FsList(arg)
   }
 
   toString () {

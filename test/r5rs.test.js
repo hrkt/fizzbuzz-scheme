@@ -2,11 +2,11 @@
 
 'use strict'
 
-import { FizzBuzzScheme } from '../src/index.js'
+import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { jest } from '@jest/globals'
 import { FsProcedure } from '../src/sexp.js'
 
-function myexpect (code, expectedStr, fbs = new FizzBuzzScheme()) {
+function myexpect (code, expectedStr, fbs = new FBS()) {
   expect(fbs.eval(code).toString()).toBe(expectedStr)
 }
 
@@ -33,7 +33,7 @@ test('2.2', () => {
 
 // all cleared 😊
 test('4.1.1', () => {
-  const fbs = new FizzBuzzScheme()
+  const fbs = new FBS()
   fbs.eval('(define x 28)')
   myexpect('x', 28, fbs)
 })
@@ -54,7 +54,7 @@ test('4.1.3', () => {
 })
 
 test('4.1.4', () => {
-  const fbs = new FizzBuzzScheme()
+  const fbs = new FBS()
   expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsProcedure).toBe(true)
 
   myexpect('((lambda (x) (+ x x)) 4)', 8)
@@ -97,7 +97,7 @@ test('4.1.5', () => {
 
 // all cleared 😊
 test('4.1.6', () => {
-  const fbs = new FizzBuzzScheme()
+  const fbs = new FBS()
   fbs.eval('(define x 2)')
   myexpect('(+ x 1)', 3, fbs)
   fbs.eval('(set! x 4)')
@@ -124,14 +124,44 @@ test('4.2.3_2', () => {
   `
 
   const mockStdoutWrite = jest.spyOn(process.stdout, 'write').mockImplementation(() => {})
-  const fbs = new FizzBuzzScheme()
+  const fbs = new FBS()
   fbs.eval(code)
   expect(mockStdoutWrite).toHaveBeenNthCalledWith(1, '4 plus 1 equals ')
   expect(mockStdoutWrite).toHaveBeenNthCalledWith(2, '5')
   mockStdoutWrite.mockRestore()
 })
 
-test('6.1', () => {
+// (eq? "" "")                             ===>  unspecified
+// (eq? '() '())                           ===>  #t
+// (eq? 2 2)                               ===>  unspecified
+// (eq? #\A #\A)         ===>  unspecified
+// (eq? car car)                           ===>  #t
+// (let ((n (+ 2 3)))
+//   (eq? n n))              ===>  unspecified
+// (let ((x '(a)))
+//   (eq? x x))              ===>  #t
+// (let ((x '#()))
+//   (eq? x x))              ===>  #t
+// (let ((p (lambda (x) x)))
+//   (eq? p p))              ===>  #t
+
+test('6.1_2', () => {
+  expect(new FBS().eval('(eq? \'a \'a)').toString()).toBe('#t')
+  expect(new FBS().eval('(eq? \'(a) \'(a))').toString()).toBe('#f') // unspecified
+  expect(new FBS().eval('(eq? (list \'a) (list \'a))').toString()).toBe('#f')
+  expect(new FBS().eval('(eq? "a" "a")').toString()).toBe('#f') // unspecified
+  expect(new FBS().eval('(eq? "" "")').toString()).toBe('#f') // unspecified
+  expect(new FBS().eval('(eq? \'() \'())').toString()).toBe('#t')
+  expect(new FBS().eval('(eq? 2 2)').toString()).toBe('#t') // unspecified
+  // expect(new FBS().eval('(eq? #\\A #\\A)').toString()).toBe('#t')// unspecified
+  expect(new FBS().eval('(eq? car car)').toString()).toBe('#t')
+  expect(new FBS().eval('(let ((n (+ 2 3))) (eq? n n)) ').toString()).toBe('#t') // unspecified
+  expect(new FBS().eval('(let ((x \'(a))) (eq? x x))').toString()).toBe('#t')
+  // expect(new FBS().eval('(let ((x \'#())) (eq? x x))').toString()).toBe('#t')
+  expect(new FBS().eval('(let ((p (lambda (x) x))) (eq? p p))').toString()).toBe('#t')
+})
+
+test('6.1_3', () => {
   myexpect('(equal? \'a \'a) ', '#t')
   myexpect('(equal? \'(a) \'(a)) ', '#t')
   myexpect('(equal? \'(a (b) c) \'(a (b) c))', '#t')
