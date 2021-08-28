@@ -1,15 +1,12 @@
 'use strict'
 
-import * as util from './testutil.js'
-
 import { FsNumber } from '../src/sexp.js'
-import { FizzBuzzScheme } from '../src/index.js'
+import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating (define a 0) (begin (set! a 1) (set! a 2) (+ a 1)) returns 3', () => {
-  const fbs = new FizzBuzzScheme()
+  const fbs = new FBS()
   fbs.eval('(define a 0)')
-  util.codeEvaledTo('a', new FsNumber(0), fbs)
-  const ret = fbs.eval('(begin (set! a 1) (set! a 2) (+ a 1))')
-  expect(ret).toStrictEqual(new FsNumber(3))
-  util.codeEvaledTo('a', new FsNumber(2), fbs)
+  expect(fbs.eval('a')).toStrictEqual(new FsNumber(0), fbs)
+  expect(fbs.eval('(begin (set! a 1) (set! a 2) (+ a 1))')).toStrictEqual(new FsNumber(3))
+  expect(fbs.eval('a')).toStrictEqual(new FsNumber(2), fbs)
 })

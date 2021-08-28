@@ -1,30 +1,24 @@
 'use strict'
 
-import * as util from './testutil.js'
-
 import { FsBoolean } from '../src/sexp.js'
+import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating true', () => {
-  const code = '#t'
-  util.codeEvaledTo(code, FsBoolean.TRUE)
+  expect(new FBS().eval('#t')).toStrictEqual(FsBoolean.TRUE)
 })
 
 test('evaluating false', () => {
-  const code = '#f'
-  util.codeEvaledTo(code, FsBoolean.FALSE)
+  expect(new FBS().eval('#f')).toStrictEqual(FsBoolean.FALSE)
 })
 
 test('evaluating (boolean? #t) yields #t', () => {
-  const code = '(boolean? #t)'
-  util.codeEvaledTo(code, FsBoolean.TRUE)
+  expect(new FBS().eval('(boolean? #t)')).toStrictEqual(FsBoolean.TRUE)
 })
 
 test('evaluating (boolean? #f) yields #t', () => {
-  const code = '(boolean? #f)'
-  util.codeEvaledTo(code, FsBoolean.TRUE)
+  expect(new FBS().eval('(boolean? #f)')).toStrictEqual(FsBoolean.TRUE)
 })
 
 test('evaluating (boolean? 0) yields #f', () => {
-  const code = '(boolean? 0)'
-  util.codeEvaledTo(code, FsBoolean.FALSE)
+  expect(new FBS().eval('(boolean? 0)')).toStrictEqual(FsBoolean.FALSE)
 })
