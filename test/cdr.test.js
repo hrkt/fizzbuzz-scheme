@@ -1,9 +1,8 @@
 'use strict'
 
-import * as util from './testutil.js'
-
+import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { FsNumber, FsList } from '../src/sexp.js'
 
 test('evaluating (cdr (list 1 2)) yields (2)', () => {
-  util.codeEvaledTo('(cdr (list 1 2))', new FsList([new FsNumber(2)]))
+  expect(new FBS().eval('(cdr (list 1 2))')).toStrictEqual(new FsList([new FsNumber(2)]))
 })
