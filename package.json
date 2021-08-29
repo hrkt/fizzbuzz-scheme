@@ -1,6 +1,6 @@
 {
   "name": "fizzbuzz-scheme",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A tiny scheme subset interpreter that can evaluate fizz-buzz code.",
   "main": "src/index.js",
   "scripts": {
@@ -44,6 +44,6 @@
       "!src/**/fbs.js",
       "!src/**/repl.js"
     ],
-    "coverageReporters": ["json", "html", "text"]
+    "coverageReporters": ["json", "html", "lcov", "text"]
   }
 }

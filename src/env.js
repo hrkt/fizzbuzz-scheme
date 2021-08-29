@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsEquals, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsOperatorAbs, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsOperatorRound, FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicateProcedure, FsPredicateSymbol, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsOperatorAbs, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsOperatorRound, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicateProcedure, FsPredicateSymbol, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -105,13 +105,15 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('>='), FsOperatorGte)
   env.set(new FsSymbol('\''), FsSymbol.SINGLE_QUOTE)
   env.set(new FsSymbol('and'), FsAnd)
+  env.set(new FsSymbol('append'), FsProcedureAppend)
   env.set(new FsSymbol('abs'), FsOperatorAbs)
   env.set(new FsSymbol('boolean?'), FsPredicateBoolean)
   env.set(new FsSymbol('car'), FsCar)
   env.set(new FsSymbol('cdr'), FsCdr)
   env.set(new FsSymbol('cons'), FsCons)
   env.set(new FsSymbol('display'), FsDisplay)
-  env.set(new FsSymbol('eq'), FsEquals)
+  env.set(new FsSymbol('eq?'), FsPredicateEq)
+  env.set(new FsSymbol('equal?'), FsPredicateEqual)
   env.set(new FsSymbol('list'), FsList)
   env.set(new FsSymbol('list?'), FsPredicateList)
   env.set(new FsSymbol('newline'), FsNewline)

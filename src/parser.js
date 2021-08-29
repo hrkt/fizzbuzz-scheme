@@ -130,6 +130,7 @@ export class FsParser {
     log.debug('------')
     log.debug(orders.length)
     log.debug('parsed: ' + orders)
+    log.debug(JSON.stringify(orders, null, 2))
 
     return orders
   }
