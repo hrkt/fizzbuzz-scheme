@@ -189,7 +189,9 @@ test('6.3.1', () => {
 })
 
 test('6.3.2', () => {
-  expect(new FBS().eval('(let ((x 2) (y 3)) (* x y))').toString()).toBe(6)
+  expect(new FBS().eval('(append \'(x) \'(y))').toString()).toBe('(x y)')
+  expect(new FBS().eval('(append \'(a) \'(b c d))').toString()).toBe('(a b c d)')
+  expect(new FBS().eval('(append \'(a (b)) \'((c)))').toString()).toBe('(a (b) (c))')
 })
 
 test('6.3.3', () => {

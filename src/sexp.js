@@ -219,12 +219,14 @@ export class FsBegin extends FsSExp {
 export class FsQuote extends FsSExp {
   static proc (arg) {
     // arg ... ex) [{"_value":"'"},{"_value":"a"}]
+    // '(a (b)) => (a (b))
     const quoteList = arg
     if (Array.isArray(quoteList[0])) {
       const innerList = quoteList[0]
       if (FsSymbol.SINGLE_QUOTE.equals(innerList[0])) {
         log.debug('returning FsList starting with FsSybol.SINGLE_QUOTE')
         return new FsList([innerList[0], FsQuote.proc(innerList.slice(1))])
+        // return new FsList([innerList[0], FsList.proc(innerList.slice(1))])
       } else {
         log.debug('returning FsList')
         // return new FsList(innerList)
@@ -553,6 +555,18 @@ export class FsProcedureMin extends FsSExp {
   }
 }
 
+export class FsProcedureAppend extends FsSExp {
+  static proc (list) {
+    const newList = []
+    for (let j = 0; j < list.length; j++) {
+      for (let i = 0; i < list[j].length; i++) {
+        newList.push(list[j].at(i))
+      }
+    }
+    return new FsList(newList)
+  }
+}
+
 export class FsWrite extends FsSExp {
   static proc (list) {
     process.stdout.write(list.map(s => s.value).join(' '))
@@ -580,7 +594,7 @@ export class FsList extends FsValue {
   constructor (value) {
     super()
     this.value = value
-    log.debug('ctor FsList called with:' + value)
+    log.debug('ctor FsList called with:' + JSON.stringify(value, null, 2))
   }
 
   get length () {
@@ -596,10 +610,40 @@ export class FsList extends FsValue {
   }
 
   toString () {
+    log.debug('FsList.toString() called. this.value:' + JSON.stringify(this.value, null, 2))
+
     if (FsSymbol.SINGLE_QUOTE.equals(this.value[0])) {
+      log.debug('PRINTING AS SINGLE_QUOTE')
       return '\'' + this.value[1].toString()
     } else {
-      return '(' + this.value.map(v => v.toString()).join(' ') + ')'
+      // TODO: this is not optimal, but pass sample code in R5RS
+      log.debug('PRINTING AS LIST')
+      // return '(' + this.value.map(v => v.toString()).join(' ') + ')'
+      let buf = ''
+      buf += '('
+      for (let i = 0; i < this.value.length; i++) {
+        if (!Array.isArray(this.value[i])) {
+          buf += this.value[i].toString()
+          log.debug(buf)
+          buf += ' '
+        } else {
+          buf += '('
+          for (let j = 0; j < this.value[i].length; j++) {
+            buf += this.value[i][j]
+            buf += ' '
+          }
+          if (this.value[i].length > 0) {
+            buf = buf.substr(0, buf.length - 1)
+          }
+          buf += ')'
+          buf += ' '
+        }
+      }
+      if (this.value.length > 0) {
+        buf = buf.substr(0, buf.length - 1)
+      }
+      buf += ')'
+      return buf
     }
   }
 }
