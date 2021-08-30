@@ -10,6 +10,7 @@ import { getGlobalEnv } from './env.js'
 export class FizzBuzzScheme {
   constructor () {
     this.env = getGlobalEnv()
+    this.debugMode = false
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('=======================================================================-')
     }
@@ -17,11 +18,15 @@ export class FizzBuzzScheme {
 
   eval (code) {
     const orders = FP.parse(code)
-    log.debug('(^^♪')
+    log.debug('🤖')
     log.debug('orders.length = ' + orders.length)
     let ret = null
     for (let i = 0; i < orders.length; i++) {
-      ret = FE.eval(orders[i], this.env)
+      if (!this.debugMode) {
+        ret = FE.eval(orders[i], this.env)
+      } else {
+        ret = FE.evalOuter(orders[i], this.env)
+      }
     }
     return ret
   }
