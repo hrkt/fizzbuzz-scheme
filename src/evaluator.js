@@ -7,16 +7,13 @@ import log from 'loglevel'
 
 // Evaluator
 export class FsEvaluator {
-  // if you want to dump environment for debugging purpose, comment out these and change
-  // existing evalInternal() to eval()
-  //
-  static eval (sexp, env = getGlobalEnv()) {
+  static evalOuter (sexp, env = getGlobalEnv()) {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('----------------------------------------------------')
       log.debug('EVAL:' + sexp + ' in ' + env.toString())
       log.debug(JSON.stringify(sexp))
     }
-    const ret = FsEvaluator.evalInternal(sexp, env)
+    const ret = FsEvaluator.eval(sexp, env)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('RETURNS:' + ret.toString() + ' for sexp:' + sexp)
       log.debug('----------------------------------------------------')
@@ -24,8 +21,7 @@ export class FsEvaluator {
     return ret
   }
 
-  // static eval (sexp, env = getGlobalEnv()) { // if you want to remove codes for the speed purpose.
-  static evalInternal (sexp, env) { // for debugging purpose, use this line
+  static eval (sexp, env = getGlobalEnv()) {
     if (sexp instanceof FsSymbol) {
       return env.find(sexp)
     } else if (!Array.isArray(sexp)) {
