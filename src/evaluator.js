@@ -7,6 +7,7 @@ import log from 'loglevel'
 
 // Evaluator
 export class FsEvaluator {
+  static evalCounter = 0
   static evalOuter (sexp, env = getGlobalEnv()) {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('----------------------------------------------------')
@@ -22,6 +23,7 @@ export class FsEvaluator {
   }
 
   static eval (sexp, env = getGlobalEnv()) {
+    FsEvaluator.evalCounter++
     if (sexp instanceof FsSymbol) {
       return env.find(sexp)
     } else if (!Array.isArray(sexp)) {
@@ -47,7 +49,16 @@ export class FsEvaluator {
       return FsLet.proc(sexp.slice(1), env)
     } else {
       const p = FsEvaluator.eval(sexp[0], env)
-      const args = sexp.slice(1).map(s => this.eval(s, env))
+
+      // for the readability, use this line
+      // const args = sexp.slice(1).map(s => this.eval(s, env))
+
+      // for the performance, use lines below. it may be bit faster.
+      const args = []
+      for (let i = 1; i < sexp.length; i++) {
+        args.push(FsEvaluator.eval(sexp[i], env))
+      }
+
       // return p.proc(args)
       return p.proc(args, env) // for testing map
     }
