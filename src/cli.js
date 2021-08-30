@@ -22,7 +22,7 @@ export class FsCli {
       const file = argv[i]
       const data = FS.readFileSync(file, 'utf8')
       engine.eval(data)
-      log.info(FsEvaluator.evalCounter)
+      log.debug('eval count' + FsEvaluator.evalCounter)
     }
     process.exit(0)
   }
