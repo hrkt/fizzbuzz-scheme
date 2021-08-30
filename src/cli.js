@@ -3,6 +3,7 @@
 import FS from 'fs'
 
 import log from 'loglevel'
+import { FsEvaluator } from './evaluator.js'
 import { FizzBuzzScheme } from './index.js'
 log.setLevel('info')
 
@@ -21,6 +22,7 @@ export class FsCli {
       const file = argv[i]
       const data = FS.readFileSync(file, 'utf8')
       engine.eval(data)
+      log.info(FsEvaluator.evalCounter)
     }
     process.exit(0)
   }

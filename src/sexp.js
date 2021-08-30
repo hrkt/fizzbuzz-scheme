@@ -346,7 +346,16 @@ export class FsOperatorAbs extends FsSExp {
 
 export class FsOperatorPlus extends FsSExp {
   static proc (list) {
-    return new FsNumber(list.map(n => n.value).reduce((a, b) => a + b, 0))
+    // for the readability, use this line
+    // return new FsNumber(list.map(n => n.value).reduce((a, b) => a + b, 0))
+
+    // for the performance, use lines below. it may be bit faster.
+    //
+    let buf = 0
+    for (let i = 0; i < list.length; i++) {
+      buf += list[i].value
+    }
+    return new FsNumber(buf)
   }
 }
 
@@ -367,14 +376,16 @@ export class FsOperatorMinus extends FsSExp {
     if (list.length === 1) {
       return new FsNumber(-1 * (list[0].value))
     } else {
-      return new FsNumber(list[0].value - FsOperatorPlus.proc(list.slice(1)))
+      // for the readability, use this line
+      // return new FsNumber(list[0].value - FsOperatorPlus.proc(list.slice(1)))
+
       // for the performance, use lines below. it may be bit faster.
       //
-      // let buf = list[0].value
-      // for (let i = 1; i < list.length; i++) {
-      //   buf -= list[i]
-      // }
-      // return new FsNumber(buf)
+      let buf = list[0].value
+      for (let i = 1; i < list.length; i++) {
+        buf -= list[i]
+      }
+      return new FsNumber(buf)
     }
   }
 }
