@@ -244,6 +244,8 @@ export class FsBoolean extends FsAtom {
 
   static get TRUE () { return FsBoolean.TRUE_ }
   static get FALSE () { return FsBoolean.FALSE_ }
+  // static TRUE = FsBoolean.TRUE_
+  // static FALSE = FsBoolean.FALSE_
 
   static isFsBooleanString (s) {
     return (s === '#t' || s === '#f')
@@ -605,7 +607,9 @@ export class FsList extends FsValue {
   constructor (value) {
     super()
     this.value = value
-    log.debug('ctor FsList called with:' + JSON.stringify(value, null, 2))
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('ctor FsList called with:' + JSON.stringify(value, null, 2))
+    }
   }
 
   get length () {
@@ -621,8 +625,9 @@ export class FsList extends FsValue {
   }
 
   toString () {
-    log.debug('FsList.toString() called. this.value:' + JSON.stringify(this.value, null, 2))
-
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('FsList.toString() called. this.value:' + JSON.stringify(this.value, null, 2))
+    }
     if (FsSymbol.SINGLE_QUOTE.equals(this.value[0])) {
       log.debug('PRINTING AS SINGLE_QUOTE')
       return '\'' + this.value[1].toString()
