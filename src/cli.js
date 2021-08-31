@@ -11,7 +11,7 @@ export class FsCli {
   static main (argv) {
     // argv[0] -> path of node.exe
     // argv[1] -> path of this script
-    log.info('args: ' + argv)
+    log.debug('args: ' + argv)
     if (argv.length <= 2) {
       console.log('usage: node fbs.js {file}')
       process.exit(0)
