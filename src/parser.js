@@ -121,17 +121,22 @@ export class FsParser {
   }
 
   static parse (code) {
-    log.debug('------')
-    log.debug('parse: ' + code)
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('------')
+      log.debug('parse: ' + code)
+    }
     const tokenized = this.tokenize(code)
-    log.debug('------')
-    log.debug('tokenized: ' + tokenized)
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('------')
+      log.debug('tokenized: ' + tokenized)
+    }
     const orders = FsParser.readTokensOuter(tokenized)
-    log.debug('------')
-    log.debug(orders.length)
-    log.debug('parsed: ' + orders)
-    log.debug(JSON.stringify(orders, null, 2))
-
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('------')
+      log.debug(orders.length)
+      log.debug('parsed: ' + orders)
+      log.debug(JSON.stringify(orders, null, 2))
+    }
     return orders
   }
 }
