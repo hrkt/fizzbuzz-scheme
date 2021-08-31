@@ -594,6 +594,16 @@ export class FsNewline extends FsSExp {
   }
 }
 
+// returns memory usage of called time.
+//
+// only works with Node
+export class FsPeekMemoryUsage extends FsSExp {
+  static proc (list) {
+    const m = process.memoryUsage()
+    return new FsString(JSON.stringify(m))
+  }
+}
+
 export class FsDisplay extends FsSExp {
   static proc (list) {
     process.stdout.write(list.map(s => s.value).join(' '))
