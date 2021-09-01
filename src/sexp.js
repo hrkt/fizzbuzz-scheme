@@ -8,16 +8,18 @@ import { FsEnv } from './env.js'
 
 export class SExpFactory {
   static build (s) {
-    if (!isNaN(s)) {
+    if (s === undefined) {
+      throw new FsError('passed undefined.') // isNaN(undefined) ==> true
+    }
+    if (!isNaN(parseFloat(s)) && !isNaN(s - 0)) {
       return new FsNumber(+s)
     } else if (FsBoolean.isFsBooleanString(s)) {
       return FsBoolean.fromString(s)
-    } else if (s.startsWith('"')) {
+    } else if (s.startsWith('"')) { // equal or faster compared to  s.charAt(0), s.indexOf('"') === 0
       const extracted = s.substring(1, s.length - 1)
       return new FsString(extracted)
     } else {
-      // return new FsSymbol(s)
-      return FsSymbol.intern(s)
+      return FsSymbol.intern(s) // avoid creating Gabage
     }
   }
 }
