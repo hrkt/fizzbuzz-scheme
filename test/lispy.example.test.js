@@ -43,6 +43,19 @@ test('evaluating range', () => {
   // expect(fbs.eval('(map fib (range 0 20))').toString()).toBe('(1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765)') // in 400ms
 })
 
+test('try tail-recursion', () => {
+  const fbs = new FBS()
+  const code = `
+  (define (sum2 n acc)
+  (if (= n 0)
+      acc
+      (sum2 (- n 1) (+ n acc))))
+  `
+  fbs.eval(code)
+  // without lispy2-like eval style, "RangeError: Maximum call stack size exceeded" occurs
+  expect(fbs.eval('(sum2 10000 0)')).toStrictEqual(new FsNumber(50005000))
+})
+
 // this does not work either on fbs or on gauche
 // (define count (lambda (item L) (if L (+ (equal? item (first L)) (count item (rest L))) 0)))
 // (count 0 (list 0 1 2 3 0 0))

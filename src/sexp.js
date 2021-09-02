@@ -59,6 +59,9 @@ export class FsAtom extends FsSExp {
 }
 
 export class FsIf extends FsSExp {
+  /**
+   * @deprecated since version 0.1.6, this function is inlined to eval-loop
+   */
   static proc (list, env) {
     const [test, conseq, alt] = list
     if (FsEvaluator.eval(test, env).value) {
@@ -103,6 +106,9 @@ export class FsProcedure extends FsSExp {
     }
   }
 
+  /**
+   * @deprecated since version 0.1.6, this function is inlined to eval-loop
+   */
   proc (execParams) {
     const innerEnv = new FsEnv(this.env)
     if (!Array.isArray(execParams)) {
@@ -209,6 +215,9 @@ export class FsSet extends FsSExp {
 }
 
 export class FsBegin extends FsSExp {
+  /**
+   * @deprecated since version 0.1.6, this function is inlined to eval-loop
+   */
   static proc (list, env) {
     let ret = null
     for (let i = 0; i < list.length; i++) {
