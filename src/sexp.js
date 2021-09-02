@@ -8,16 +8,18 @@ import { FsEnv } from './env.js'
 
 export class SExpFactory {
   static build (s) {
-    if (!isNaN(s)) {
+    if (s === undefined) {
+      throw new FsError('passed undefined.') // isNaN(undefined) ==> true
+    }
+    if (!isNaN(parseFloat(s)) && !isNaN(s - 0)) {
       return new FsNumber(+s)
     } else if (FsBoolean.isFsBooleanString(s)) {
       return FsBoolean.fromString(s)
-    } else if (s.startsWith('"')) {
+    } else if (s.startsWith('"')) { // equal or faster compared to  s.charAt(0), s.indexOf('"') === 0
       const extracted = s.substring(1, s.length - 1)
       return new FsString(extracted)
     } else {
-      // return new FsSymbol(s)
-      return FsSymbol.intern(s)
+      return FsSymbol.intern(s) // avoid creating Gabage
     }
   }
 }
@@ -244,6 +246,8 @@ export class FsBoolean extends FsAtom {
 
   static get TRUE () { return FsBoolean.TRUE_ }
   static get FALSE () { return FsBoolean.FALSE_ }
+  // static TRUE = FsBoolean.TRUE_
+  // static FALSE = FsBoolean.FALSE_
 
   static isFsBooleanString (s) {
     return (s === '#t' || s === '#f')
@@ -592,6 +596,16 @@ export class FsNewline extends FsSExp {
   }
 }
 
+// returns memory usage of called time.
+//
+// only works with Node
+export class FsPeekMemoryUsage extends FsSExp {
+  static proc (list) {
+    const m = process.memoryUsage()
+    return new FsString(JSON.stringify(m))
+  }
+}
+
 export class FsDisplay extends FsSExp {
   static proc (list) {
     process.stdout.write(list.map(s => s.value).join(' '))
@@ -605,7 +619,9 @@ export class FsList extends FsValue {
   constructor (value) {
     super()
     this.value = value
-    log.debug('ctor FsList called with:' + JSON.stringify(value, null, 2))
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('ctor FsList called with:' + JSON.stringify(value, null, 2))
+    }
   }
 
   get length () {
@@ -621,8 +637,9 @@ export class FsList extends FsValue {
   }
 
   toString () {
-    log.debug('FsList.toString() called. this.value:' + JSON.stringify(this.value, null, 2))
-
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('FsList.toString() called. this.value:' + JSON.stringify(this.value, null, 2))
+    }
     if (FsSymbol.SINGLE_QUOTE.equals(this.value[0])) {
       log.debug('PRINTING AS SINGLE_QUOTE')
       return '\'' + this.value[1].toString()

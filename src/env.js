@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsOperatorAbs, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsOperatorRound, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicateProcedure, FsPredicateSymbol, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsOperatorAbs, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsOperatorRound, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicateProcedure, FsPredicateSymbol, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -127,6 +127,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('round'), FsOperatorRound)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol)
   env.set(new FsSymbol('write'), FsWrite)
+  env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage)
 
   log.setLevel(prev)
   return env
