@@ -34,7 +34,7 @@ The code this interpreter runs now is in sample/fizzbuzz.fbs .
 ## results
 
 ```console
-PS C:\Users\hrkt\work\fizzbuzz-scheme> npm run repl
+> npm run repl
 
 fbs> (display "aaa")
 aaa#undefined
@@ -79,14 +79,15 @@ $ npm run majestic
 - ✅constants and quote[Literal expressions](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.2)
 - ✅define [Assignments](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6)
 - ✅set! [Assignments](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.3)
-- ✅basic arithmetic operators (+,-,*,/,mod) within basic accuracy of JavaScript.
+- ✅basic arithmetic operators (+,-,*,/,mod,exp,round) within basic accuracy of JavaScript.
 - ✅basic comparison operators (=,<,<=,>,>=)
 - ✅a basic operator for FizzBuzz (and)
 - ✅other basic operators (not)
 - ✅if -> [Conditionals](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.5)
-- ✅lambda -> [Procedures](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.4)
-- ✅[Procedure calls](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.3)
+- ✅lambda, [Procedure calls](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.3)
 - ✅[sequencing](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.3)
+- ✅(partly)[Proper tail recursion](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-6.html#%_sec_3.5)
+- ✅some predicates for type-checking (boolean?, null?, number?, procedure?, symbol?)
 
 Test cases for a few part of R5RS are in [r5rs.test.js]("./src/r5rs.test.js")
 
@@ -94,13 +95,15 @@ Test cases for a few part of R5RS are in [r5rs.test.js]("./src/r5rs.test.js")
 
 - ❌[quasiquotation](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.6)
 
+## Fizz-Buzz Scheme original procedures
+
+- some procedures benchmarking (peek-memory-usage)
 ## Future work
 
 - implementing items listed in "not implemented"
 
 ## LICENSE
 
-### App
 MIT
 
 ## CI
