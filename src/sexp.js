@@ -63,12 +63,13 @@ export class FsIf extends FsSExp {
    * @deprecated since version 0.1.6, this function is inlined to eval-loop
    */
   static proc (list, env) {
-    const [test, conseq, alt] = list
-    if (FsEvaluator.eval(test, env).value) {
-      return FsEvaluator.eval(conseq, env)
-    } else {
-      return FsEvaluator.eval(alt, env)
-    }
+    throw new FsError('do not call me.')
+    // const [test, conseq, alt] = list
+    // if (FsEvaluator.eval(test, env).value) {
+    //   return FsEvaluator.eval(conseq, env)
+    // } else {
+    //   return FsEvaluator.eval(alt, env)
+    // }
   }
 }
 
@@ -292,7 +293,7 @@ export class FsString extends FsAtom {
 }
 
 export class FsSymbol extends FsAtom {
-  static IF = new FsSymbol('if')
+  static IF = new FsIf('if')
   static QUOTE = new FsSymbol('quote')
   static SINGLE_QUOTE = new FsSymbol('\'')
   static DEFINE = new FsSymbol('define')
