@@ -13,7 +13,14 @@ export class Adjuster {
       throw new FsError('ERROR: should pass array to adjest() ')
     }
 
-    return sexpList.map(sexp => Adjuster.adjustInner(sexp))
+    const ret = sexpList.map(sexp => Adjuster.adjustInner(sexp))
+    if (log.getLevel() <= log.levels.DEBUG) {
+      log.debug('------')
+      log.debug(ret.length)
+      log.debug('adjusted: ' + ret)
+      log.debug(JSON.stringify(ret, null, 2))
+    }
+    return ret
   }
 
   static adjustInner (sexp) {
@@ -23,7 +30,9 @@ export class Adjuster {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug(JSON.stringify(sexp, null, 2))
     }
-    if (!Array.isArray) {
+    if (!Array.isArray(sexp)) {
+      // it passes "null".
+      // ex. after adjusting (if #f 1) => (if #f 1 null)
       return sexp
     } else if (sexp[0] === FsSymbol.IF) {
       if (sexp.length <= 2) {
@@ -33,7 +42,7 @@ export class Adjuster {
         // ex. [if #t 1] => [if #t 1 null]
         sexp.push(null)
       }
-      return sexp
+      return sexp.map(sexp => Adjuster.adjustInner(sexp))
     } else {
       return sexp
     }
