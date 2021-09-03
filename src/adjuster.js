@@ -25,7 +25,7 @@ export class Adjuster {
 
   static adjustInner (sexp) {
     if (sexp === undefined) {
-      throw new FsError('ERROR: "undefined" was passed to adjestInner() ')
+      throw new FsError('ERROR: "undefined" was passed to adjustInner() ')
     }
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug(JSON.stringify(sexp, null, 2))
