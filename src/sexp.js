@@ -111,21 +111,22 @@ export class FsProcedure extends FsSExp {
    * @deprecated since version 0.1.6, this function is inlined to eval-loop
    */
   proc (execParams) {
-    const innerEnv = new FsEnv(this.env)
-    if (!Array.isArray(execParams)) {
-      throw new Error('arg type do not match')
-    }
-    if (this.params instanceof FsSymbol) {
-      // ex. ((lambda x x) 3 4 5 6)
-      innerEnv.set(this.params, new FsList(execParams))
-      return FsEvaluator.eval(this.params, innerEnv)
-    } else {
-      // ex. (lambda (x) (+ 1 2))
-      for (let i = 0; i < this.params.length; i++) {
-        innerEnv.set(this.params[i], execParams[i])
-      }
-      return FsEvaluator.eval(this.body, innerEnv)
-    }
+    throw new FsError('do not call me.')
+    // const innerEnv = new FsEnv(this.env)
+    // if (!Array.isArray(execParams)) {
+    //   throw new Error('arg type do not match')
+    // }
+    // if (this.params instanceof FsSymbol) {
+    //   // ex. ((lambda x x) 3 4 5 6)
+    //   innerEnv.set(this.params, new FsList(execParams))
+    //   return FsEvaluator.eval(this.params, innerEnv)
+    // } else {
+    //   // ex. (lambda (x) (+ 1 2))
+    //   for (let i = 0; i < this.params.length; i++) {
+    //     innerEnv.set(this.params[i], execParams[i])
+    //   }
+    //   return FsEvaluator.eval(this.body, innerEnv)
+    // }
   }
 
   toString () {
@@ -220,11 +221,12 @@ export class FsBegin extends FsSExp {
    * @deprecated since version 0.1.6, this function is inlined to eval-loop
    */
   static proc (list, env) {
-    let ret = null
-    for (let i = 0; i < list.length; i++) {
-      ret = FsEvaluator.eval(list[i], env)
-    }
-    return ret
+    throw new FsError('do not call me.')
+    // let ret = null
+    // for (let i = 0; i < list.length; i++) {
+    //   ret = FsEvaluator.eval(list[i], env)
+    // }
+    // return ret
   }
 }
 
