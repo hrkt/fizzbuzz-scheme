@@ -32,6 +32,7 @@ export class FsSExp {
   }
 
   equals (that) {
+    // used in expect .toBe()
     return undefined !== that && (this.value === that.value)
   }
 
@@ -46,15 +47,11 @@ export class FsAtom extends FsSExp {
     if (this.constructor === FsAtom) {
       throw new FsError('FsAtom class can\'t be instantiated.')
     }
-    this._value = value
-  }
-
-  get value () {
-    return this._value
+    this.value = value
   }
 
   toString () {
-    return this._value === null ? 'null' : this._value.toString()
+    return this.value === null ? 'null' : this.value.toString()
   }
 }
 
@@ -389,7 +386,9 @@ export class FsOperatorMultiply extends FsSExp {
 
 export class FsOperatorMinus extends FsSExp {
   static proc (list) {
-    if (list.length === 1) {
+    if (list.length === 2) {
+      return new FsNumber(list[0].value - list[1].value)
+    } else if (list.length === 1) {
       return new FsNumber(-1 * (list[0].value))
     } else {
       // for the readability, use this line
@@ -510,14 +509,12 @@ export class FsNumberEquals extends FsSExp {
 
 export class FsOperatorLt extends FsSExp {
   static proc (list) {
-    ensureListContainsTwo(list)
     return list[0].value < list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsOperatorLte extends FsSExp {
   static proc (list) {
-    ensureListContainsTwo(list)
     return list[0].value <= list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
@@ -531,16 +528,23 @@ export class FsOperatorGt extends FsSExp {
 
 export class FsOperatorGte extends FsSExp {
   static proc (list) {
-    ensureListContainsTwo(list)
     return list[0].value >= list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsAnd extends FsSExp {
   static proc (list) {
-    ensureListContainsTwo(list)
-    const [lhs, rhs] = list
-    return lhs === FsBoolean.TRUE && rhs === FsBoolean.TRUE ? FsBoolean.TRUE : FsBoolean.FALSE
+    if (list.length === 2) {
+      const [lhs, rhs] = list
+      return lhs === FsBoolean.TRUE && rhs === FsBoolean.TRUE ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else {
+      for (let i = 0; i < list.length; i++) {
+        if (list[0] !== list[i]) {
+          return FsBoolean.FALSE
+        }
+      }
+      return FsBoolean.TRUE
+    }
   }
 }
 
