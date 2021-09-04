@@ -521,7 +521,6 @@ export class FsOperatorLte extends FsSExp {
 
 export class FsOperatorGt extends FsSExp {
   static proc (list) {
-    ensureListContainsTwo(list)
     return list[0].value > list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
