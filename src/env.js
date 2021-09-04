@@ -6,7 +6,7 @@ import { FsError, FsException } from './common.js'
 
 // Environment
 export class FsEnv {
-  // static counter = 0 
+  // static counter = 0
 
   // use {} instead of new Map() because it is bit faster on benchmarking on fib(30)
   // constructor (outer = null, vars = new Map()) {
