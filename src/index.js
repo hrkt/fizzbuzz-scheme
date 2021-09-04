@@ -5,7 +5,7 @@ import { FsEvaluator as FE } from '../src/evaluator.js'
 
 import log from 'loglevel'
 import { getGlobalEnv } from './env.js'
-import { Adjuster } from './adjuster.js'
+import { FsAdjuster } from './adjuster.js'
 
 // Environment
 export class FizzBuzzScheme {
@@ -19,7 +19,7 @@ export class FizzBuzzScheme {
 
   eval (code) {
     const orders = FP.parse(code)
-    const adjusted = Adjuster.adjust(orders)
+    const adjusted = FsAdjuster.adjust(orders)
     log.debug('🤖')
     log.debug('orders.length = ' + orders.length)
     log.debug('adjusted.length = ' + adjusted.length)
