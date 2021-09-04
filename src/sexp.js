@@ -364,11 +364,17 @@ export class FsOperatorPlus extends FsSExp {
 
     // for the performance, use lines below. it may be bit faster.
     //
-    let buf = 0
-    for (let i = 0; i < list.length; i++) {
-      buf += list[i].value
+    if (list.length === 2) {
+      return new FsNumber(list[0].value + list[1].value)
+    } else if (list.length === 1) {
+      return new FsNumber(-1 * (list[0].value))
+    } else {
+      let buf = 0
+      for (let i = 0; i < list.length; i++) {
+        buf += list[i].value
+      }
+      return new FsNumber(buf)
     }
-    return new FsNumber(buf)
   }
 }
 
@@ -648,7 +654,7 @@ export class FsList extends FsValue {
   }
 
   static proc (arg) {
-    return arg.length === 0 ? this.EMPTY : new FsList(arg)
+    return arg.length === 0 ? FsList.EMPTY : new FsList(arg)
   }
 
   toString () {

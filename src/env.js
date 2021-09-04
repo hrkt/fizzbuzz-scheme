@@ -6,12 +6,14 @@ import { FsError, FsException } from './common.js'
 
 // Environment
 export class FsEnv {
-  static counter = 0
+  // static counter = 0 
 
-  constructor (outer = null, vars = new Map()) {
+  // use {} instead of new Map() because it is bit faster on benchmarking on fib(30)
+  // constructor (outer = null, vars = new Map()) {
+  constructor (outer = null, vars = {}) {
     this.outer = outer
     this.vars = vars
-    this._id = FsEnv.counter++
+    // this._id = FsEnv.counter++
   }
 
   get id () {
@@ -36,7 +38,7 @@ export class FsEnv {
       log.debug('env-set k=:' + k + ',v:' + v + ',in:id=' + this.id)
       log.debug('---------------------------------')
     }
-    this.vars.set(FsEnv.toKey(k), v)
+    this.vars[FsEnv.toKey(k)] = v
   }
 
   find (symbol) {
@@ -45,8 +47,9 @@ export class FsEnv {
       log.debug('env-find:' + symbol + ' in:' + this + ' key:' + key)
     }
 
-    if (this.vars.has(key)) {
-      return this.vars.get(key)
+    const v = this.vars[key]
+    if (v !== undefined) {
+      return v
     } else if (this.outer !== null) {
       // calling outer like below results in exeeding maximum call stack,
       // so we simply use foo-loop in this method, and do nut use recursive call.
@@ -54,8 +57,9 @@ export class FsEnv {
       // return this.outer.find(symbol)
       let nextOuter = this.outer
       while (nextOuter !== null) {
-        if (nextOuter.vars.has(key)) {
-          return nextOuter.vars.get(key)
+        const v = nextOuter.vars[key]
+        if (v !== undefined) {
+          return v
         }
         nextOuter = nextOuter.outer
       }
@@ -65,15 +69,11 @@ export class FsEnv {
   }
 
   toString () {
-    // let buf = ''
-    // if (this.outer !== null) {
-    //   buf += '[' + this.outer.toString() + ']'
-    // }
-    // return buf + '>>[' + Array.from(this.vars.keys()) + ']'
     if (this.outer === null) {
       return '>>ROOT'
     } else {
-      return '>>id' + this.id + ' [' + Array.from(this.vars.keys()).map(k => k + '=' + this.vars.get(k)) + ']'
+      // return '>>id' + this.id + ' [' + Array.from(this.vars.keys()).map(k => k + '=' + this.vars.get(k)) + ']'
+      return JSON.stringify(this.vars)
     }
   }
 }
@@ -92,42 +92,42 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('lambda'), FsLambda)
   env.set(new FsSymbol('let'), FsLet)
   // used in eval-last
-  env.set(new FsSymbol('+'), FsOperatorPlus)
-  env.set(new FsSymbol('-'), FsOperatorMinus)
-  env.set(new FsSymbol('*'), FsOperatorMultiply)
-  env.set(new FsSymbol('/'), FsOperatorDivide)
-  env.set(new FsSymbol('mod'), FsOperatorMod)
-  env.set(new FsSymbol('pow'), FsOperatorPow)
-  env.set(new FsSymbol('='), FsNumberEquals)
-  env.set(new FsSymbol('<'), FsOperatorLt)
-  env.set(new FsSymbol('<='), FsOperatorLte)
-  env.set(new FsSymbol('>'), FsOperatorGt)
-  env.set(new FsSymbol('>='), FsOperatorGte)
-  env.set(new FsSymbol('\''), FsSymbol.SINGLE_QUOTE)
-  env.set(new FsSymbol('and'), FsAnd)
-  env.set(new FsSymbol('append'), FsProcedureAppend)
-  env.set(new FsSymbol('abs'), FsOperatorAbs)
-  env.set(new FsSymbol('boolean?'), FsPredicateBoolean)
-  env.set(new FsSymbol('car'), FsCar)
-  env.set(new FsSymbol('cdr'), FsCdr)
-  env.set(new FsSymbol('cons'), FsCons)
-  env.set(new FsSymbol('display'), FsDisplay)
-  env.set(new FsSymbol('eq?'), FsPredicateEq)
-  env.set(new FsSymbol('equal?'), FsPredicateEqual)
-  env.set(new FsSymbol('list'), FsList)
-  env.set(new FsSymbol('list?'), FsPredicateList)
-  env.set(new FsSymbol('newline'), FsNewline)
-  env.set(new FsSymbol('map'), FsProcedureMap)
-  env.set(new FsSymbol('max'), FsProcedureMax)
-  env.set(new FsSymbol('min'), FsProcedureMin)
-  env.set(new FsSymbol('null?'), FsPredicateNull)
-  env.set(new FsSymbol('number?'), FsPredicateNumber)
-  env.set(new FsSymbol('not'), FsNot)
-  env.set(new FsSymbol('procedure?'), FsPredicateProcedure)
-  env.set(new FsSymbol('round'), FsOperatorRound)
-  env.set(new FsSymbol('symbol?'), FsPredicateSymbol)
-  env.set(new FsSymbol('write'), FsWrite)
-  env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage)
+  env.set(new FsSymbol('+'), FsOperatorPlus.proc)
+  env.set(new FsSymbol('-'), FsOperatorMinus.proc)
+  env.set(new FsSymbol('*'), FsOperatorMultiply.proc)
+  env.set(new FsSymbol('/'), FsOperatorDivide.proc)
+  env.set(new FsSymbol('mod'), FsOperatorMod.proc)
+  env.set(new FsSymbol('pow'), FsOperatorPow.proc)
+  env.set(new FsSymbol('='), FsNumberEquals.proc)
+  env.set(new FsSymbol('<'), FsOperatorLt.proc)
+  env.set(new FsSymbol('<='), FsOperatorLte.proc)
+  env.set(new FsSymbol('>'), FsOperatorGt.proc)
+  env.set(new FsSymbol('>='), FsOperatorGte.proc)
+  env.set(new FsSymbol('\''), FsSymbol.SINGLE_QUOTE.proc)
+  env.set(new FsSymbol('and'), FsAnd.proc)
+  env.set(new FsSymbol('append'), FsProcedureAppend.proc)
+  env.set(new FsSymbol('abs'), FsOperatorAbs.proc)
+  env.set(new FsSymbol('boolean?'), FsPredicateBoolean.proc)
+  env.set(new FsSymbol('car'), FsCar.proc)
+  env.set(new FsSymbol('cdr'), FsCdr.proc)
+  env.set(new FsSymbol('cons'), FsCons.proc)
+  env.set(new FsSymbol('display'), FsDisplay.proc)
+  env.set(new FsSymbol('eq?'), FsPredicateEq.proc)
+  env.set(new FsSymbol('equal?'), FsPredicateEqual.proc)
+  env.set(new FsSymbol('list'), FsList.proc)
+  env.set(new FsSymbol('list?'), FsPredicateList.proc)
+  env.set(new FsSymbol('newline'), FsNewline.proc)
+  env.set(new FsSymbol('map'), FsProcedureMap.proc)
+  env.set(new FsSymbol('max'), FsProcedureMax.proc)
+  env.set(new FsSymbol('min'), FsProcedureMin.proc)
+  env.set(new FsSymbol('null?'), FsPredicateNull.proc)
+  env.set(new FsSymbol('number?'), FsPredicateNumber.proc)
+  env.set(new FsSymbol('not'), FsNot.proc)
+  env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
+  env.set(new FsSymbol('round'), FsOperatorRound.proc)
+  env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
+  env.set(new FsSymbol('write'), FsWrite.proc)
+  env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage.proc)
 
   log.setLevel(prev)
   return env
