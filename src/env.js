@@ -25,7 +25,7 @@ export class FsEnv {
   static toKey (obj) {
     if (obj instanceof FsSymbol) {
       // return obj.toString()
-      // value of FsSymbole is not falcy. simply use its value as key.
+      // value of FsSymbol is not falcy. simply use its value as key.
       return obj.value
     } else {
       throw new FsError('cannot use as key:' + obj)
