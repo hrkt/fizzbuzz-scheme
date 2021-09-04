@@ -52,7 +52,7 @@ export class FsEnv {
       return v
     } else if (this.outer !== null) {
       // calling outer like below results in exeeding maximum call stack,
-      // so we simply use foo-loop in this method, and do nut use recursive call.
+      // so we simply use for-loop in this method, and do nut use recursive call.
       //
       // return this.outer.find(symbol)
       let nextOuter = this.outer
