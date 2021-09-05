@@ -4,6 +4,7 @@
   "description": "A tiny scheme subset interpreter that can evaluate fizz-buzz code.",
   "main": "src/index.js",
   "scripts": {
+    "clean": "rimraf isolate-* coverage",
     "fib30": "node src/fbs sample/fibonacci.scm sample/fib30.scm",
     "lint": "npx eslint src/ test/",
     "repl": "node src/repl",
@@ -36,7 +37,8 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "jest": "^27.0.6",
-    "jest-mock-process": "^1.4.1"
+    "jest-mock-process": "^1.4.1",
+    "rimraf": "^3.0.2"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -44,6 +46,11 @@
       "!src/**/fbs.js",
       "!src/**/repl.js"
     ],
-    "coverageReporters": ["json", "html", "lcov", "text"]
+    "coverageReporters": [
+      "json",
+      "html",
+      "lcov",
+      "text"
+    ]
   }
 }
