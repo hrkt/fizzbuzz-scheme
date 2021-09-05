@@ -86,10 +86,11 @@ export class FsEvaluator {
             env = innerEnv
           }
         } else {
-          // return p.proc(evaled, env) // for testing map
           const evaled = []
+          // evaled.length = sexp.length - 1 // this line slows execution, so we do not do this.
           for (let i = 1; i < sexp.length; i++) {
-            evaled.push(FsEvaluator.eval(sexp[i], env))
+            // evaled.push(FsEvaluator.eval(sexp[i], env))
+            evaled[i - 1] = FsEvaluator.eval(sexp[i], env)
           }
           return p(evaled, env) // for testing map
         }
