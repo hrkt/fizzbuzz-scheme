@@ -636,7 +636,7 @@ export class FsDisplay extends FsSExp {
 
 export class FsValue {}
 export class FsList extends FsValue {
-  static EMPTY = new FsList([])
+  static EMPTY = Object.freeze(new FsList([]))
   constructor (value) {
     super()
     this.value = value
