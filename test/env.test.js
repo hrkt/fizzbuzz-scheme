@@ -7,7 +7,7 @@ import { FsError } from '../src/common.js'
 test('define env success', () => {
   const env = new FsEnv(null)
   // expect(env.vars).toStrictEqual(new Map()) // we use old-fashioned {}, for battle against fibonacchi bench
-  expect(env.vars).toStrictEqual({})
+  expect(env.vars).toStrictEqual(Object.create(null))
 })
 
 test('get a symbol from the env success', () => {
