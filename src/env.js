@@ -10,7 +10,7 @@ export class FsEnv {
 
   // use {} instead of new Map() because it is bit faster on benchmarking on fib(30)
   // constructor (outer = null, vars = new Map()) {
-  constructor (outer = null, vars = {}) {
+  constructor (outer = null, vars = Object.create(null)) {
     this.outer = outer
     this.vars = vars
     // this._id = FsEnv.counter++
@@ -25,7 +25,7 @@ export class FsEnv {
   static toKey (obj) {
     if (obj instanceof FsSymbol) {
       // return obj.toString()
-      // value of FsSymbole is not falcy. simply use its value as key.
+      // value of FsSymbol is not falcy. simply use its value as key.
       return obj.value
     } else {
       throw new FsError('cannot use as key:' + obj)
@@ -52,7 +52,7 @@ export class FsEnv {
       return v
     } else if (this.outer !== null) {
       // calling outer like below results in exeeding maximum call stack,
-      // so we simply use foo-loop in this method, and do nut use recursive call.
+      // so we simply use for-loop in this method, and do nut use recursive call.
       //
       // return this.outer.find(symbol)
       let nextOuter = this.outer
@@ -84,13 +84,13 @@ export function getGlobalEnv () {
   const prev = log.getLevel()
   log.setLevel('error')
   // used in eval-each-switches
-  env.set(new FsSymbol('if'), FsIf)
-  env.set(new FsSymbol('quote'), FsQuote)
-  env.set(new FsSymbol('define'), FsDefine)
-  env.set(new FsSymbol('set!'), FsSet)
-  env.set(new FsSymbol('begin'), FsBegin)
-  env.set(new FsSymbol('lambda'), FsLambda)
-  env.set(new FsSymbol('let'), FsLet)
+  env.set(FsSymbol.IF, FsIf)
+  env.set(FsSymbol.QUOTE, FsQuote)
+  env.set(FsSymbol.DEFINE, FsDefine)
+  env.set(FsSymbol.SET_, FsSet)
+  env.set(FsSymbol.BEGIN, FsBegin)
+  env.set(FsSymbol.LAMBDA, FsLambda)
+  env.set(FsSymbol.LET, FsLet)
   // used in eval-last
   env.set(new FsSymbol('+'), FsOperatorPlus.proc)
   env.set(new FsSymbol('-'), FsOperatorMinus.proc)

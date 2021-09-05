@@ -250,8 +250,8 @@ export class FsQuote extends FsSExp {
 }
 
 export class FsBoolean extends FsAtom {
-  static TRUE_ = new FsBoolean(true)
-  static FALSE_ = new FsBoolean(false)
+  static TRUE_ = Object.freeze(new FsBoolean(true))
+  static FALSE_ = Object.freeze(new FsBoolean(false))
 
   static get TRUE () { return FsBoolean.TRUE_ }
   static get FALSE () { return FsBoolean.FALSE_ }
@@ -292,14 +292,14 @@ export class FsString extends FsAtom {
 }
 
 export class FsSymbol extends FsAtom {
-  static IF = new FsIf('if')
-  static QUOTE = new FsSymbol('quote')
-  static SINGLE_QUOTE = new FsSymbol('\'')
-  static DEFINE = new FsSymbol('define')
-  static SET_ = new FsSymbol('set!')
-  static BEGIN = new FsSymbol('begin')
-  static LAMBDA = new FsSymbol('lambda')
-  static LET = new FsSymbol('let')
+  static IF = Object.freeze(new FsSymbol('if'))
+  static QUOTE = Object.freeze(new FsSymbol('quote'))
+  static SINGLE_QUOTE = Object.freeze(new FsSymbol('\''))
+  static DEFINE = Object.freeze(new FsSymbol('define'))
+  static SET_ = Object.freeze(new FsSymbol('set!'))
+  static BEGIN = Object.freeze(new FsSymbol('begin'))
+  static LAMBDA = Object.freeze(new FsSymbol('lambda'))
+  static LET = Object.freeze(new FsSymbol('let'))
   static intern (str) {
     switch (str) {
       case 'if':
@@ -319,7 +319,7 @@ export class FsSymbol extends FsAtom {
       case 'let':
         return this.LET
       default:
-        return new FsSymbol(str)
+        return Object.freeze(new FsSymbol(str))
     }
   }
 }
