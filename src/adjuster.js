@@ -1,6 +1,6 @@
 'use strict'
 import { FsError, FsException } from './common.js'
-import { FsSymbol } from './sexp.js'
+import { FsSymbol, FsUndefined } from './sexp.js'
 import log from 'loglevel'
 
 export class FsAdjuster {
@@ -55,7 +55,7 @@ export class FsAdjuster {
       }
       if (sexp.length === 3) {
         // ex. [if #t 1] => [if #t 1 null]
-        sexp.push(null)
+        sexp.push(FsUndefined.UNDEFINED)
       }
       return sexp.map(sexp => FsAdjuster.adjustInner(sexp))
     } else if (sexp[0] instanceof FsSymbol && (
