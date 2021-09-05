@@ -1,6 +1,6 @@
 'use strict'
 import { FsError, FsException } from './common.js'
-import { FsSymbol, FsUndefined } from './sexp.js'
+import { FsList, FsSymbol, FsUndefined } from './sexp.js'
 import log from 'loglevel'
 
 export class FsAdjuster {
@@ -17,8 +17,12 @@ export class FsAdjuster {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('------')
       log.debug(ret.length)
-      log.debug('adjusted: ' + ret)
+      for (let i = 0; i < ret.length; i++) {
+        log.debug('adjusted : ' + i + ' : >>> ' + ret[i] + ' <<<')
+      }
+      log.debug('------')
       log.debug(JSON.stringify(ret, null, 2))
+      log.debug('------')
     }
     return ret
   }
@@ -49,6 +53,8 @@ export class FsAdjuster {
       // it passes "null".
       // ex. after adjusting (if #f 1) => (if #f 1 null)
       return sexp
+    // } if (Array.isArray(sexp) && sexp.length === 0) {
+    //   return FsList.EMPTY
     } else if (sexp[0] === FsSymbol.IF) {
       if (sexp.length <= 2) {
         throw new FsException('Syntax Error: malformed if:' + sexp)
