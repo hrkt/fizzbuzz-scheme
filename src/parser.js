@@ -123,19 +123,21 @@ export class FsParser {
   static parse (code) {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('------')
-      log.debug('parse: ' + code)
+      log.debug('parse: >>> ' + code + ' <<<')
     }
     const tokenized = this.tokenize(code)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('------')
-      log.debug('tokenized: ' + tokenized)
+      log.debug('tokenized: >>> ' + tokenized + ' <<<')
     }
     const orders = FsParser.readTokensOuter(tokenized)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('------')
       log.debug(orders.length)
-      log.debug('parsed: ' + orders)
+      log.debug('parsed: >>> ' + orders + '<<<')
+      log.debug('------')
       log.debug(JSON.stringify(orders, null, 2))
+      log.debug('------')
     }
     return orders
   }

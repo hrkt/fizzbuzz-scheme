@@ -17,8 +17,12 @@ export class FsAdjuster {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('------')
       log.debug(ret.length)
-      log.debug('adjusted: ' + ret)
+      for (let i = 0; i < ret.length; i++) {
+        log.debug('adjusted : ' + i + ' : >>> ' + ret[i] + ' <<<')
+      }
+      log.debug('------')
       log.debug(JSON.stringify(ret, null, 2))
+      log.debug('------')
     }
     return ret
   }
@@ -49,6 +53,8 @@ export class FsAdjuster {
       // it passes "null".
       // ex. after adjusting (if #f 1) => (if #f 1 null)
       return sexp
+    // } if (Array.isArray(sexp) && sexp.length === 0) {
+    //   return FsList.EMPTY
     } else if (sexp[0] === FsSymbol.IF) {
       if (sexp.length <= 2) {
         throw new FsException('Syntax Error: malformed if:' + sexp)
@@ -68,6 +74,11 @@ export class FsAdjuster {
         throw new FsException('Syntax Error: malformed :' + sexp)
       }
       return sexp.map(sexp => FsAdjuster.adjustInner(sexp))
+    } else if (sexp[0] instanceof FsSymbol && sexp[0].value === 'set!') {
+      if (sexp.length !== 3) {
+        throw new FsException('Syntax Error: malformed :' + sexp)
+      }
+      return sexp
     } else {
       return sexp
     }
