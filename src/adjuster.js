@@ -1,6 +1,6 @@
 'use strict'
 import { FsError, FsException } from './common.js'
-import { FsSymbol, FsUndefined } from './sexp.js'
+import { FsDefine, FsSet, FsSymbol, FsUndefined } from './sexp.js'
 import log from 'loglevel'
 
 export class FsAdjuster {
@@ -74,6 +74,11 @@ export class FsAdjuster {
         throw new FsException('Syntax Error: malformed :' + sexp)
       }
       return sexp.map(sexp => FsAdjuster.adjustInner(sexp))
+    } else if (sexp[0] instanceof FsSymbol && sexp[0].value === 'set!') {
+      if (sexp.length !== 3) {
+        throw new FsException('Syntax Error: malformed :' + sexp)
+      }
+      return sexp
     } else {
       return sexp
     }
