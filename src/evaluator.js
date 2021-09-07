@@ -35,9 +35,7 @@ export class FsEvaluator {
         return FsList.EMPTY
       } else if (FsSymbol.IF === sexp[0]) {
         FsEvaluator.eval(sexp[1], env).value ? sexp = sexp[2] : sexp = sexp[3]
-      } else if (FsSymbol.QUOTE === sexp[0]) {
-        return FsQuote.proc(sexp.slice(1))
-      } else if (FsSymbol.SINGLE_QUOTE === sexp[0]) {
+      } else if (FsSymbol.QUOTE === sexp[0] || FsSymbol.SINGLE_QUOTE === sexp[0]) {
         return FsQuote.proc(sexp.slice(1))
       } else if (FsSymbol.DEFINE === sexp[0]) {
         return FsDefine.proc(sexp.slice(1), env)
