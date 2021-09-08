@@ -634,7 +634,20 @@ export class FsDisplay extends FsSExp {
   }
 }
 
+export class FsPair extends FsSExp {
+  constructor (car, cdr) {
+    super()
+    this.car = car
+    this.cdr = cdr
+  }
+
+  toString () {
+    return '(' + this.car + ' . ' + this.cdr + ')'
+  }
+}
+
 export class FsValue {}
+
 export class FsList extends FsValue {
   static EMPTY = Object.freeze(new FsList([]))
   constructor (value) {
@@ -724,7 +737,7 @@ export class FsCons extends FsSExp {
     if (arg[1] instanceof FsList) {
       return new FsList([arg[0]].concat(arg[1].value))
     } else {
-      return new FsList([arg[0]].concat(arg[1]))
+      return new FsPair(arg[0], arg[1])
     }
   }
 }

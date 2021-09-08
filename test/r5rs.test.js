@@ -188,7 +188,15 @@ test('6.3.1', () => {
   expect(new FBS().eval('(boolean? \'())').toString()).toBe('#f')
 })
 
-test('6.3.2', () => {
+test('6.3.2_1', () => {
+  expect(new FBS().eval('(cons \'a \'())').toString()).toBe('(a)')
+  expect(new FBS().eval('(cons \'(a) \'(b c d))').toString()).toBe('((a) b c d)')
+  expect(new FBS().eval('(cons "a" \'(b c))').toString()).toBe('("a" b c)')
+  expect(new FBS().eval('(cons \'a 3)').toString()).toBe('(a . 3)')
+  expect(new FBS().eval('(cons \'(a b) \'c)').toString()).toBe('((a b) . c)')
+})
+
+test('6.3.2_2', () => {
   expect(new FBS().eval('(append \'(x) \'(y))').toString()).toBe('(x y)')
   expect(new FBS().eval('(append \'(a) \'(b c d))').toString()).toBe('(a b c d)')
   expect(new FBS().eval('(append \'(a (b)) \'((c)))').toString()).toBe('(a (b) (c))')
