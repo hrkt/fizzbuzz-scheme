@@ -5,6 +5,7 @@
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { jest } from '@jest/globals'
 import { FsProcedure } from '../src/sexp.js'
+import { FsException } from '../src/common.js'
 
 // all cleared 😊
 test('1.3.4', () => {
@@ -194,6 +195,11 @@ test('6.3.2_1', () => {
   expect(new FBS().eval('(cons "a" \'(b c))').toString()).toBe('("a" b c)')
   expect(new FBS().eval('(cons \'a 3)').toString()).toBe('(a . 3)')
   expect(new FBS().eval('(cons \'(a b) \'c)').toString()).toBe('((a b) . c)')
+
+  expect(new FBS().eval('(car \'(a b c))').toString()).toBe('a')
+  // expect(new FBS().eval('(car \'((a) b c d))').toString()).toBe('(a)') // error. it returns a
+  expect(new FBS().eval('(car \'(1 . 2))').toString()).toBe(1)
+  expect(() => { new FBS().eval('car \'())') }).toThrow(FsException)
 })
 
 test('6.3.2_2', () => {
