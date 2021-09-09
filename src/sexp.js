@@ -627,9 +627,10 @@ export class FsPeekMemoryUsage extends FsSExp {
   }
 }
 
+// print s-exp in list. For FsString, print its value without double quotes.
 export class FsDisplay extends FsSExp {
   static proc (list) {
-    process.stdout.write(list.map(s => s.value).join(' '))
+    process.stdout.write(list.map(s => (s instanceof FsString ? s.value : s.toString())).join(' '))
     return FsUndefined.UNDEFINED
   }
 }
@@ -713,20 +714,32 @@ export class FsList extends FsValue {
 export class FsCar extends FsSExp {
   static proc (arg) {
     const target = arg[0]
-    if (!(target instanceof FsList)) {
-      throw new FsException('arg must be list')
+    if (target instanceof FsPair) {
+      return target.car
+    } else if (target instanceof FsList) {
+      if (target === FsList.EMPTY) {
+        throw new FsException('Syntax Error : cannot call car with EMPTY list')
+      }
+      return target.at(0)
+    } else {
+      throw new FsException('Syntax Error : cannot call car with arg ' + arg)
     }
-    return target.at(0)
   }
 }
 
 export class FsCdr extends FsSExp {
   static proc (arg) {
     const target = arg[0]
-    if (!(target instanceof FsList)) {
-      throw new FsException('arg must be list')
+    if (target instanceof FsPair) {
+      return target.cdr
+    } else if (target instanceof FsList) {
+      if (target === FsList.EMPTY) {
+        throw new FsException('Syntax Error : cannot call cdr with EMPTY list')
+      }
+      return new FsList(target.value.slice(1))
+    } else {
+      throw new FsException('Syntax Error : cannot call cdr with arg ' + arg)
     }
-    return new FsList(target.value.slice(1))
   }
 }
 
