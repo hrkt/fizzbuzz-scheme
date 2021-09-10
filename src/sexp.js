@@ -72,15 +72,13 @@ export class FsIf extends FsSExp {
 
 export class FsLambda extends FsSExp {
   static proc (list, env) {
-    const params = list.shift()
+    const params = list.at(0)
 
     let body = null
     if (params instanceof FsSymbol) {
-      // single variable not suppoted
-      // throw new Error('non-array type arg is not implemented')
       body = list
     } else {
-      body = list.shift()
+      body = list.at(1)
     }
     const procedure = new FsProcedure(params, body, env)
     return procedure
@@ -135,19 +133,18 @@ export class FsLet extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
     let varDefs = null
-    if (Array.isArray(list) && !(Array.isArray(list[0][0]))) {
-      // varDefs = [list[0]]
+    if (Array.isArray(list) && !(Array.isArray(list.at(0).at(0)))) {
       throw new FsException('syntax error: bindings should have the form ((k 1) ..')
     } else {
-      varDefs = list[0]
+      varDefs = list.at(0)
     }
 
     const innerEnv = new FsEnv(env)
     for (let i = 0; i < varDefs.length; i++) {
-      innerEnv.set(varDefs[i][0], FsEvaluator.eval(varDefs[i][1], env))
+      innerEnv.set(varDefs.at(i).at(0), FsEvaluator.eval(varDefs.at(i).at(1), env))
     }
 
-    const body = list[1]
+    const body = list.at(1)
 
     return FsEvaluator.eval(body, innerEnv)
   }
@@ -161,8 +158,8 @@ export class FsLet extends FsSExp {
 export class FsDefine extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
-    const car = list.shift()
-    const cdr = list.shift()
+    const car = list.at(0)
+    const cdr = list.at(1)
 
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('car:' + car + ',cdr:' + cdr)
@@ -172,7 +169,7 @@ export class FsDefine extends FsSExp {
       console.dir(cdr)
     }
 
-    if (!Array.isArray(car)) {
+    if (!(car instanceof FsList)) {
       // ex)
       // (define x1 (lambda (x) (* x 2)))
       env.set(car, FsEvaluator.eval(cdr, env))
@@ -180,8 +177,8 @@ export class FsDefine extends FsSExp {
     } else {
       // ex)
       // (define (x2 x) (* x 2))
-      const funcName = car.shift()
-      const params = car
+      const funcName = car.at(0)
+      const params = car.slice(1)
       const body = cdr
       const procedure = new FsProcedure(params, body, env)
       if (log.getLevel() <= log.levels.DEBUG) {
@@ -197,8 +194,8 @@ export class FsDefine extends FsSExp {
 export class FsSet extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
-    const symbol = list.shift()
-    const newValue = list.shift()
+    const symbol = list.at(0)
+    const newValue = list.at(1)
 
     try {
       const prev = env.find(symbol)
@@ -232,19 +229,17 @@ export class FsQuote extends FsSExp {
     // arg ... ex) [{"_value":"'"},{"_value":"a"}]
     // '(a (b)) => (a (b))
     const quoteList = arg
-    if (Array.isArray(quoteList[0])) {
-      const innerList = quoteList[0]
-      if (FsSymbol.SINGLE_QUOTE.equals(innerList[0])) {
+    if (quoteList.at(0) instanceof FsList) {
+      const innerList = quoteList.at(0)
+      if (FsSymbol.SINGLE_QUOTE.equals(innerList.at(0))) {
         log.debug('returning FsList starting with FsSybol.SINGLE_QUOTE')
-        return new FsList([innerList[0], FsQuote.proc(innerList.slice(1))])
-        // return new FsList([innerList[0], FsList.proc(innerList.slice(1))])
+        return new FsList([innerList.at(0), FsQuote.proc(innerList.slice(1))])
       } else {
         log.debug('returning FsList')
-        // return new FsList(innerList)
         return FsList.proc(innerList)
       }
     } else {
-      return new FsSingleItem(arg)
+      return new FsList(arg.value)
     }
   }
 }
@@ -255,6 +250,7 @@ export class FsBoolean extends FsAtom {
 
   static get TRUE () { return FsBoolean.TRUE_ }
   static get FALSE () { return FsBoolean.FALSE_ }
+  // using these direct call do not increase performance, so we use getter
   // static TRUE = FsBoolean.TRUE_
   // static FALSE = FsBoolean.FALSE_
 
@@ -335,8 +331,8 @@ export class FsUndefined extends FsAtom {
 }
 
 function ensureListContains (list, length) {
-  if (!Array.isArray(list) || list.length !== length) {
-    throw new Error('this procedure must take ' + length + ' argument(s) as list')
+  if (!(list instanceof FsList) || list.length !== length) {
+    throw new FsException('this procedure must take ' + length + ' argument(s) as list')
   }
 }
 
@@ -350,10 +346,10 @@ function ensureListContainsOne (list) {
 
 export class FsOperatorAbs extends FsSExp {
   static proc (list) {
-    if (!(list[0] instanceof FsNumber)) {
+    if (!(list.at(0) instanceof FsNumber)) {
       throw new FsException('arg must be number')
     }
-    return new FsNumber(Math.abs(list[0].value))
+    return new FsNumber(Math.abs(list.at(0).value))
   }
 }
 
@@ -365,13 +361,13 @@ export class FsOperatorPlus extends FsSExp {
     // for the performance, use lines below. it may be bit faster.
     //
     if (list.length === 2) {
-      return new FsNumber(list[0].value + list[1].value)
+      return new FsNumber(list.at(0).value + list.at(1).value)
     } else if (list.length === 1) {
-      return new FsNumber(-1 * (list[0].value))
+      return new FsNumber(-1 * (list.at(0).value))
     } else {
       let buf = 0
       for (let i = 0; i < list.length; i++) {
-        buf += list[i].value
+        buf += list.at(i).value
       }
       return new FsNumber(buf)
     }
@@ -380,31 +376,36 @@ export class FsOperatorPlus extends FsSExp {
 
 export class FsOperatorRound extends FsSExp {
   static proc (list) {
-    return new FsNumber(Math.round(list[0].value))
+    return new FsNumber(Math.round(list.at(0).value))
   }
 }
 
 export class FsOperatorMultiply extends FsSExp {
   static proc (list) {
-    return new FsNumber(list.map(n => n.value).reduce((a, b) => a * b, 1))
+    // return new FsNumber(list.map(n => n.value).reduce((a, b) => a * b, 1))
+    let buf = list.at(0).value
+    for (let i = 1; i < list.length; i++) {
+      buf *= list.at(i).value
+    }
+    return new FsNumber(buf)
   }
 }
 
 export class FsOperatorMinus extends FsSExp {
   static proc (list) {
     if (list.length === 2) {
-      return new FsNumber(list[0].value - list[1].value)
+      return new FsNumber(list.at(0).value - list.at(1).value)
     } else if (list.length === 1) {
-      return new FsNumber(-1 * (list[0].value))
+      return new FsNumber(-1 * (list.at(0).value))
     } else {
       // for the readability, use this line
-      // return new FsNumber(list[0].value - FsOperatorPlus.proc(list.slice(1)))
+      // return new FsNumber(list.at(0).value - FsOperatorPlus.proc(list.slice(1)))
 
       // for the performance, use lines below. it may be bit faster.
       //
-      let buf = list[0].value
+      let buf = list.at(0).value
       for (let i = 1; i < list.length; i++) {
-        buf -= list[i]
+        buf -= list.at(i)
       }
       return new FsNumber(buf)
     }
@@ -415,15 +416,15 @@ export class FsOperatorDivide extends FsSExp {
   static proc (list) {
     if (list.length === 1) {
       // TODO: support rational number
-      if (list[0].value !== 0) {
-        return list[0]
+      if (list.at(0).value !== 0) {
+        return new FsNumber(list.at(0).value)
       } else {
         throw new FsException('divide by 0')
       }
     } else {
       const divisor = FsOperatorMultiply.proc(list.slice(1))
       if (divisor.value !== 0) {
-        return new FsNumber(list[0].value / divisor.value)
+        return new FsNumber(list.at(0).value / divisor.value)
       } else {
         throw new FsException('divide by 0')
       }
@@ -434,8 +435,8 @@ export class FsOperatorDivide extends FsSExp {
 export class FsOperatorMod extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
-    const dividend = list[0].value
-    const divisor = list[1].value
+    const dividend = list.at(0).value
+    const divisor = list.at(1).value
     return new FsNumber(dividend % divisor)
   }
 }
@@ -443,7 +444,7 @@ export class FsOperatorMod extends FsSExp {
 export class FsOperatorPow extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
-    return new FsNumber(Math.pow(list[0].value, list[1].value))
+    return new FsNumber(Math.pow(list.at(0).value, list.at(1).value))
   }
 }
 
@@ -453,7 +454,8 @@ export class FsOperatorPow extends FsSExp {
 export class FsEquals extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
-    const [lhs, rhs] = list
+    const lhs = list.at(0)
+    const rhs = list.at(1)
     if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
       return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
     } else {
@@ -469,12 +471,24 @@ export class FsEquals extends FsSExp {
 export class FsPredicateEq extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
-    const [lhs, rhs] = list
+    const lhs = list.at(0)
+    const rhs = list.at(1)
     if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
       return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
-    } else if (lhs instanceof FsSingleItem && rhs instanceof FsSingleItem) {
+    } else if (lhs instanceof FsSymbol && rhs instanceof FsSymbol) {
       // ex. (eq? 'a 'a)
-      return lhs.value.value === rhs.value.value ? FsBoolean.TRUE : FsBoolean.FALSE
+      return lhs.value === rhs.value ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else if (lhs instanceof FsList && rhs instanceof FsList) {
+      if (lhs.length === 0 && rhs.length === 0) {
+        return FsBoolean.TRUE
+      } else if ((lhs.length === 1 && rhs.length === 1) &&
+      (lhs.at(0) === rhs.at(0))) {
+        // ex. (let ((x \'(a))) (eq? x x)); 2 objects point the same object on the memory
+        // ; It is not the comparison between their values
+        return FsBoolean.TRUE
+      } else {
+        return FsBoolean.FALSE
+      }
     } else {
       // prerequisites: only ascii characters are permitted
       return lhs === rhs ? FsBoolean.TRUE : FsBoolean.FALSE
@@ -488,7 +502,9 @@ export class FsPredicateEq extends FsSExp {
 export class FsPredicateEqual extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
-    const [lhs, rhs] = list
+    const lhs = list.at(0)
+    const rhs = list.at(1)
+
     if (lhs instanceof FsList && rhs instanceof FsList) {
       // TODO: this might not be fast, but works.
       return JSON.stringify(lhs) === JSON.stringify(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
@@ -505,7 +521,8 @@ export class FsPredicateEqual extends FsSExp {
 export class FsNumberEquals extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
-    const [lhs, rhs] = list
+    const lhs = list.at(0)
+    const rhs = list.at(1)
     if (!(lhs instanceof FsNumber) || !(rhs instanceof FsNumber)) {
       throw new FsException('parameter for "=" must be a number.')
     }
@@ -515,36 +532,37 @@ export class FsNumberEquals extends FsSExp {
 
 export class FsOperatorLt extends FsSExp {
   static proc (list) {
-    return list[0].value < list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0).value < list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsOperatorLte extends FsSExp {
   static proc (list) {
-    return list[0].value <= list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0).value <= list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsOperatorGt extends FsSExp {
   static proc (list) {
-    return list[0].value > list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0).value > list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsOperatorGte extends FsSExp {
   static proc (list) {
-    return list[0].value >= list[1].value ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0).value >= list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsAnd extends FsSExp {
   static proc (list) {
     if (list.length === 2) {
-      const [lhs, rhs] = list
+      const lhs = list.at(0)
+      const rhs = list.at(1)
       return lhs === FsBoolean.TRUE && rhs === FsBoolean.TRUE ? FsBoolean.TRUE : FsBoolean.FALSE
     } else {
       for (let i = 0; i < list.length; i++) {
-        if (list[0] !== list[i]) {
+        if (list.at(0) !== list.at(i)) {
           return FsBoolean.FALSE
         }
       }
@@ -556,7 +574,7 @@ export class FsAnd extends FsSExp {
 export class FsNot extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
-    const target = list[0]
+    const target = list.at(0)
     if (target instanceof FsBoolean) {
       return target.value ? FsBoolean.FALSE : FsBoolean.TRUE
     } else {
@@ -567,11 +585,11 @@ export class FsNot extends FsSExp {
 
 export class FsProcedureMap extends FsSExp {
   static proc (list, env) {
-    const p = list[0]
-    const body = list[1]
+    const p = list.at(0)
+    const body = list.at(1)
     const ret = []
     for (let i = 0; i < body.length; i++) {
-      ret.push(FsEvaluator.eval([p, body.at(i)], env))
+      ret.push(FsEvaluator.eval(new FsList([p, body.at(i)]), env))
     }
     return new FsList(ret)
   }
@@ -579,14 +597,14 @@ export class FsProcedureMap extends FsSExp {
 
 export class FsProcedureMax extends FsSExp {
   static proc (list) {
-    const target = list.map(fsn => fsn.value)
+    const target = list.value.map(fsn => fsn.value)
     return new FsNumber(Math.max(...target))
   }
 }
 
 export class FsProcedureMin extends FsSExp {
   static proc (list) {
-    const target = list.map(fsn => fsn.value)
+    const target = list.value.map(fsn => fsn.value)
     return new FsNumber(Math.min(...target))
   }
 }
@@ -595,8 +613,8 @@ export class FsProcedureAppend extends FsSExp {
   static proc (list) {
     const newList = []
     for (let j = 0; j < list.length; j++) {
-      for (let i = 0; i < list[j].length; i++) {
-        newList.push(list[j].at(i))
+      for (let i = 0; i < list.at(j).length; i++) {
+        newList.push(list.at(j).at(i))
       }
     }
     return new FsList(newList)
@@ -605,7 +623,7 @@ export class FsProcedureAppend extends FsSExp {
 
 export class FsWrite extends FsSExp {
   static proc (list) {
-    process.stdout.write(list.map(s => s.value).join(' '))
+    process.stdout.write(list.value.map(s => s.value).join(' '))
     return FsUndefined.UNDEFINED
   }
 }
@@ -630,7 +648,7 @@ export class FsPeekMemoryUsage extends FsSExp {
 // print s-exp in list. For FsString, print its value without double quotes.
 export class FsDisplay extends FsSExp {
   static proc (list) {
-    process.stdout.write(list.map(s => (s instanceof FsString ? s.value : s.toString())).join(' '))
+    process.stdout.write(list.value.map(s => (s instanceof FsString ? s.value : s.toString())).join(' '))
     return FsUndefined.UNDEFINED
   }
 }
@@ -651,12 +669,20 @@ export class FsValue {}
 
 export class FsList extends FsValue {
   static EMPTY = Object.freeze(new FsList([]))
-  constructor (value) {
+  constructor (value = []) {
     super()
     this.value = value
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('ctor FsList called with:' + JSON.stringify(value, null, 2))
     }
+  }
+
+  push (s) {
+    this.value.push(s)
+  }
+
+  slice (index) {
+    return new FsList(this.value.slice(index))
   }
 
   get length () {
@@ -668,7 +694,7 @@ export class FsList extends FsValue {
   }
 
   static proc (arg) {
-    return arg.length === 0 ? FsList.EMPTY : new FsList(arg)
+    return arg.length === 0 ? FsList.EMPTY : new FsList(arg.value)
   }
 
   toString () {
@@ -713,7 +739,7 @@ export class FsList extends FsValue {
 
 export class FsCar extends FsSExp {
   static proc (arg) {
-    const target = arg[0]
+    const target = arg.at(0)
     if (target instanceof FsPair) {
       return target.car
     } else if (target instanceof FsList) {
@@ -729,7 +755,7 @@ export class FsCar extends FsSExp {
 
 export class FsCdr extends FsSExp {
   static proc (arg) {
-    const target = arg[0]
+    const target = arg.at(0)
     if (target instanceof FsPair) {
       return target.cdr
     } else if (target instanceof FsList) {
@@ -747,54 +773,41 @@ export class FsCons extends FsSExp {
   static proc (arg) {
     ensureListContainsTwo(arg)
     // TODO dot pair
-    if (arg[1] instanceof FsList) {
-      return new FsList([arg[0]].concat(arg[1].value))
+    if (arg.at(1) instanceof FsList) {
+      return new FsList([arg.at(0)].concat(arg.at(1).value))
     } else {
-      return new FsPair(arg[0], arg[1])
+      return new FsPair(arg.at(0), arg.at(1))
     }
-  }
-}
-
-export class FsSingleItem extends FsValue {
-  constructor (value) {
-    super()
-    this.value = value
-    log.debug('ctor FsSingleItem called with:' + value)
-  }
-
-  toString () {
-    return this.value.toString()
   }
 }
 
 export class FsPredicateNull extends FsSExp {
   static proc (list) {
-    return list[0] instanceof FsList && (list[0]).length === 0 ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0) instanceof FsList && (list.at(0)).length === 0 ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsPredicateBoolean extends FsSExp {
   static proc (list) {
-    return list[0] instanceof FsBoolean ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0) instanceof FsBoolean ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsPredicateList extends FsSExp {
   static proc (list) {
-    return list[0] instanceof FsList ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0) instanceof FsList ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsPredicateNumber extends FsSExp {
   static proc (list) {
-    return list[0] instanceof FsNumber ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0) instanceof FsNumber ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
 export class FsPredicateSymbol extends FsSExp {
   static proc (list, env) {
-    return (list[0] instanceof FsSingleItem && (list[0].value)[0] instanceof FsSymbol) ||
-     (list[0] instanceof FsSymbol)
+    return (list.at(0) instanceof FsSymbol)
       ? FsBoolean.TRUE
       : FsBoolean.FALSE
   }
@@ -802,6 +815,6 @@ export class FsPredicateSymbol extends FsSExp {
 
 export class FsPredicateProcedure extends FsSExp {
   static proc (list) {
-    return list[0] instanceof FsProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0) instanceof FsProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }

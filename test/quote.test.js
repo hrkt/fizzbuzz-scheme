@@ -5,7 +5,7 @@ import { FizzBuzzScheme } from '../src/index.js'
 test('evaluating (quote 1) yields 1', () => {
   const code = '(quote 1)'
   const fbs = new FizzBuzzScheme()
-  expect(fbs.eval(code).toString()).toBe('1')
+  expect(fbs.eval(code).toString()).toBe(1)
 })
 
 test('evaluating (quote (+ 1 1)) yields (+ 1 1)', () => {

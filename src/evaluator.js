@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsDefine, FsLambda, FsSymbol, FsQuote, FsSet, FsLet, FsList, FsProcedure } from './sexp.js'
+import { FsDefine, FsLambda, FsSymbol, FsSet, FsLet, FsList, FsProcedure } from './sexp.js'
 import { FsEnv, getGlobalEnv } from './env.js'
 
 import log from 'loglevel'
@@ -28,28 +28,29 @@ export class FsEvaluator {
       // FsEvaluator.evalCounter++
       if (sexp instanceof FsSymbol) {
         return env.find(sexp)
-      } else if (!Array.isArray(sexp)) {
+      } else if (!(sexp instanceof FsList)) {
       // i.e. FsNumber, FsBoolean...
         return sexp
-      } else if (Array.isArray(sexp) && sexp.length === 0) {
+      // } else if (sexp === FsList.EMPTY) {
+      } else if (sexp instanceof FsList && sexp.length === 0) {
         return FsList.EMPTY
-      } else if (FsSymbol.IF === sexp[0]) {
-        FsEvaluator.eval(sexp[1], env).value ? sexp = sexp[2] : sexp = sexp[3]
-      } else if (FsSymbol.QUOTE === sexp[0] || FsSymbol.SINGLE_QUOTE === sexp[0]) {
-        return FsQuote.proc(sexp.slice(1))
-      } else if (FsSymbol.DEFINE === sexp[0]) {
+      } else if (FsSymbol.IF === sexp.at(0)) {
+        FsEvaluator.eval(sexp.at(1), env).value ? sexp = sexp.at(2) : sexp = sexp.at(3)
+      } else if (FsSymbol.QUOTE === sexp.at(0) || FsSymbol.SINGLE_QUOTE === sexp.at(0)) {
+        return sexp.at(1)
+      } else if (FsSymbol.DEFINE === sexp.at(0)) {
         return FsDefine.proc(sexp.slice(1), env)
-      } else if (FsSymbol.SET_ === sexp[0]) {
+      } else if (FsSymbol.SET_ === sexp.at(0)) {
         return FsSet.proc(sexp.slice(1), env)
-      } else if (FsSymbol.BEGIN === sexp[0]) {
+      } else if (FsSymbol.BEGIN === sexp.at(0)) {
         let ret = null
         for (let i = 1; i < sexp.length; i++) {
-          ret = FsEvaluator.eval(sexp[i], env)
+          ret = FsEvaluator.eval(sexp.at(i), env)
         }
         sexp = ret
-      } else if (FsSymbol.LAMBDA === sexp[0]) {
+      } else if (FsSymbol.LAMBDA === sexp.at(0)) {
         return FsLambda.proc(sexp.slice(1), env)
-      } else if (FsSymbol.LET === sexp[0]) {
+      } else if (FsSymbol.LET === sexp.at(0)) {
         return FsLet.proc(sexp.slice(1), env)
       } else {
         // for the readability, use this line
@@ -61,15 +62,14 @@ export class FsEvaluator {
         //   evaled.push(FsEvaluator.eval(sexp[i], env))
         // }
 
-        // const p = evaled.shift()
-        const p = FsEvaluator.eval(sexp[0], env)
+        const p = FsEvaluator.eval(sexp.at(0), env)
         if (p instanceof FsProcedure) {
           const innerEnv = new FsEnv(p.env)
           if (p.params instanceof FsSymbol) {
           // ex. ((lambda x x) 3 4 5 6)
             const evaled = []
             for (let i = 1; i < sexp.length; i++) {
-              evaled.push(FsEvaluator.eval(sexp[i], env))
+              evaled.push(FsEvaluator.eval(sexp.at(i), env))
             }
             innerEnv.set(p.params, new FsList(evaled))
             sexp = p.params
@@ -77,8 +77,7 @@ export class FsEvaluator {
           } else {
           // ex. (lambda (x) (+ 1 2))
             for (let i = 0; i < p.params.length; i++) {
-              // innerEnv.set(p.params[i], evaled[i])
-              innerEnv.set(p.params[i], FsEvaluator.eval(sexp[i + 1], env))
+              innerEnv.set(p.params.at(i), FsEvaluator.eval(sexp.at(i + 1), env))
             }
             sexp = p.body
             env = innerEnv
@@ -87,10 +86,9 @@ export class FsEvaluator {
           const evaled = []
           // evaled.length = sexp.length - 1 // this line slows execution, so we do not do this.
           for (let i = 1; i < sexp.length; i++) {
-            // evaled.push(FsEvaluator.eval(sexp[i], env))
-            evaled[i - 1] = FsEvaluator.eval(sexp[i], env)
+            evaled[i - 1] = FsEvaluator.eval(sexp.at(i), env)
           }
-          return p(evaled, env) // for testing map
+          return p(new FsList(evaled), env) // for testing map
         }
       }
     }

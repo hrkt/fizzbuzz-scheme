@@ -143,6 +143,7 @@ test('4.2.3_2', () => {
 //   (eq? p p))              ===>  #t
 
 test('6.1_2', () => {
+  // eq? checks 2 objects point the same point of memory
   expect(new FBS().eval('(eq? \'a \'a)').toString()).toBe('#t')
   expect(new FBS().eval('(eq? \'(a) \'(a))').toString()).toBe('#f') // unspecified
   expect(new FBS().eval('(eq? (list \'a) (list \'a))').toString()).toBe('#f')
