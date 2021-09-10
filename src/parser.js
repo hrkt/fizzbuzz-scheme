@@ -2,7 +2,7 @@
 
 import log from 'loglevel'
 import { FsException } from './common.js'
-import { FsSymbol, SExpFactory } from './sexp.js'
+import { FsList, FsSymbol, SExpFactory } from './sexp.js'
 
 // Parser
 export class FsParser {
@@ -88,7 +88,7 @@ export class FsParser {
   static readTokens (tokenized, inQuoted = false) {
     const t = tokenized.shift()
     if (t === '\'') {
-      const l = []
+      const l = new FsList()
       // l.push(FsParser.element('\''))
       l.push(FsSymbol.SINGLE_QUOTE)
       l.push(FsParser.readTokens(tokenized, true))
@@ -96,7 +96,7 @@ export class FsParser {
       return l
     }
     if (t === '(') {
-      const l = []
+      const l = new FsList()
       while (tokenized[0] !== ')' && tokenized.length > 0) {
         l.push(FsParser.readTokens(tokenized, inQuoted))
       }
