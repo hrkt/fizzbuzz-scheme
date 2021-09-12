@@ -81,7 +81,6 @@ export class FsAdjuster {
  * @returns true if sexp is a valid pair expression.
  */
 function isDotPair (sexp) {
-  console.log('check isDotPair?' + sexp)
   if (!(sexp instanceof FsList)) {
     return false
   }
