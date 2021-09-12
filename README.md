@@ -89,7 +89,7 @@ $ npm run majestic
 - ✅(partly)[Proper tail recursion](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-6.html#%_sec_3.5)
 - ✅some predicates for type-checking (boolean?, null?, number?, procedure?, symbol?)
 
-Test cases for a few part of R5RS are in [r5rs.test.js]("./src/r5rs.test.js")
+Test cases for a few part of R5RS are in [r5rs.test.js](test/r5rs.test.js)
 
 ## not implemented
 
