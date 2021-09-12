@@ -653,18 +653,6 @@ export class FsDisplay extends FsSExp {
   }
 }
 
-export class FsPair extends FsSExp {
-  constructor (car, cdr) {
-    super()
-    this.car = car
-    this.cdr = cdr
-  }
-
-  toString () {
-    return '(' + this.car + ' . ' + this.cdr + ')'
-  }
-}
-
 export class FsValue {}
 
 export class FsList extends FsValue {
@@ -695,6 +683,10 @@ export class FsList extends FsValue {
 
   static proc (arg) {
     return arg.length === 0 ? FsList.EMPTY : new FsList(arg.value)
+  }
+
+  static isEmptyList (arg) {
+    return (arg instanceof FsList) && arg.length === 0
   }
 
   toString () {
@@ -734,6 +726,18 @@ export class FsList extends FsValue {
       buf += ')'
       return buf
     }
+  }
+}
+
+export class FsPair extends FsList {
+  constructor (car, cdr) {
+    super()
+    this.car = car
+    this.cdr = cdr
+  }
+
+  toString () {
+    return '(' + this.car + ' . ' + this.cdr + ')'
   }
 }
 
@@ -816,5 +820,14 @@ export class FsPredicateSymbol extends FsSExp {
 export class FsPredicateProcedure extends FsSExp {
   static proc (list) {
     return list.at(0) instanceof FsProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicatePair extends FsSExp {
+  static proc (list) {
+    return list.at(0) instanceof FsPair ||
+    (list.at(0) instanceof FsList && !FsList.isEmptyList(list.at(0)))
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
   }
 }
