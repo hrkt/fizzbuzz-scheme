@@ -8,13 +8,13 @@ import { FsProcedure } from '../src/sexp.js'
 import { FsException } from '../src/common.js'
 
 // all cleared 😊
-test('1.3.4', () => {
+test('✅1.3.4', () => {
   const code = '(* 5 8)'
   expect(new FBS().eval(code).toString()).toBe(40)
 })
 
 // all cleared 😊
-test('2.2', () => {
+test('✅2.2', () => {
   const code = `;;; The FACT procedure computes the factorial
   ;;; of a non-negative integer.
   (define fact
@@ -29,13 +29,13 @@ test('2.2', () => {
 })
 
 // all cleared 😊
-test('4.1.1', () => {
+test('✅4.1.1', () => {
   const fbs = new FBS()
   fbs.eval('(define x 28)')
   expect(fbs.eval('x').toString()).toBe(28)
 })
 
-test('4.1.2', () => {
+test('🚧4.1.2', () => {
   expect(new FBS().eval('(quote a)').toString()).toBe('a')
 
   // TODO:
@@ -45,12 +45,12 @@ test('4.1.2', () => {
 })
 
 // all cleared 😊
-test('4.1.3', () => {
+test('✅4.1.3', () => {
   expect(new FBS().eval('(+ 3 4)').toString()).toBe(7)
   expect(new FBS().eval('((if #f + *) 3 4)').toString()).toBe(12)
 })
 
-test('4.1.4', () => {
+test('🚧4.1.4', () => {
   const fbs = new FBS()
   expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsProcedure).toBe(true)
 
@@ -80,7 +80,7 @@ test('4.1.4', () => {
 })
 
 // all cleared 😊
-test('4.1.5', () => {
+test('✅4.1.5', () => {
   expect(new FBS().eval('(if (> 3 2) \'yes \'no)').toString()).toBe('yes')
   expect(new FBS().eval('(if (> 2 3) \'yes \'no)').toString()).toBe('no')
   {
@@ -93,7 +93,7 @@ test('4.1.5', () => {
 })
 
 // all cleared 😊
-test('4.1.6', () => {
+test('✅4.1.6', () => {
   const fbs = new FBS()
   fbs.eval('(define x 2)')
   expect(fbs.eval('(+ x 1)').toString()).toBe(3)
@@ -101,11 +101,11 @@ test('4.1.6', () => {
   expect(fbs.eval('(+ x 1)').toString()).toBe(5)
 })
 
-test('4.2.2', () => {
+test('🚧4.2.2', () => {
   expect(new FBS().eval('(let ((x 2) (y 3)) (* x y))').toString()).toBe(6)
 })
 
-test('4.2.3_1', () => {
+test('🚧4.2.3_1', () => {
   const code = `
   (define x 0)
   (begin (set! x 5)
@@ -114,7 +114,7 @@ test('4.2.3_1', () => {
   expect(new FBS().eval(code).toString()).toBe(6)
 })
 
-test('4.2.3_2', () => {
+test('🚧4.2.3_2', () => {
   const code = `
   (begin (display "4 plus 1 equals ")
   (display (+ 4 1)))
@@ -142,7 +142,7 @@ test('4.2.3_2', () => {
 // (let ((p (lambda (x) x)))
 //   (eq? p p))              ===>  #t
 
-test('6.1_2', () => {
+test('🚧6.1_2', () => {
   // eq? checks 2 objects point the same point of memory
   expect(new FBS().eval('(eq? \'a \'a)').toString()).toBe('#t')
   expect(new FBS().eval('(eq? \'(a) \'(a))').toString()).toBe('#f') // unspecified
@@ -159,7 +159,7 @@ test('6.1_2', () => {
   expect(new FBS().eval('(let ((p (lambda (x) x))) (eq? p p))').toString()).toBe('#t')
 })
 
-test('6.1_3', () => {
+test('🚧6.1_3', () => {
   expect(new FBS().eval('(equal? \'a \'a) ').toString()).toBe('#t')
   expect(new FBS().eval('(equal? \'(a) \'(a)) ').toString()).toBe('#t')
   expect(new FBS().eval('(equal? \'(a (b) c) \'(a (b) c))').toString()).toBe('#t')
@@ -171,7 +171,7 @@ test('6.1_3', () => {
 })
 
 // all cleared 😊
-test('6.3.1', () => {
+test('✅6.3.1', () => {
   expect(new FBS().eval('#t').toString()).toBe('#t')
   expect(new FBS().eval('#f').toString()).toBe('#f')
   expect(new FBS().eval('\'#f').toString()).toBe('#f')
@@ -190,7 +190,20 @@ test('6.3.1', () => {
   expect(new FBS().eval('(boolean? \'())').toString()).toBe('#f')
 })
 
-test('6.3.2_1', () => {
+test('🚧6.3.2_1', () => {
+  // expect(new FBS().eval('(pair? \'(a . b))').toString()).toBe('#t') // TODO: after parser impl
+  expect(new FBS().eval('(pair? \'(a b c))').toString()).toBe('#t')
+  expect(new FBS().eval('(pair? \'())').toString()).toBe('#f')
+  // expect(new FBS().eval('(pair? \'#(a b))').toString()).toBe('#f') // TODO: after vector impl
+
+  expect(new FBS().eval('(cons \'a \'())').toString()).toBe('(a)')
+  expect(new FBS().eval('(cons \'(a) \'(b c d))').toString()).toBe('((a) b c d)')
+  expect(new FBS().eval('(cons "a" \'(b c))').toString()).toBe('("a" b c)')
+  expect(new FBS().eval('(cons \'a 3)').toString()).toBe('(a . 3)')
+  expect(new FBS().eval('(cons \'(a b) \'c)').toString()).toBe('((a b) . c)')
+})
+
+test('🚧6.3.2_2', () => {
   expect(new FBS().eval('(cons \'a \'())').toString()).toBe('(a)')
   expect(new FBS().eval('(cons \'(a) \'(b c d))').toString()).toBe('((a) b c d)')
   expect(new FBS().eval('(cons "a" \'(b c))').toString()).toBe('("a" b c)')
@@ -198,18 +211,18 @@ test('6.3.2_1', () => {
   expect(new FBS().eval('(cons \'(a b) \'c)').toString()).toBe('((a b) . c)')
 
   expect(new FBS().eval('(car \'(a b c))').toString()).toBe('a')
-  // expect(new FBS().eval('(car \'((a) b c d))').toString()).toBe('(a)') // error. it returns a
+  expect(new FBS().eval('(car \'((a) b c d))').toString()).toBe('(a)')
   expect(new FBS().eval('(car \'(1 . 2))').toString()).toBe(1)
   expect(() => { new FBS().eval('car \'())') }).toThrow(FsException)
 })
 
-test('6.3.2_2', () => {
+test('🚧6.3.2_3', () => {
   expect(new FBS().eval('(append \'(x) \'(y))').toString()).toBe('(x y)')
   expect(new FBS().eval('(append \'(a) \'(b c d))').toString()).toBe('(a b c d)')
   expect(new FBS().eval('(append \'(a (b)) \'((c)))').toString()).toBe('(a (b) (c))')
 })
 
-test('6.3.3', () => {
+test('🚧6.3.3', () => {
   expect(new FBS().eval('(symbol? \'foo)').toString()).toBe('#t')
   expect(new FBS().eval('(symbol? (car \'(a b))) ').toString()).toBe('#t')
   expect(new FBS().eval('(symbol? "bar")').toString()).toBe('#f')
