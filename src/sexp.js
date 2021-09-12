@@ -296,6 +296,7 @@ export class FsSymbol extends FsAtom {
   static BEGIN = Object.freeze(new FsSymbol('begin'))
   static LAMBDA = Object.freeze(new FsSymbol('lambda'))
   static LET = Object.freeze(new FsSymbol('let'))
+  static DOT = Object.freeze(new FsSymbol('.'))
   static intern (str) {
     switch (str) {
       case 'if':
@@ -314,6 +315,8 @@ export class FsSymbol extends FsAtom {
         return this.LAMBDA
       case 'let':
         return this.LET
+      case '.':
+        return this.DOT
       default:
         return Object.freeze(new FsSymbol(str))
     }
