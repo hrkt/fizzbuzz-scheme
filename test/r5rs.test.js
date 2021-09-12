@@ -191,7 +191,7 @@ test('✅6.3.1', () => {
 })
 
 test('🚧6.3.2_1', () => {
-  // expect(new FBS().eval('(pair? \'(a . b))').toString()).toBe('#t') // TODO: after parser impl
+  expect(new FBS().eval('(pair? \'(a . b))').toString()).toBe('#t') // TODO: after parser impl
   expect(new FBS().eval('(pair? \'(a b c))').toString()).toBe('#t')
   expect(new FBS().eval('(pair? \'())').toString()).toBe('#f')
   // expect(new FBS().eval('(pair? \'#(a b))').toString()).toBe('#f') // TODO: after vector impl
