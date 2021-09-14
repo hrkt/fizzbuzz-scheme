@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsOperatorAbs, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsOperatorRound, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsOperatorAbs, FsOperatorDivide, FsOperatorGt, FsOperatorGte, FsOperatorLt, FsOperatorLte, FsOperatorMinus, FsOperatorMod, FsOperatorMultiply, FsOperatorPlus, FsOperatorPow, FsOperatorRound, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsProcedureVector, FsQuote, FsSet, FsSymbol, FsWrite } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -123,12 +123,14 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('null?'), FsPredicateNull.proc)
   env.set(new FsSymbol('number?'), FsPredicateNumber.proc)
   env.set(new FsSymbol('not'), FsNot.proc)
+  env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
+  env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage.proc)
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
   env.set(new FsSymbol('round'), FsOperatorRound.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
+  env.set(new FsSymbol('vector'), FsProcedureVector.proc)
+  env.set(new FsSymbol('vector?'), FsPredicateVector.proc)
   env.set(new FsSymbol('write'), FsWrite.proc)
-  env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
-  env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage.proc)
 
   log.setLevel(prev)
   return env

@@ -59,7 +59,14 @@ test('tokenizing (list "a b")(list "c d") yields 2 lists', () => {
   expect(tokenized).toHaveLength(8)
 })
 
+// too many ")"
 test('tokenizing (+ 1 2)) throws FsException', () => {
   const code = '(+ 1 2))'
   expect(() => { FsParser.parse(code) }).toThrow(FsException)
+})
+
+test('tokenizing #(1 2) yields a list of 5 tokens', () => {
+  const code = '#(1 2)'
+  const tokenized = FsParser.tokenize(code)
+  expect(tokenized).toHaveLength(5)
 })

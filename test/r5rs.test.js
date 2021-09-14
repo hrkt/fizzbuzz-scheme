@@ -230,3 +230,7 @@ test('🚧6.3.3', () => {
   expect(new FBS().eval('(symbol? \'())').toString()).toBe('#f')
   expect(new FBS().eval('(symbol? #f)').toString()).toBe('#f')
 })
+
+test('🚧6.3.6', () => {
+  expect(new FBS().eval('(vector \'a \'b \'c)').toString()).toBe('#(a b c)')
+})

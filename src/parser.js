@@ -2,7 +2,7 @@
 
 import log from 'loglevel'
 import { FsException } from './common.js'
-import { FsList, FsSymbol, SExpFactory } from './sexp.js'
+import { FsList, FsSymbol, FsVector, SExpFactory } from './sexp.js'
 
 // Parser
 export class FsParser {
@@ -32,6 +32,29 @@ export class FsParser {
         tokenList.push(c)
         i++
         continue
+      }
+
+      // vector or boolean letheral
+      if (c === '#') {
+        if (i + 1 >= code.length) {
+          throw new FsException('Syntax Error: at ' + i)
+        }
+        // boolean
+        if (code.charAt(i + 1) === 't' || code.charAt(i + 1) === 'f') {
+          buf += '#' + code.charAt(i + 1)
+          i++ // "#"
+          i++ // "t" or "f"
+          tokenList.push(buf)
+          buf = ''
+          continue
+        }
+        // vector
+        if (code.charAt(i + 1) === '(') {
+          tokenList.push(c)
+          i++
+          continue
+        }
+        throw new FsException('Syntax Error: at ' + i)
       }
 
       // found double quote, then read eager.
@@ -87,6 +110,7 @@ export class FsParser {
 
   static readTokens (tokenized, inQuoted = false) {
     const t = tokenized.shift()
+    // quoted
     if (t === '\'') {
       const l = new FsList()
       // l.push(FsParser.element('\''))
@@ -95,6 +119,11 @@ export class FsParser {
       log.debug('created array : ' + l.length)
       return l
     }
+    // vector
+    if (t === '#') {
+      return new FsVector(FsParser.readTokens(tokenized, inQuoted).value)
+    }
+    // list
     if (t === '(') {
       const l = new FsList()
       while (tokenized[0] !== ')' && tokenized.length > 0) {
