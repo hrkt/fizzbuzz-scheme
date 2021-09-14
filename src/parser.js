@@ -34,6 +34,29 @@ export class FsParser {
         continue
       }
 
+      // vector or boolean letheral
+      if (c === '#') {
+        if (i + 1 >= code.length) {
+          throw new FsException('Syntax Error: at ' + i)
+        }
+        // boolean
+        if (code.charAt(i + 1) === 't' || code.charAt(i + 1) === 'f') {
+          buf += '#' + code.charAt(i + 1)
+          i++ // "#"
+          i++ // "t" or "f"
+          tokenList.push(buf)
+          buf = ''
+          continue
+        }
+        // vector
+        if (code.charAt(i + 1) === '(') {
+          tokenList.push(c)
+          i++
+          continue
+        }
+        throw new FsException('Syntax Error: at ' + i)
+      }
+
       // found double quote, then read eager.
       if (c === '"') {
         buf += c
