@@ -2,7 +2,7 @@
 
 import log from 'loglevel'
 import { FsException } from './common.js'
-import { FsList, FsSymbol, SExpFactory } from './sexp.js'
+import { FsList, FsSymbol, FsVector, SExpFactory } from './sexp.js'
 
 // Parser
 export class FsParser {
@@ -110,6 +110,7 @@ export class FsParser {
 
   static readTokens (tokenized, inQuoted = false) {
     const t = tokenized.shift()
+    // quoted
     if (t === '\'') {
       const l = new FsList()
       // l.push(FsParser.element('\''))
@@ -118,6 +119,11 @@ export class FsParser {
       log.debug('created array : ' + l.length)
       return l
     }
+    // vector
+    if (t === '#') {
+      return new FsVector(FsParser.readTokens(tokenized, inQuoted).value)
+    }
+    // list
     if (t === '(') {
       const l = new FsList()
       while (tokenized[0] !== ')' && tokenized.length > 0) {

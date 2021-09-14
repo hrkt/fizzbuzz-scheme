@@ -586,6 +586,12 @@ export class FsNot extends FsSExp {
   }
 }
 
+export class FsProcedureVector extends FsSExp {
+  static proc (list) {
+    return new FsVector(list.value)
+  }
+}
+
 export class FsProcedureMap extends FsSExp {
   static proc (list, env) {
     const p = list.at(0)
@@ -732,6 +738,21 @@ export class FsList extends FsValue {
   }
 }
 
+export class FsVector extends FsSExp {
+  /**
+   *
+   * @param {*} arg Array
+   */
+  constructor (arg) {
+    super()
+    this.value = arg
+  }
+
+  toString () {
+    return '#(' + this.value.map(s => s.toString()).join(' ') + ')'
+  }
+}
+
 export class FsPair extends FsList {
   constructor (car, cdr) {
     super()
@@ -830,6 +851,14 @@ export class FsPredicatePair extends FsSExp {
   static proc (list) {
     return list.at(0) instanceof FsPair ||
     (list.at(0) instanceof FsList && !FsList.isEmptyList(list.at(0)))
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateVector extends FsSExp {
+  static proc (list) {
+    return list.at(0) instanceof FsVector
       ? FsBoolean.TRUE
       : FsBoolean.FALSE
   }
