@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsDefine, FsLambda, FsSymbol, FsSet, FsLet, FsList, FsProcedure } from './sexp.js'
+import { FsDefine, FsLambda, FsSymbol, FsSet, FsLet, FsList, FsProcedure, FsProcedureSetCdr } from './sexp.js'
 import { FsEnv, getGlobalEnv } from './env.js'
 
 import log from 'loglevel'
@@ -42,6 +42,8 @@ export class FsEvaluator {
         return FsDefine.proc(sexp.slice(1), env)
       } else if (FsSymbol.SET_ === sexp.at(0)) {
         return FsSet.proc(sexp.slice(1), env)
+      } else if (FsSymbol.SET_CDR_ === sexp.at(0)) {
+        return FsProcedureSetCdr.proc(sexp.slice(1), env)
       } else if (FsSymbol.BEGIN === sexp.at(0)) {
         let ret = null
         for (let i = 1; i < sexp.length; i++) {

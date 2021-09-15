@@ -293,6 +293,7 @@ export class FsSymbol extends FsAtom {
   static SINGLE_QUOTE = Object.freeze(new FsSymbol('\''))
   static DEFINE = Object.freeze(new FsSymbol('define'))
   static SET_ = Object.freeze(new FsSymbol('set!'))
+  static SET_CDR_ = Object.freeze(new FsSymbol('set-cdr!'))
   static BEGIN = Object.freeze(new FsSymbol('begin'))
   static LAMBDA = Object.freeze(new FsSymbol('lambda'))
   static LET = Object.freeze(new FsSymbol('let'))
@@ -309,6 +310,8 @@ export class FsSymbol extends FsAtom {
         return this.DEFINE
       case 'set!':
         return this.SET_
+      case 'set-cdr!':
+        return this.SET_CDR_
       case 'begin':
         return this.BEGIN
       case 'lambda':
@@ -627,6 +630,23 @@ export class FsProcedureAppend extends FsSExp {
       }
     }
     return new FsList(newList)
+  }
+}
+
+export class FsProcedureSetCdr extends FsSExp {
+  static proc (list, env) {
+    const evaledCurrent = FsEvaluator.eval(list.at(0), env)
+    if (evaledCurrent instanceof FsPair) {
+      const np = new FsPair(evaledCurrent.car, list.at(1))
+      env.set(list.at(0), np)
+    } else if (evaledCurrent instanceof FsList) {
+      const np = new FsPair(evaledCurrent.at(0), list.at(1))
+      env.set(list.at(0), np)
+    }
+    // const target = list.at(0)
+    // const newCdr = list.at(1)
+    // target.value.at(0), newCdr
+    return FsUndefined.UNDEFINED
   }
 }
 
