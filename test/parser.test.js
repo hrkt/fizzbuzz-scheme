@@ -70,3 +70,9 @@ test('tokenizing #(1 2) yields a list of 5 tokens', () => {
   const tokenized = FsParser.tokenize(code)
   expect(tokenized).toHaveLength(5)
 })
+
+test('tokenizing #\\a yields 1 token', () => {
+  const code = '#\\a'
+  const tokenized = FsParser.tokenize(code)
+  expect(tokenized).toHaveLength(1)
+})

@@ -142,7 +142,9 @@ test('🚧4.2.3_2', () => {
 // (let ((p (lambda (x) x)))
 //   (eq? p p))              ===>  #t
 
-test('🚧6.1_2', () => {
+// procedure (eq? block
+// all cleared 😊
+test('✅6.1_2', () => {
   // eq? checks 2 objects point the same point of memory
   expect(new FBS().eval('(eq? \'a \'a)').toString()).toBe('#t')
   expect(new FBS().eval('(eq? \'(a) \'(a))').toString()).toBe('#f') // unspecified
@@ -151,11 +153,11 @@ test('🚧6.1_2', () => {
   expect(new FBS().eval('(eq? "" "")').toString()).toBe('#f') // unspecified
   expect(new FBS().eval('(eq? \'() \'())').toString()).toBe('#t')
   expect(new FBS().eval('(eq? 2 2)').toString()).toBe('#t') // unspecified
-  // expect(new FBS().eval('(eq? #\\A #\\A)').toString()).toBe('#t')// unspecified
+  expect(new FBS().eval('(eq? #\\A #\\A)').toString()).toBe('#t')// unspecified
   expect(new FBS().eval('(eq? car car)').toString()).toBe('#t')
   expect(new FBS().eval('(let ((n (+ 2 3))) (eq? n n)) ').toString()).toBe('#t') // unspecified
   expect(new FBS().eval('(let ((x \'(a))) (eq? x x))').toString()).toBe('#t')
-  // expect(new FBS().eval('(let ((x \'#())) (eq? x x))').toString()).toBe('#t')
+  expect(new FBS().eval('(let ((x \'#())) (eq? x x))').toString()).toBe('#t')
   expect(new FBS().eval('(let ((p (lambda (x) x))) (eq? p p))').toString()).toBe('#t')
 })
 

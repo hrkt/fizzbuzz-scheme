@@ -37,13 +37,26 @@ export class FsParser {
       // vector or boolean letheral
       if (c === '#') {
         if (i + 1 >= code.length) {
-          throw new FsException('Syntax Error: at ' + i)
+          throw new FsException('Syntax Error: at ' + (i + 1))
         }
         // boolean
         if (code.charAt(i + 1) === 't' || code.charAt(i + 1) === 'f') {
           buf += '#' + code.charAt(i + 1)
           i++ // "#"
           i++ // "t" or "f"
+          tokenList.push(buf)
+          buf = ''
+          continue
+        }
+        // char
+        if (code.charAt(i + 1) === '\\') {
+          if (i + 2 >= code.length) {
+            throw new FsException('Syntax Error: at ' + (i + 2))
+          }
+          buf += '#' + code.charAt(i + 1) + code.charAt(i + 2)
+          i++ // "#"
+          i++ // "\"
+          i++ // character
           tokenList.push(buf)
           buf = ''
           continue
