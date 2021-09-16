@@ -15,6 +15,8 @@ export class SExpFactory {
       return new FsNumber(+s)
     } else if (FsBoolean.isFsBooleanString(s)) {
       return FsBoolean.fromString(s)
+    } else if (FsChar.isFsChar(s)) {
+      return FsChar.fromString(s)
     } else if (s.startsWith('"')) { // equal or faster compared to  s.charAt(0), s.indexOf('"') === 0
       const extracted = s.substring(1, s.length - 1)
       return new FsString(extracted)
@@ -281,6 +283,25 @@ export class FsNumber extends FsAtom {
   }
 }
 
+export class FsChar extends FsAtom {
+  static isFsChar (s) {
+    return (s.charAt(0) === '#' && s.charAt(1) === '\\' && s.length === 3)
+  }
+
+  static fromString (s) {
+    // s is "#\a" and previously checked its format.
+    return new FsChar(s.charAt(2))
+  }
+
+  toString () {
+    return this.value
+  }
+
+  equals (target) {
+    return this.value === target.value
+  }
+}
+
 export class FsString extends FsAtom {
   toString () {
     return '"' + this.value + '"'
@@ -480,6 +501,8 @@ export class FsPredicateEq extends FsSExp {
     const lhs = list.at(0)
     const rhs = list.at(1)
     if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
+      return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else if (lhs instanceof FsChar && rhs instanceof FsChar) {
       return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
     } else if (lhs instanceof FsSymbol && rhs instanceof FsSymbol) {
       // ex. (eq? 'a 'a)
