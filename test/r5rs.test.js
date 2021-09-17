@@ -4,8 +4,10 @@
 
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { jest } from '@jest/globals'
-import { FsProcedure } from '../src/sexp.js'
+import { FsDefinedProcedure } from '../src/sexp.js'
 import { FsException } from '../src/common.js'
+
+// 1. Overview of scheme
 
 // all cleared 😊
 test('✅1.3.4', () => {
@@ -27,6 +29,12 @@ test('✅2.2', () => {
 
   expect(new FBS().eval(code).toString()).toBe(3628800)
 })
+
+// 2. Lexical conventions
+
+// 3. Basic concepts
+
+// 4. Expressions
 
 // all cleared 😊
 test('✅4.1.1', () => {
@@ -52,7 +60,7 @@ test('✅4.1.3', () => {
 
 test('🚧4.1.4', () => {
   const fbs = new FBS()
-  expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsProcedure).toBe(true)
+  expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsDefinedProcedure).toBe(true)
 
   expect(new FBS().eval('((lambda (x) (+ x x)) 4)').toString()).toBe(8)
 
@@ -127,6 +135,10 @@ test('🚧4.2.3_2', () => {
   expect(mockStdoutWrite).toHaveBeenNthCalledWith(2, '5')
   mockStdoutWrite.mockRestore()
 })
+
+// 5. Program structure
+
+// 6. Standard procedures
 
 // (eq? "" "")                             ===>  unspecified
 // (eq? '() '())                           ===>  #t
@@ -248,3 +260,7 @@ test('🚧6.3.3', () => {
 test('🚧6.3.6', () => {
   expect(new FBS().eval('(vector \'a \'b \'c)').toString()).toBe('#(a b c)')
 })
+
+// 7. Format Syntax and semantics
+
+// Example
