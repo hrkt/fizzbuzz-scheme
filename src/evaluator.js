@@ -32,7 +32,8 @@ export class FsEvaluator {
       // i.e. FsNumber, FsBoolean...
         return sexp
       // } else if (sexp === FsList.EMPTY) {
-      } else if (sexp instanceof FsList && sexp.length === 0) {
+        // after this case, "sexp" is a instance of FsList
+      } else if (sexp.length === 0) {
         return FsList.EMPTY
       } else if (FsSymbol.IF === sexp.at(0)) {
         FsEvaluator.eval(sexp.at(1), env).value ? sexp = sexp.at(2) : sexp = sexp.at(3)
