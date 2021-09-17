@@ -23,7 +23,7 @@ export class FsEnv {
   // Object keys in JS Map are compared by its ref.
   // Here we convert FsSymbol to string in case we don't have its reference.
   static toKey (obj) {
-    if (obj instanceof FsSymbol) {
+    if (obj !== null && obj.type === 'fssymbol') {
       // return obj.toString()
       // value of FsSymbol is not falcy. simply use its value as key.
       return obj.value
