@@ -82,12 +82,12 @@ export class FsLambda extends FsSExp {
     } else {
       body = list.at(1)
     }
-    const procedure = new FsProcedure(params, body, env)
+    const procedure = new FsDefinedProcedure(params, body, env)
     return procedure
   }
 }
 
-export class FsProcedure extends FsSExp {
+export class FsDefinedProcedure extends FsSExp {
   constructor (params, body, env) {
     super()
     this.params = params
@@ -95,7 +95,7 @@ export class FsProcedure extends FsSExp {
     this.env = env
 
     if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('ctor. FsProcedure with params:' + params + ',body:' + body)
+      log.debug('ctor. FsDefinedProcedure with params:' + params + ',body:' + body)
       log.debug('--params--')
       log.debug(params)
       log.debug('--body--')
@@ -127,7 +127,7 @@ export class FsProcedure extends FsSExp {
   }
 
   toString () {
-    return 'FsProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+    return 'FsDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
   }
 }
 
@@ -152,7 +152,7 @@ export class FsLet extends FsSExp {
   }
 
   toString () {
-    return 'FsProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+    return 'FsDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
   }
 }
 
@@ -182,7 +182,7 @@ export class FsDefine extends FsSExp {
       const funcName = car.at(0)
       const params = car.slice(1)
       const body = cdr
-      const procedure = new FsProcedure(params, body, env)
+      const procedure = new FsDefinedProcedure(params, body, env)
       if (log.getLevel() <= log.levels.DEBUG) {
         log.debug('define funciton - funcName:' + funcName + ' procedure:' + procedure)
       }
@@ -886,7 +886,7 @@ export class FsPredicateSymbol extends FsSExp {
 
 export class FsPredicateProcedure extends FsSExp {
   static proc (list) {
-    return list.at(0) instanceof FsProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0) instanceof FsDefinedProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 

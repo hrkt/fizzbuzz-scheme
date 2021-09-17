@@ -4,7 +4,7 @@
 
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { jest } from '@jest/globals'
-import { FsProcedure } from '../src/sexp.js'
+import { FsDefinedProcedure } from '../src/sexp.js'
 import { FsException } from '../src/common.js'
 
 // 1. Overview of scheme
@@ -60,7 +60,7 @@ test('✅4.1.3', () => {
 
 test('🚧4.1.4', () => {
   const fbs = new FBS()
-  expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsProcedure).toBe(true)
+  expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsDefinedProcedure).toBe(true)
 
   expect(new FBS().eval('((lambda (x) (+ x x)) 4)').toString()).toBe(8)
 
