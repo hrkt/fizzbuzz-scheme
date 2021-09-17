@@ -289,6 +289,10 @@ export class FsNumber extends FsAtom {
   equals (target) {
     return this.value === target.value
   }
+
+  get type () {
+    return 'fsnumber'
+  }
 }
 
 export class FsChar extends FsAtom {
@@ -564,10 +568,10 @@ export class FsNumberEquals extends FsSExp {
     ensureListContainsTwo(list)
     const lhs = list.at(0)
     const rhs = list.at(1)
-    if (!(lhs instanceof FsNumber) || !(rhs instanceof FsNumber)) {
+    if (lhs.type !== 'fsnumber' || rhs.type !== 'fsnumber') {
       throw new FsException('parameter for "=" must be a number.')
     }
-    return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
+    return lhs.value === rhs.value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 

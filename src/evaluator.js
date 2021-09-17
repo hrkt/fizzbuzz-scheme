@@ -26,6 +26,7 @@ export class FsEvaluator {
   static eval (sexp, env = getGlobalEnv()) {
     while (true) {
       // FsEvaluator.evalCounter++
+      // do not use sexp.instanceof XXXX because it's slower than simple field comparison
       if (sexp.type === 'fssymbol') {
         return env.find(sexp)
       } else if (sexp.type !== 'fslist') {
@@ -68,7 +69,7 @@ export class FsEvaluator {
         const p = FsEvaluator.eval(sexp.at(0), env)
         if (p.type === 'fsdefinedprocedure') {
           const innerEnv = new FsEnv(p.env)
-          if (p.params instanceof FsSymbol) {
+          if (p.params.type === 'fssymbol') {
           // ex. ((lambda x x) 3 4 5 6)
             const evaled = []
             for (let i = 1; i < sexp.length; i++) {
