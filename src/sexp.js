@@ -33,6 +33,10 @@ export class FsSExp {
     }
   }
 
+  get type () {
+    return 'fssexp'
+  }
+
   equals (that) {
     // used in expect .toBe()
     return undefined !== that && (this.value === that.value)
@@ -128,6 +132,10 @@ export class FsDefinedProcedure extends FsSExp {
 
   toString () {
     return 'FsDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+  }
+
+  get type () {
+    return 'fsdefinedprocedure'
   }
 }
 
@@ -344,6 +352,10 @@ export class FsSymbol extends FsAtom {
       default:
         return Object.freeze(new FsSymbol(str))
     }
+  }
+
+  get type () {
+    return 'fssymbol'
   }
 }
 
@@ -715,6 +727,10 @@ export class FsList extends FsValue {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('ctor FsList called with:' + JSON.stringify(value, null, 2))
     }
+  }
+
+  get type () {
+    return 'fslist'
   }
 
   push (s) {
