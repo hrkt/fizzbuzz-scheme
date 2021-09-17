@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsDefine, FsLambda, FsSymbol, FsSet, FsLet, FsList, FsDefinedProcedure, FsProcedureSetCdr } from './sexp.js'
+import { FsDefine, FsLambda, FsSymbol, FsSet, FsLet, FsList, FsProcedureSetCdr } from './sexp.js'
 import { FsEnv, getGlobalEnv } from './env.js'
 
 import log from 'loglevel'
