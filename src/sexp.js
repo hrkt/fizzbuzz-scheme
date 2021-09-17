@@ -721,16 +721,11 @@ export class FsDisplay extends FsSExp {
   }
 }
 
-export class FsValue {}
-
-export class FsList extends FsValue {
+export class FsList extends FsSExp {
   static EMPTY = Object.freeze(new FsList([]))
   constructor (value = []) {
     super()
     this.value = value
-    if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('ctor FsList called with:' + JSON.stringify(value, null, 2))
-    }
   }
 
   get type () {
@@ -751,6 +746,10 @@ export class FsList extends FsValue {
 
   at (index) {
     return this.value[index]
+  }
+
+  set (index, v) {
+    this.value[index] = v
   }
 
   static proc (arg) {
