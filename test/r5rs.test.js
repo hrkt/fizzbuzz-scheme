@@ -190,6 +190,7 @@ test('✅6.3.1', () => {
   expect(new FBS().eval('#f').toString()).toBe('#f')
   expect(new FBS().eval('\'#f').toString()).toBe('#f')
 
+  // library procedure not
   expect(new FBS().eval('(not #t)').toString()).toBe('#f')
   expect(new FBS().eval('(not 3)').toString()).toBe('#f')
   expect(new FBS().eval('(not (list 3))').toString()).toBe('#f')
@@ -199,6 +200,7 @@ test('✅6.3.1', () => {
   expect(new FBS().eval('(not \'nil)').toString()).toBe('#f')
   expect(new FBS().eval('\'#f').toString()).toBe('#f')
 
+  // library procedure boolean?
   expect(new FBS().eval('(boolean? #f)').toString()).toBe('#t')
   expect(new FBS().eval('(boolean? 0)').toString()).toBe('#f')
   expect(new FBS().eval('(boolean? \'())').toString()).toBe('#f')
