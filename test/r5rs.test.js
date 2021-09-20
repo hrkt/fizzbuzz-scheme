@@ -184,6 +184,17 @@ test('🚧6.1_3', () => {
   expect(new FBS().eval('(equal? (lambda (x) x) (lambda (y) y))').toString()).toBe('#f') // unspecified
 })
 
+// test('🚧..', () => {
+//   expect(new FBS().eval('').toString()).toBe('')
+// })
+
+test('🚧6.2.5', () => {
+  expect(new FBS().eval('(+ 3 4)').toString()).toBe(7)
+  expect(new FBS().eval('(+)').toString()).toBe(0)
+  expect(new FBS().eval('(* 4)').toString()).toBe(4)
+  expect(new FBS().eval('(*)').toString()).toBe(1)
+})
+
 // all cleared 😊
 test('✅6.3.1', () => {
   expect(new FBS().eval('#t').toString()).toBe('#t')
