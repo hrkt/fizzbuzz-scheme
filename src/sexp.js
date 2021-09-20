@@ -406,7 +406,7 @@ export class FsProcedurePlus extends FsSExp {
     if (list.length === 2) {
       return new FsNumber(list.at(0).value + list.at(1).value)
     } else if (list.length === 1) {
-      return new FsNumber(-1 * (list.at(0).value))
+      return new FsNumber(list.at(0).value)
     } else {
       let buf = 0
       for (let i = 0; i < list.length; i++) {
@@ -425,6 +425,9 @@ export class FsProcedureRound extends FsSExp {
 
 export class FsProcedureMultiply extends FsSExp {
   static proc (list) {
+    if (list.length === 0) {
+      return new FsNumber(1)
+    }
     // return new FsNumber(list.map(n => n.value).reduce((a, b) => a * b, 1))
     let buf = list.at(0).value
     for (let i = 1; i < list.length; i++) {
