@@ -12,8 +12,11 @@
     "coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --collectCoverage",
     "majestic": "cross-env NODE_OPTIONS=--experimental-vm-modules npx majestic",
     "show-opt-deopt-win": "node --trace-deopt --trace-opt .\\src\\fbs.js .\\sample\\fibonacci.scm .\\sample\\fib30.scm",
+    "perf-get-prof-linux": "node --prof ./src/fbs.js ./sample/fibonacci.scm ./sample/fib30.scm",
     "perf-get-prof-win": "node --prof .\\src\\fbs.js .\\sample\\fibonacci.scm .\\sample\\fib30.scm",
+    "perf-parse-prof-linux": "node --prof-process isolate-*",
     "perf-parse-prof-win": "powershell -c node --prof-process (Get-Item .\\isolate-*)",
+    "perf-linux": "run-s perf-get-prof-linux perf-parse-prof-linux",
     "perf-win": "run-s perf-get-prof-win perf-parse-prof-win",
     "sloc": "npx sloc . -e node_modules"
   },
