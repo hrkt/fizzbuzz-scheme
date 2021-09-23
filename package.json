@@ -8,6 +8,7 @@
     "clean": "rimraf isolate-* coverage",
     "fib30": "node src/fbs sample/fibonacci.scm sample/fib30.scm",
     "fib30d": "node dist/bundle.js sample/fibonacci.scm sample/fib30.scm",
+    "fib30-all": "node src/fbs sample/fib30-all.scm",
     "lint": "npx eslint src/ test/",
     "repl": "node src/repl",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest",
