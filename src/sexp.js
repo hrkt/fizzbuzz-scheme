@@ -1,10 +1,14 @@
 // various S-expressions
 'use strict'
 
+import FS from 'fs'
+
 import { FsEvaluator } from './evaluator.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 import { FsEnv } from './env.js'
+import { FsParser } from './parser.js'
+import { FsAdjuster } from './adjuster.js'
 
 export class SExpFactory {
   static build (s) {
@@ -703,6 +707,25 @@ export class FsNewline extends FsSExp {
   static proc (list) {
     console.log()
     return FsUndefined.UNDEFINED
+  }
+}
+
+export class FsProcedureLoad extends FsSExp {
+  static proc (list, env) {
+    // TODO: utilize this in cli.js and index.js
+    const file = list.at(0).value
+    log.debug('loading ' + file)
+    try {
+      const data = FS.readFileSync(file, 'utf8')
+      const parsed = FsParser.parse(data)
+      const adjusted = FsAdjuster.adjust(parsed)
+      for (let i = 0; i < adjusted.length; i++) {
+        FsEvaluator.eval(adjusted[i], env)
+      }
+      return FsUndefined.UNDEFINED
+    } catch {
+      throw new FsException('error in loading file:' + file)
+    }
   }
 }
 

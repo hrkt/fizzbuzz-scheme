@@ -6,12 +6,14 @@ import { FsEvaluator as FE } from '../src/evaluator.js'
 import log from 'loglevel'
 import { getGlobalEnv } from './env.js'
 import { FsAdjuster } from './adjuster.js'
+import { FsList, FsProcedureLoad, FsString } from './sexp.js'
 
 // Environment
 export class FizzBuzzScheme {
   constructor () {
     this.env = getGlobalEnv()
     this.debugMode = false
+    FsProcedureLoad.proc(new FsList([new FsString('src/basic.scm')]), this.env)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('=======================================================================-')
     }

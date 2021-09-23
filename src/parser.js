@@ -11,13 +11,13 @@ export class FsParser {
     let buf = ''
     let i = 0
     log.debug('tokenizing: length=' + code.length)
-    log.debug(code)
+    log.trace(code)
 
     // eslint-disable-next-line no-labels
     nextLoop:
     while (i < code.length) {
       let c = code.charAt(i)
-      log.debug('i: ' + i + '\tc:' + c)
+      log.trace('i: ' + i + '\tc:' + c)
       // found comment char, then read to the end of line ignoring comments.
       if (c === ';') {
         while (i < code.length && c !== '\n') {
@@ -76,7 +76,7 @@ export class FsParser {
         i++
 
         while (i < code.length) {
-          log.debug('\ti: ' + i + '\tc:' + code.charAt(i))
+          log.trace('\ti: ' + i + '\tc:' + code.charAt(i))
           if (code.charAt(i) === '\\' && code.charAt(i + 1) === '"') {
             buf += '\\"'
             i += 2
@@ -85,7 +85,7 @@ export class FsParser {
             tokenList.push(buf)
             buf = ''
             i++
-            log.debug('continue to nextLoop:, i=' + i)
+            log.trace('continue to nextLoop:, i=' + i)
             // eslint-disable-next-line no-labels
             continue nextLoop
           } else {
@@ -129,7 +129,7 @@ export class FsParser {
       // l.push(FsParser.element('\''))
       l.push(FsSymbol.SINGLE_QUOTE)
       l.push(FsParser.readTokens(tokenized, true))
-      log.debug('created array : ' + l.length)
+      log.trace('created array : ' + l.length)
       return l
     }
     // vector
