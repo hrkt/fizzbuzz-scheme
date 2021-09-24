@@ -32,6 +32,19 @@ export class FsEnv {
     }
   }
 
+  /**
+   * add symbol-value pair to the environment
+   *
+   * This function symple behave like hash, so
+   * the existence of symbol should be checked before calling this function
+   * in (set! procedure.
+   *
+   * This function does not use recursion so as not to hit the maximum-call-stack.
+   *
+   * @param {*} symbol as key of new entry
+   * @param {*} value as value of new entry
+   * @returns a value of new entry
+   */
   set (symbol, value) {
     const key = FsEnv.toKey(symbol)
     if (log.getLevel() <= log.levels.DEBUG) {
@@ -53,7 +66,6 @@ export class FsEnv {
     }
 
     this.vars[key] = value
-    // throw new FsException('Symbol [' + symbol + '] is not found.')
   }
 
   find (symbol) {
@@ -98,6 +110,7 @@ export function getGlobalEnv () {
   const env = new FsEnv()
   const prev = log.getLevel()
   log.setLevel('error')
+
   // used in eval-each-switches
   env.set(FsSymbol.IF, FsIf)
   env.set(FsSymbol.QUOTE, FsQuote)
@@ -107,8 +120,11 @@ export function getGlobalEnv () {
   env.set(FsSymbol.BEGIN, FsBegin)
   env.set(FsSymbol.LAMBDA, FsLambda)
   env.set(FsSymbol.LET, FsLet)
+
   // used in eval-last
   env.set(new FsSymbol('+'), FsProcedurePlus.proc)
+  // also we can provide JS function as value like below.
+  // env.set(new FsSymbol('+'), (list) => { return new FsNumber(list.value.map(n => n.value).reduce((a, b) => a + b, 0)) })
   env.set(new FsSymbol('-'), FsProcedureMinus.proc)
   env.set(new FsSymbol('*'), FsProcedureMultiply.proc)
   env.set(new FsSymbol('/'), FsProcedureDivide.proc)
@@ -148,6 +164,9 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('vector'), FsProcedureVector.proc)
   env.set(new FsSymbol('vector?'), FsPredicateVector.proc)
   env.set(new FsSymbol('write'), FsWrite.proc)
+
+  // original
+  env.set(new FsSymbol('exit'), (list) => { list !== undefined && list.length > 0 ? process.exit(list.at(0).value) : process.exit(0) })
 
   log.setLevel(prev)
   return env
