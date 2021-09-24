@@ -25,3 +25,20 @@ test('multiple set! success', () => {
   fbs.eval('(set! a 2)')
   expect(fbs.eval('a')).toStrictEqual(new FsNumber(2))
 })
+
+test('set! value with symbol success', () => {
+  const fbs = new FBS()
+  fbs.eval('(define a 0)')
+  fbs.eval('(define b 1)')
+  fbs.eval('(set! a b)')
+  expect(fbs.eval('a')).toStrictEqual(new FsNumber(1))
+})
+
+test('set! value in inner env success', () => {
+  const fbs = new FBS()
+  fbs.eval('(define a 0)')
+  fbs.eval('(if (< 1 2) (set! a 1) (set! a 2))')
+  expect(fbs.eval('a')).toStrictEqual(new FsNumber(1))
+  fbs.eval('(if (> 1 2) (set! a 1) (set! a 2))')
+  expect(fbs.eval('a')).toStrictEqual(new FsNumber(2))
+})

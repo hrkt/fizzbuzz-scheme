@@ -32,13 +32,28 @@ export class FsEnv {
     }
   }
 
-  set (k, v) {
+  set (symbol, value) {
+    const key = FsEnv.toKey(symbol)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('---------------------------------')
-      log.debug('env-set k=:' + k + ',v:' + v + ',in:id=' + this.id)
+      log.debug('env-set key=:' + key + ',value:' + value + ',in:id=' + this.id)
       log.debug('---------------------------------')
     }
-    this.vars[FsEnv.toKey(k)] = v
+
+    if (this.outer !== null) {
+      let nextOuter = this.outer
+      while (nextOuter !== null) {
+        const currentValue = nextOuter.vars[key]
+        if (currentValue !== undefined) {
+          nextOuter.vars[key] = value
+          return
+        }
+        nextOuter = nextOuter.outer
+      }
+    }
+
+    this.vars[key] = value
+    // throw new FsException('Symbol [' + symbol + '] is not found.')
   }
 
   find (symbol) {
