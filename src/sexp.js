@@ -214,10 +214,11 @@ export class FsSet extends FsSExp {
     try {
       const prev = env.find(symbol)
       if (log.getLevel() <= log.levels.DEBUG) {
-        log.debug('set! - pref:' + prev + ' new:' + newValue)
+        log.debug('set! - prev:' + prev + ' new:' + newValue)
       }
-      env.set(symbol, FsEvaluator.eval(newValue, env))
-      return FsUndefined.UNDEFINED
+      const v = FsEvaluator.eval(newValue, env)
+      env.set(symbol, v)
+      return v
     } catch (e) {
       throw new FsException('symbol must be defined before calling "set!"')
     }
