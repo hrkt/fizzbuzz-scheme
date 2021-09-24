@@ -30,6 +30,10 @@
   "author": "Hiroki Ito",
   "license": "MIT",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hrkt/fizzbuzz-scheme.git"
+  },
   "dependencies": {
     "cross-env": "^7.0.3",
     "loglevel": "^1.7.1",
@@ -39,6 +43,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-node-resolve": "^13.0.5",
+    "ansi-regex": "^6.0.1",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
