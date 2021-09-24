@@ -105,7 +105,7 @@ test('✅4.1.6', () => {
   const fbs = new FBS()
   fbs.eval('(define x 2)')
   expect(fbs.eval('(+ x 1)').toString()).toBe(3)
-  fbs.eval('(set! x 4)')
+  fbs.eval('(set! x 4)') // unspecified
   expect(fbs.eval('(+ x 1)').toString()).toBe(5)
 })
 
