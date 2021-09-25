@@ -113,7 +113,8 @@ test('🚧4.2.2', () => {
   expect(new FBS().eval('(let ((x 2) (y 3)) (* x y))').toString()).toBe(6)
 })
 
-test('🚧4.2.3_1', () => {
+// all cleared 😊
+test('✅4.2.3_1', () => {
   const code = `
   (define x 0)
   (begin (set! x 5)
@@ -122,7 +123,8 @@ test('🚧4.2.3_1', () => {
   expect(new FBS().eval(code).toString()).toBe(6)
 })
 
-test('🚧4.2.3_2', () => {
+// all cleared 😊
+test('✅4.2.3_2', () => {
   const code = `
   (begin (display "4 plus 1 equals ")
   (display (+ 4 1)))
