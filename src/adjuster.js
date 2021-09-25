@@ -1,6 +1,6 @@
 'use strict'
 import { FsError, FsException } from './common.js'
-import { FsList, FsPair, FsSymbol, FsUndefined } from './sexp.js'
+import { FsList, FsSymbol, FsUndefined } from './sexp.js'
 import log from 'loglevel'
 
 export class FsAdjuster {
@@ -66,61 +66,8 @@ export class FsAdjuster {
         throw new FsException('Syntax Error: malformed :' + sexp)
       }
       return sexp
-    } else if (isDotPair(sexp)) {
-      return toDotPair(sexp)
-      // return sexp
     } else {
       return sexp
     }
   }
-}
-
-/**
- *
- * @param {*} sexp as FSList
- * @returns true if sexp is a valid pair expression.
- */
-function isDotPair (sexp) {
-  if (!(sexp instanceof FsList)) {
-    return false
-  }
-  if (sexp.at(0) !== FsSymbol.QUOTE && sexp.at(0) !== FsSymbol.SINGLE_QUOTE) {
-    return false
-  }
-
-  const argList = sexp.at(0) === FsSymbol.SINGLE_QUOTE ? sexp.at(1).value : sexp.slice(1)
-  if (!(Array.isArray(argList)) || argList.length <= 2) {
-    return false
-  }
-  const dots = argList.filter(s => s === FsSymbol.DOT).length
-
-  if (dots === 0) {
-    return false
-  } else if (dots >= 2) {
-    throw new FsException('Sysntax Error: too many "."s ')
-  } else {
-    // dots === 1
-    console.dir(argList[argList.length - 2])
-    if (argList.length >= 3 && argList[argList.length - 2] === Symbol.DOT) {
-      return true
-    } else {
-      throw new FsException('Sysntax Error: bad "." ')
-    }
-  }
-}
-
-function toDotPair (sexp) {
-  // sexp should be valid pair style. ie. (x x . x)
-
-  const buf = []
-  buf.concat(sexp.value.slice(0, sexp.length - 3))
-  buf.concat(sexp.at(sexp.lengh - 1))
-
-  let p = new FsPair(buf.at(buf.length - 2), buf.at(buf.length - 1))
-  for (let i = buf.length - 3; i >= 0; i--) {
-    const sp = new FsPair(buf.at(i), p)
-    p = sp
-  }
-
-  return p
 }
