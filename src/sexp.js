@@ -673,6 +673,27 @@ export class FsProcedureSetCdr extends FsSExp {
   }
 }
 
+export class FsProcedureLastPair extends FsSExp {
+  static proc (list, env) {
+    if (list.at(0).type === 'fspair') {
+      let current = list.at(0)
+      let hasMore = current.cdr !== undefined && current.cdr.type === 'fspair'
+      while (hasMore) {
+        const next = current.cdr
+        hasMore = next.cdr !== undefined && next.cdr.type === 'fspair'
+        if (hasMore) {
+          current = current.at(0).cdr
+        } else {
+          current = next
+        }
+      }
+      return current
+    } else {
+      return (list.at(0)).at(list.at(0).length - 1)
+    }
+  }
+}
+
 export class FsWrite extends FsSExp {
   static proc (list) {
     process.stdout.write(list.value.map(s => s.value).join(' '))
