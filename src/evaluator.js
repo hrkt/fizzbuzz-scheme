@@ -87,7 +87,9 @@ export class FsEvaluator {
               const givenParams = sexp.slice(1)
               // ex. (lambda (x) (+ 1 2))
               // fixed number "n" case or take "n or more" case
-              if (p.params.type === 'fslist') {
+              if (p.params.type === 'fspair') {
+                throw new Error('not implemented')
+              } else if (p.params.type === 'fslist') {
                 for (let i = 0; i < p.params.length; i++) {
                   innerEnv.set(p.params.at(i), FsEvaluator.eval(givenParams.at(i), env))
                 }
