@@ -155,7 +155,7 @@ export class FsDefine extends FsSExp {
     const car = list.at(0)
 
     if (!(car instanceof FsList)) {
-      // e.g. 
+      // e.g.
       // (define x1 (lambda (x) (* x 2)))
       const cdr = list.at(1)
       env.set(car, FsEvaluator.eval(cdr, env))
@@ -164,7 +164,7 @@ export class FsDefine extends FsSExp {
       }
       return car
     } else {
-      // e.g. 
+      // e.g.
       // (define (x2 x) (* x 2))
       const funcName = car.at(0)
       const params = car.slice(1)
@@ -739,15 +739,15 @@ export class FsList extends FsSExp {
     this.value.push(s)
   }
 
-  slice (inde.g.  {
-    return new FsList(this.value.slice(inde.g. )
+  slice (index) {
+    return new FsList(this.value.slice(index))
   }
 
   get length () {
     return this.value.length
   }
 
-  at (inde.g.  {
+  at (index) {
     return this.value[index]
   }
 
@@ -823,6 +823,10 @@ export class FsPair extends FsList {
     super()
     this.car = car
     this.cdr = cdr
+  }
+
+  get type () {
+    return 'fspair'
   }
 
   toString () {
