@@ -76,19 +76,26 @@ export class FsEvaluator {
               // eval args, store them, bind them as given param symbol.
               // then eval its body in the next loop.
               const evaled = []
+              // given params are in sexp.slice(1)
               for (let i = 1; i < sexp.length; i++) {
                 evaled.push(FsEvaluator.eval(sexp.at(i), env))
               }
               innerEnv.set(p.params, new FsList(evaled))
-              sexp = p.body
+              sexp = p.body.at(0) // TODO: multiplue bodies
               env = innerEnv
             } else {
+              const givenParams = sexp.slice(1)
               // ex. (lambda (x) (+ 1 2))
-              for (let i = 0; i < p.params.length; i++) {
-                innerEnv.set(p.params.at(i), FsEvaluator.eval(sexp.at(i + 1), env))
+              // fixed number "n" case or take "n or more" case
+              if (p.params.type === 'fslist') {
+                for (let i = 0; i < p.params.length; i++) {
+                  innerEnv.set(p.params.at(i), FsEvaluator.eval(givenParams.at(i), env))
+                }
+                sexp = p.body.at(0) // TODO: multiplue bodies
+                env = innerEnv
+              } else {
+                throw new Error('not implemented')
               }
-              sexp = p.body
-              env = innerEnv
             }
           } else {
           // evaled.length = sexp.length - 1 // this line slows execution, so we do not do this.
