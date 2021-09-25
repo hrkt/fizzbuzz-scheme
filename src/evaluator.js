@@ -72,13 +72,15 @@ export class FsEvaluator {
           if (p.type === 'fsdefinedprocedure') {
             const innerEnv = new FsEnv(p.env)
             if (p.params.type === 'fssymbol') {
-              // ex. ((lambda x x) 3 4 5 6)
+              // e.g. ((lambda x x) 3 4 5 6)
+              // eval args, store them, bind them as given param symbol.
+              // then eval its body in the next loop.
               const evaled = []
               for (let i = 1; i < sexp.length; i++) {
                 evaled.push(FsEvaluator.eval(sexp.at(i), env))
               }
               innerEnv.set(p.params, new FsList(evaled))
-              sexp = p.params
+              sexp = p.body
               env = innerEnv
             } else {
               // ex. (lambda (x) (+ 1 2))

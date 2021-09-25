@@ -84,11 +84,19 @@ export class FsLambda extends FsSExp {
   static proc (list, env) {
     const params = list.at(0)
 
+    // (lambda <formals> body)
+    // <formals> could be 3 types.
+    // case 1. (<v1> <v2>, ...) ; a fixed number of arguments
+    // case 2. <v> ; any number of arguments
+    // case 3. (<v1> <v2> ... <vn> . <vn+1>) ; takes n or more arguments
+
     let body = null
     if (params instanceof FsSymbol) {
-      body = list
+      // case 2.
+      body = list.at(1)
     } else {
       body = list.at(1)
+      // body = list.slice(1)
     }
     const procedure = new FsDefinedProcedure(params, body, env)
     return procedure
