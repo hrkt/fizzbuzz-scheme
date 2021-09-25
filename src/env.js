@@ -157,7 +157,6 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('number?'), FsPredicateNumber.proc)
   env.set(new FsSymbol('not'), FsNot.proc)
   env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
-  env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage.proc)
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
   env.set(new FsSymbol('round'), FsProcedureRound.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
@@ -167,6 +166,8 @@ export function getGlobalEnv () {
 
   // original
   env.set(new FsSymbol('exit'), (list) => { list !== undefined && list.length > 0 ? process.exit(list.at(0).value) : process.exit(0) })
+  env.set(new FsSymbol('fs-set-loglevel'), (list) => { list !== undefined && list.length === 1 ? log.setLevel(list.at(0).value) : process.exit(0) })
+  env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage.proc)
 
   log.setLevel(prev)
   return env
