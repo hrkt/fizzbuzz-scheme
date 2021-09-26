@@ -4,6 +4,7 @@ import { FsDefine, FsLambda, FsSymbol, FsSet, FsLet, FsList, FsProcedureSetCdr }
 import { FsEnv, getGlobalEnv } from './env.js'
 
 import log from 'loglevel'
+import { FsException } from './common.js'
 
 // Evaluator
 export class FsEvaluator {
@@ -88,7 +89,34 @@ export class FsEvaluator {
               // ex. (lambda (x) (+ 1 2))
               // fixed number "n" case or take "n or more" case
               if (p.params.type === 'fspair') {
-                throw new Error('not implemented')
+                const paramAsList = []
+                const currentPair = p.params
+                let nextPair = currentPair.cdr
+                paramAsList.push(currentPair.car)
+                let hasNext = true
+                while (hasNext) {
+                  if (nextPair.cdr !== undefined && nextPair.cdr.type !== 'fspair') {
+                    paramAsList.push(nextPair.car)
+                    paramAsList.push(nextPair.cdr)
+                    hasNext = false
+                  } else {
+                    paramAsList.push(currentPair.car)
+                    nextPair = currentPair.cdr
+                  }
+                }
+                if (givenParams.length < paramAsList.length) {
+                  throw new FsException('this function requires at least ' + (paramAsList.length - 1) + ' argument(s)')
+                } else { // givenParams.length >== paramAsList.length - 1
+                  for (let i = 0; i < paramAsList.length - 1; i++) {
+                    innerEnv.set(paramAsList[i], FsEvaluator.eval(givenParams.at(i), env))
+                  }
+                  const rest = givenParams.slice(paramAsList.length - 1)
+                  // innerEnv.set(paramAsList[paramAsList.length - 1], FsEvaluator.eval(rest, env))
+                  const restEvaled = rest.value.map(s => FsEvaluator.eval(s, env))
+                  innerEnv.set(paramAsList[paramAsList.length - 1], new FsList(restEvaled))
+                }
+                sexp = p.body.at(0) // TODO: multiplue bodies
+                env = innerEnv
               } else if (p.params.type === 'fslist') {
                 for (let i = 0; i < p.params.length; i++) {
                   innerEnv.set(p.params.at(i), FsEvaluator.eval(givenParams.at(i), env))

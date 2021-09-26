@@ -58,7 +58,8 @@ test('✅4.1.3', () => {
   expect(new FBS().eval('((if #f + *) 3 4)').toString()).toBe(12)
 })
 
-test('🚧4.1.4', () => {
+// all cleared 😊
+test('✅4.1.4', () => {
   const fbs = new FBS()
   expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsDefinedProcedure).toBe(true)
 
@@ -82,9 +83,7 @@ test('🚧4.1.4', () => {
   }
 
   expect(new FBS().eval('((lambda x x) 3 4 5 6)').toString()).toBe('(3 4 5 6)')
-
-  // TODO: after adding dot-pair
-  // expect(new FBS().eval('((lambda (x y . z) z) 3 4 5 6)').toString()).toBe('(5 6)')
+  expect(new FBS().eval('((lambda (x y . z) z) 3 4 5 6)').toString()).toBe('(5 6)')
 })
 
 // all cleared 😊
