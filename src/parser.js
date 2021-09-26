@@ -2,7 +2,7 @@
 
 import log from 'loglevel'
 import { FsException } from './common.js'
-import { FsList, FsSymbol, FsVector, SExpFactory } from './sexp.js'
+import { FsList, FsPair, FsSymbol, FsVector, SExpFactory } from './sexp.js'
 
 // Parser
 export class FsParser {
@@ -129,8 +129,13 @@ export class FsParser {
       // l.push(FsParser.element('\''))
       l.push(FsSymbol.SINGLE_QUOTE)
       l.push(FsParser.readTokens(tokenized, true))
-      log.trace('created array : ' + l.length)
-      return l
+      log.trace('created array : ' + l.length + ' of ' + l)
+
+      if (isDotPair(l)) {
+        return toDotPair(l)
+      } else {
+        return l
+      }
     }
     // vector
     if (t === '#') {
@@ -143,7 +148,12 @@ export class FsParser {
         l.push(FsParser.readTokens(tokenized, inQuoted))
       }
       tokenized.shift()
-      return l
+
+      if (isDotPair(l)) {
+        return toDotPair(l)
+      } else {
+        return l
+      }
     } else if (t === ')') {
       throw new FsException('syntax error: too much ")"')
     } else {
@@ -183,4 +193,57 @@ export class FsParser {
     }
     return orders
   }
+}
+
+/**
+ *
+ * @param {*} sexp as FSList
+ * @returns true if sexp is a valid pair expression.
+ */
+function isDotPair (sexp) {
+  if (!(sexp instanceof FsList)) {
+    return false
+  }
+  // if (sexp.at(0) === FsSymbol.QUOTE || sexp.at(0) === FsSymbol.SINGLE_QUOTE) {
+  //   return false
+  // }
+
+  // const argList = sexp.at(0) === FsSymbol.SINGLE_QUOTE ? sexp.at(1).value : sexp.slice(1)
+  // if (!(Array.isArray(argList)) || argList.length <= 2) {
+  //   return false
+  // }
+  // const dots = argList.filter(s => s === FsSymbol.DOT).length
+  // if (sexp.at(0) === FsSymbol.QUOTE || sexp.at(0) === FsSymbol.SINGLE_QUOTE) {
+  const values = sexp.value
+  const dots = values.filter(s => s === FsSymbol.DOT).length
+
+  if (dots === 0) {
+    return false
+  } else if (dots >= 2) {
+    throw new FsException('Sysntax Error: too many "."s ')
+  } else {
+    // dots === 1
+    // console.dir(values[values.length - 2])
+    if (values.length >= 3 && values[values.length - 2] === FsSymbol.DOT) {
+      return true
+    } else {
+      throw new FsException('Sysntax Error: bad "." ')
+    }
+  }
+}
+
+function toDotPair (sexp) {
+  // sexp should be valid pair style. ie. (x x . x)
+
+  let buf = []
+  const values = sexp.value
+  buf = buf.concat(values.slice(0, values.length - 2), values[values.length - 1])
+
+  let p = new FsPair(buf[buf.length - 2], buf[buf.length - 1])
+  for (let i = buf.length - 3; i >= 0; i--) {
+    const sp = new FsPair(buf[i], p)
+    p = sp
+  }
+
+  return p
 }

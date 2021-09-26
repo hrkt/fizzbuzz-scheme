@@ -71,12 +71,6 @@ export class FsIf extends FsSExp {
    */
   static proc (list, env) {
     throw new FsError('do not call me.')
-    // const [test, conseq, alt] = list
-    // if (FsEvaluator.eval(test, env).value) {
-    //   return FsEvaluator.eval(conseq, env)
-    // } else {
-    //   return FsEvaluator.eval(alt, env)
-    // }
   }
 }
 
@@ -84,12 +78,13 @@ export class FsLambda extends FsSExp {
   static proc (list, env) {
     const params = list.at(0)
 
-    let body = null
-    if (params instanceof FsSymbol) {
-      body = list
-    } else {
-      body = list.at(1)
-    }
+    // (lambda <formals> body)
+    // <formals> could be 3 types.
+    // case 1. (<v1> <v2>, ...) ; a fixed number of arguments
+    // case 2. <v> ; any number of arguments
+    // case 3. (<v1> <v2> ... <vn> . <vn+1>) ; takes n or more arguments
+
+    const body = list.slice(1)
     const procedure = new FsDefinedProcedure(params, body, env)
     return procedure
   }
@@ -117,21 +112,6 @@ export class FsDefinedProcedure extends FsSExp {
    */
   proc (execParams) {
     throw new FsError('do not call me.')
-    // const innerEnv = new FsEnv(this.env)
-    // if (!Array.isArray(execParams)) {
-    //   throw new Error('arg type do not match')
-    // }
-    // if (this.params instanceof FsSymbol) {
-    //   // ex. ((lambda x x) 3 4 5 6)
-    //   innerEnv.set(this.params, new FsList(execParams))
-    //   return FsEvaluator.eval(this.params, innerEnv)
-    // } else {
-    //   // ex. (lambda (x) (+ 1 2))
-    //   for (let i = 0; i < this.params.length; i++) {
-    //     innerEnv.set(this.params[i], execParams[i])
-    //   }
-    //   return FsEvaluator.eval(this.body, innerEnv)
-    // }
   }
 
   toString () {
@@ -173,30 +153,26 @@ export class FsDefine extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
     const car = list.at(0)
-    const cdr = list.at(1)
-
-    if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('car:' + car + ',cdr:' + cdr)
-      log.debug('DUMP-IN-DEFINE car')
-      console.dir(car)
-      log.debug('DUMP-IN-DEFINE cdr')
-      console.dir(cdr)
-    }
 
     if (!(car instanceof FsList)) {
-      // ex)
+      // e.g.
       // (define x1 (lambda (x) (* x 2)))
+      const cdr = list.at(1)
       env.set(car, FsEvaluator.eval(cdr, env))
+      if (log.getLevel() <= log.levels.DEBUG) {
+        log.debug('define symbol - symbol:' + car + ' value:' + cdr)
+      }
       return car
     } else {
-      // ex)
+      // e.g.
       // (define (x2 x) (* x 2))
       const funcName = car.at(0)
       const params = car.slice(1)
+      const cdr = list.slice(1)
       const body = cdr
       const procedure = new FsDefinedProcedure(params, body, env)
       if (log.getLevel() <= log.levels.DEBUG) {
-        log.debug('define funciton - funcName:' + funcName + ' procedure:' + procedure)
+        log.debug('define functiton - funcName:' + funcName + ' procedure:' + procedure)
       }
       env.set(funcName, procedure)
       return funcName
@@ -241,7 +217,7 @@ export class FsBegin extends FsSExp {
 
 export class FsQuote extends FsSExp {
   static proc (arg) {
-    // arg ... ex) [{"_value":"'"},{"_value":"a"}]
+    // arg ... e.g.  [{"_value":"'"},{"_value":"a"}]
     // '(a (b)) => (a (b))
     const quoteList = arg
     if (quoteList.at(0) instanceof FsList) {
@@ -697,6 +673,27 @@ export class FsProcedureSetCdr extends FsSExp {
   }
 }
 
+export class FsProcedureLastPair extends FsSExp {
+  static proc (list, env) {
+    if (list.at(0).type === 'fspair') {
+      let current = list.at(0)
+      let hasMore = current.cdr !== undefined && current.cdr.type === 'fspair'
+      while (hasMore) {
+        const next = current.cdr
+        hasMore = next.cdr !== undefined && next.cdr.type === 'fspair'
+        if (hasMore) {
+          current = current.at(0).cdr
+        } else {
+          current = next
+        }
+      }
+      return current
+    } else {
+      return (list.at(0)).at(list.at(0).length - 1)
+    }
+  }
+}
+
 export class FsWrite extends FsSExp {
   static proc (list) {
     process.stdout.write(list.value.map(s => s.value).join(' '))
@@ -847,6 +844,10 @@ export class FsPair extends FsList {
     super()
     this.car = car
     this.cdr = cdr
+  }
+
+  get type () {
+    return 'fspair'
   }
 
   toString () {

@@ -33,7 +33,7 @@ test('evaluating (define (x2 x) (* x 2)) then (x2 1) yields 2', () => {
   expect(fbs.eval('(x2 1)')).toStrictEqual(new FsNumber(2))
 })
 
-test('evaluating (define (x3 x y) (+ x y)) then (x3 x y) yields 3', () => {
+test('evaluating (define (x3 x y) (+ x y)) then (x3 1 2) yields 3', () => {
   const fbs = new FBS()
   fbs.eval('(define (x3 x y) (+ x y))')
   expect(fbs.eval('(x3 1 2)')).toStrictEqual(new FsNumber(3))

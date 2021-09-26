@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsProcedureAbs, FsProcedureDivide, FsProcedureGt, FsProcedureGte, FsProcedureLt, FsProcedureLte, FsProcedureMinus, FsProcedureMod, FsProcedureMultiply, FsProcedurePlus, FsProcedurePow, FsProcedureRound, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsProcedureSetCdr, FsProcedureVector, FsQuote, FsSet, FsSymbol, FsWrite, FsProcedureLoad } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsProcedureAbs, FsProcedureDivide, FsProcedureGt, FsProcedureGte, FsProcedureLt, FsProcedureLte, FsProcedureMinus, FsProcedureMod, FsProcedureMultiply, FsProcedurePlus, FsProcedurePow, FsProcedureRound, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsProcedureSetCdr, FsProcedureVector, FsQuote, FsSet, FsSymbol, FsWrite, FsProcedureLoad, FsProcedureLastPair } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -146,6 +146,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('display'), FsDisplay.proc)
   env.set(new FsSymbol('eq?'), FsPredicateEq.proc)
   env.set(new FsSymbol('equal?'), FsPredicateEqual.proc)
+  env.set(new FsSymbol('last-pair'), FsProcedureLastPair.proc)
   env.set(new FsSymbol('list'), FsList.proc)
   env.set(new FsSymbol('list?'), FsPredicateList.proc)
   env.set(new FsSymbol('load'), FsProcedureLoad.proc)
@@ -157,7 +158,6 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('number?'), FsPredicateNumber.proc)
   env.set(new FsSymbol('not'), FsNot.proc)
   env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
-  env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage.proc)
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
   env.set(new FsSymbol('round'), FsProcedureRound.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
@@ -167,6 +167,8 @@ export function getGlobalEnv () {
 
   // original
   env.set(new FsSymbol('exit'), (list) => { list !== undefined && list.length > 0 ? process.exit(list.at(0).value) : process.exit(0) })
+  env.set(new FsSymbol('fs-set-loglevel'), (list) => { list !== undefined && list.length === 1 ? log.setLevel(list.at(0).value) : process.exit(0) })
+  env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage.proc)
 
   log.setLevel(prev)
   return env
