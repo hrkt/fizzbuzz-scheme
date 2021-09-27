@@ -272,7 +272,9 @@ test('🚧6.3.3', () => {
 })
 
 test('🚧6.3.6', () => {
+  expect(new FBS().eval('#(0 (2 2 2 2) "Anna")').toString()).toBe('#(0 (2 2 2 2) "Anna")')
   expect(new FBS().eval('(vector \'a \'b \'c)').toString()).toBe('#(a b c)')
+  expect(new FBS().eval('(vector? (vector \'a \'b \'c))').toString()).toBe('#t') // additional: from its definition
 })
 
 // 7. Format Syntax and semantics
