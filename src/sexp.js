@@ -618,6 +618,17 @@ export class FsProcedureVector extends FsSExp {
   }
 }
 
+export class FsProcedureVectorRef extends FsSExp {
+  static proc (list) {
+    const vec = list.at(0)
+    if (!(vec instanceof FsVector)) {
+      throw new FsException('a vector is required')
+    }
+    const index = list.at(1).value
+    return list.at(0).at(index)
+  }
+}
+
 export class FsProcedureMap extends FsSExp {
   static proc (list, env) {
     const p = list.at(0)
@@ -832,6 +843,10 @@ export class FsVector extends FsSExp {
   constructor (arg) {
     super()
     this.value = arg
+  }
+
+  at (index) {
+    return this.value[index]
   }
 
   toString () {

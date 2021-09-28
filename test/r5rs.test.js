@@ -275,6 +275,7 @@ test('🚧6.3.6', () => {
   expect(new FBS().eval('#(0 (2 2 2 2) "Anna")').toString()).toBe('#(0 (2 2 2 2) "Anna")')
   expect(new FBS().eval('(vector \'a \'b \'c)').toString()).toBe('#(a b c)')
   expect(new FBS().eval('(vector? (vector \'a \'b \'c))').toString()).toBe('#t') // additional: from its definition
+  expect(new FBS().eval('(vector-ref \'#(1 1 2 3 5 8 13 21) 5)').toString()).toBe(8)
 })
 
 // 7. Format Syntax and semantics
