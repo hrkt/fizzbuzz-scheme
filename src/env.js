@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsProcedureAbs, FsProcedureDivide, FsProcedureGt, FsProcedureGte, FsProcedureLt, FsProcedureLte, FsProcedureMinus, FsProcedureMod, FsProcedureMultiply, FsProcedurePlus, FsProcedurePow, FsProcedureRound, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsProcedureSetCdr, FsProcedureVector, FsQuote, FsSet, FsSymbol, FsWrite, FsProcedureLoad, FsProcedureLastPair } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsProcedureAbs, FsProcedureDivide, FsProcedureGt, FsProcedureGte, FsProcedureLt, FsProcedureLte, FsProcedureMinus, FsProcedureMod, FsProcedureMultiply, FsProcedurePlus, FsProcedurePow, FsProcedureRound, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsProcedureSetCdr, FsProcedureVector, FsQuote, FsSet, FsSymbol, FsWrite, FsProcedureLoad, FsProcedureLastPair, FsProcedureVectorRef } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 
@@ -162,6 +162,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('round'), FsProcedureRound.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
   env.set(new FsSymbol('vector'), FsProcedureVector.proc)
+  env.set(new FsSymbol('vector-ref'), FsProcedureVectorRef.proc)
   env.set(new FsSymbol('vector?'), FsPredicateVector.proc)
   env.set(new FsSymbol('write'), FsWrite.proc)
 
