@@ -91,9 +91,16 @@ $ npm run majestic
 
 Test cases for a few part of R5RS are in [r5rs.test.js](test/r5rs.test.js)
 
-## not implemented
+## not implemented yet
 
+_many_ feachers like ...
+
+- ❌numbers : Rational, Complex, Integer, and its extactness 
+- ❌[macro](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.3)
+- ❌call with current continuation
+- ❌ports other than CLI
 - ❌[quasiquotation](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.6)
+
 
 ## Fizz-Buzz Scheme original procedures
 
