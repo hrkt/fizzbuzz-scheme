@@ -2,7 +2,7 @@ import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 
 export default {
-  input: 'src/fbs.js',
+  input: 'src/index.js',
   output: {
     compact: true,
     file: 'dist/bundle.js',
