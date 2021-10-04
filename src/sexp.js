@@ -12,26 +12,6 @@ import { FsAdjuster } from './adjuster.js'
 import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
 
-export class SExpFactory {
-  static build (s) {
-    if (s === undefined) {
-      throw new FsError('passed undefined.') // isNaN(undefined) ==> true
-    }
-    if (!isNaN(parseFloat(s)) && !isNaN(s - 0)) {
-      return new FsNumber(+s)
-    } else if (FsBoolean.isFsBooleanString(s)) {
-      return FsBoolean.fromString(s)
-    } else if (FsChar.isFsChar(s)) {
-      return FsChar.fromString(s)
-    } else if (s.startsWith('"')) { // equal or faster compared to  s.charAt(0), s.indexOf('"') === 0
-      const extracted = s.substring(1, s.length - 1)
-      return new FsString(extracted)
-    } else {
-      return FsSymbol.intern(s) // avoid creating Gabage
-    }
-  }
-}
-
 export class FsIf extends FsSExp {
   /**
    * @deprecated since version 0.1.6, this function is inlined to eval-loop
