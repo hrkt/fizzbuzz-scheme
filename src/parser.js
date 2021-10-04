@@ -2,7 +2,8 @@
 
 import log from 'loglevel'
 import { FsException } from './common.js'
-import { FsList, FsPair, FsSymbol, FsVector, SExpFactory } from './sexp.js'
+import { FsList, FsPair, FsVector } from './datatypes.js'
+import { FsSymbol, SExpFactory } from './sexp.js'
 
 // Parser
 export class FsParser {

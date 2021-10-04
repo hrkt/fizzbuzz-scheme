@@ -1,8 +1,9 @@
 'use strict'
 
 import { FsException } from '../src/common.js'
+import { FsNumber } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FsNumber, FsUndefined } from '../src/sexp.js'
+import { FsUndefined } from '../src/sexp.js'
 
 test('evaluating (if #t 1 2) yields 1', () => {
   const code = '(if #t 1 2)'

@@ -2,7 +2,7 @@
 
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { FsException } from '../src/common.js'
-import { FsNumber } from '../src/sexp.js'
+import { FsNumber } from '../src/datatypes.js'
 
 test('evaluating  (vector-ref \'a 0) throws FsException', () => {
   const code = '(vector-ref \'a 0)'

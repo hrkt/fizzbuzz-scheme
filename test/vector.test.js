@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsVector } from '../src/sexp.js'
+import { FsVector } from '../src/datatypes.js'
 
 test('creating vector success', () => {
   const vector = new FsVector([1, 2, 3])

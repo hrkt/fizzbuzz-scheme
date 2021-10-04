@@ -3,7 +3,7 @@
 import FS from 'fs'
 
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FsNumber } from '../src/sexp.js'
+import { FsNumber } from '../src/datatypes.js'
 
 test('evaluating comment.test.1.scm', () => {
   const code1 = FS.readFileSync('test/code/comment.test.1.scm', 'utf8')

@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsBoolean } from '../src/sexp.js'
+import { FsBoolean } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating (procedure? 1) yields #f', () => {

@@ -1,8 +1,8 @@
 'use strict'
 
 import { FsException } from '../src/common.js'
+import { FsString } from '../src/datatypes.js'
 import { FsParser } from '../src/parser.js'
-import { FsString } from '../src/sexp.js'
 
 test('tokenizing (+ 1 2) yields a list of 5 tokens', () => {
   const code = '(+ 1 2)'

@@ -6,7 +6,8 @@ import { FsEvaluator as FE } from '../src/evaluator.js'
 import log from 'loglevel'
 import { getGlobalEnv } from './env.js'
 import { FsAdjuster } from './adjuster.js'
-import { FsList, FsProcedureLoad, FsString } from './sexp.js'
+import { FsProcedureLoad } from './sexp.js'
+import { FsList, FsString } from './datatypes.js'
 
 // Environment
 export class FizzBuzzScheme {
