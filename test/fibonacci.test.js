@@ -2,7 +2,7 @@
 
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 
-import { FsNumber } from '../src/sexp.js'
+import { FsNumber } from '../src/datatypes.js'
 
 import log from 'loglevel'
 log.setLevel('info')

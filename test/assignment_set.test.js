@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsNumber } from '../src/sexp.js'
+import { FsNumber } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { FsException } from '../src/common.js'
 

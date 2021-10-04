@@ -1,7 +1,8 @@
 'use strict'
 import { FsError, FsException } from './common.js'
-import { FsList, FsSymbol, FsUndefined } from './sexp.js'
+import { FsSymbol, FsUndefined } from './sexp.js'
 import log from 'loglevel'
+import { FsList } from './datatypes.js'
 
 export class FsAdjuster {
   // pre process sexp

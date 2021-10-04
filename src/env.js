@@ -1,8 +1,9 @@
 'use strict'
 
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsList, FsNewline, FsNot, FsNumberEquals, FsProcedureAbs, FsProcedureDivide, FsProcedureGt, FsProcedureGte, FsProcedureLt, FsProcedureLte, FsProcedureMinus, FsProcedureMod, FsProcedureMultiply, FsProcedurePlus, FsProcedurePow, FsProcedureRound, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsProcedureSetCdr, FsProcedureVector, FsQuote, FsSet, FsSymbol, FsWrite, FsProcedureLoad, FsProcedureLastPair, FsProcedureVectorRef } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FsProcedureAbs, FsProcedureDivide, FsProcedureGt, FsProcedureGte, FsProcedureLt, FsProcedureLte, FsProcedureMinus, FsProcedureMod, FsProcedureMultiply, FsProcedurePlus, FsProcedurePow, FsProcedureRound, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector, FsProcedureAppend, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsProcedureSetCdr, FsProcedureVector, FsQuote, FsSet, FsWrite, FsProcedureLoad, FsProcedureLastPair, FsProcedureVectorRef, FsSymbol } from './sexp.js'
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
+import { FsList } from './datatypes.js'
 
 // Environment
 export class FsEnv {

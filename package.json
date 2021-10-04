@@ -6,17 +6,17 @@
   "scripts": {
     "build": "npx rollup --config ./rollup.config.js",
     "clean": "rimraf isolate-* coverage dist",
-    "fib30": "node src/fbs sample/fibonacci.scm sample/fib30.scm",
+    "fib30": "node bin/fbs sample/fibonacci.scm sample/fib30.scm",
     "fib30d": "node dist/bundle.js sample/fibonacci.scm sample/fib30.scm",
-    "fib30-all": "node src/fbs sample/fib30-all.scm",
+    "fib30-all": "node bin/fbs sample/fib30-all.scm",
     "lint": "npx eslint src/ test/",
     "repl": "node src/repl",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest",
     "coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --collectCoverage",
     "majestic": "cross-env NODE_OPTIONS=--experimental-vm-modules npx majestic",
-    "show-opt-deopt-win": "node --trace-deopt --trace-opt .\\src\\fbs.js .\\sample\\fibonacci.scm .\\sample\\fib30.scm",
-    "perf-get-prof-linux": "node --prof ./src/fbs.js ./sample/fibonacci.scm ./sample/fib30.scm",
-    "perf-get-prof-win": "node --prof .\\src\\fbs.js .\\sample\\fibonacci.scm .\\sample\\fib30.scm",
+    "show-opt-deopt-win": "node --trace-deopt --trace-opt .\\bin\\fbs.js .\\sample\\fibonacci.scm .\\sample\\fib30.scm",
+    "perf-get-prof-linux": "node --prof ./bin/fbs.js ./sample/fibonacci.scm ./sample/fib30.scm",
+    "perf-get-prof-win": "node --prof .\\bin\\fbs.js .\\sample\\fibonacci.scm .\\sample\\fib30.scm",
     "perf-parse-prof-linux": "node --prof-process isolate-*",
     "perf-parse-prof-win": "powershell -c node --prof-process (Get-Item .\\isolate-*)",
     "perf-linux": "run-s perf-get-prof-linux perf-parse-prof-linux",
@@ -61,7 +61,6 @@
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.js",
-      "!src/**/fbs.js",
       "!src/**/repl.js"
     ],
     "coverageReporters": [
@@ -70,5 +69,8 @@
       "lcov",
       "text"
     ]
+  },
+  "bin": {
+    "fbs": "bin/fbs.js"
   }
 }

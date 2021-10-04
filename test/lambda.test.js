@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsNumber } from '../src/sexp.js'
+import { FsNumber } from '../src/datatypes.js'
 import { FizzBuzzScheme } from '../src/index.js'
 
 test('evaluating (define p (lambda (x) (+ x x)))', () => {

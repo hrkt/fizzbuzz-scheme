@@ -3,7 +3,7 @@
 // test sample expressions from http://norvig.com/lispy.html
 
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FsNumber } from '../src/sexp.js'
+import { FsNumber } from '../src/datatypes.js'
 
 test('evaluating circle-area', () => {
   const code = '(define circle-area (lambda (r) (* 3.141592653 (* r r))))'

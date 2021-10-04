@@ -1,7 +1,7 @@
 'use strict'
 
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FsBoolean } from '../src/sexp.js'
+import { FsBoolean } from '../src/datatypes.js'
 
 test('evaluating (null? ()) yields #t', () => {
   const code = '(null? ())'

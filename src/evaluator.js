@@ -1,10 +1,11 @@
 'use strict'
 
-import { FsDefine, FsLambda, FsSymbol, FsSet, FsLet, FsList, FsProcedureSetCdr } from './sexp.js'
+import { FsDefine, FsLambda, FsSymbol, FsSet, FsLet, FsProcedureSetCdr } from './sexp.js'
 import { FsEnv, getGlobalEnv } from './env.js'
 
 import log from 'loglevel'
 import { FsException } from './common.js'
+import { FsList } from './datatypes.js'
 
 // Evaluator
 export class FsEvaluator {

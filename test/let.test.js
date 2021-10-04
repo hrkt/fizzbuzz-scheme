@@ -1,7 +1,7 @@
 'use strict'
 
+import { FsBoolean, FsNumber } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FsBoolean, FsNumber } from '../src/sexp.js'
 
 test('evaluating (let ((x 1) (y 2)) (+ x y)) yields 3', () => {
   const code = '(let ((x 1) (y 2)) (+ x y)'

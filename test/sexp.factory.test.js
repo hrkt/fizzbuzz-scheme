@@ -1,4 +1,5 @@
-import { FsNumber, FsSymbol, SExpFactory } from '../src/sexp'
+import { FsNumber } from '../src/datatypes'
+import { FsSymbol, SExpFactory } from '../src/sexp'
 
 test('building number', () => {
   expect(SExpFactory.build('1')).toStrictEqual(new FsNumber(1))

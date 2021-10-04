@@ -8,7 +8,8 @@ export default {
     {
       compact: true,
       file: 'dist/fbs.bundle.js',
-      format: 'es'
+      format: 'es',
+      sourcemap: true
     },
     {
       file: 'dist/fbs.bundle.min.js',
