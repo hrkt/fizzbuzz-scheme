@@ -3,7 +3,7 @@
 import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
-import { FsSymbol } from './sexp.js'
+import { FsSymbol } from './symbol.js'
 
 export class SExpFactory {
   static build (s) {
