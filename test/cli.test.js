@@ -1,6 +1,7 @@
 'use strict'
 
 import { jest } from '@jest/globals'
+
 import { FsCli } from '../src/cli.js'
 
 test('no argv prints usage', () => {

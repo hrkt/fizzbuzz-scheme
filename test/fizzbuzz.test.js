@@ -1,10 +1,9 @@
 'use strict'
+import { jest } from '@jest/globals'
 import FS from 'fs'
+import mockProcess from 'jest-mock-process'
 
 import { FizzBuzzScheme } from '../src/index.js'
-
-import { jest } from '@jest/globals'
-import mockProcess from 'jest-mock-process'
 
 // log.setLevel('debug')
 

@@ -2,10 +2,11 @@
 
 'use strict'
 
-import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { jest } from '@jest/globals'
-import { FsDefinedProcedure } from '../src/sexp.js'
+
 import { FsException } from '../src/common.js'
+import { FizzBuzzScheme as FBS } from '../src/index.js'
+import { FsDefinedProcedure } from '../src/sexp.js'
 
 // 1. Overview of scheme
 

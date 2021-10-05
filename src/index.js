@@ -1,13 +1,13 @@
 'use strict'
 
-import { FsParser as FP } from '../src/parser.js'
-import { FsEvaluator as FE } from '../src/evaluator.js'
-
 import log from 'loglevel'
-import { getGlobalEnv } from './env.js'
+
+import { FsEvaluator as FE } from '../src/evaluator.js'
+import { FsParser as FP } from '../src/parser.js'
 import { FsAdjuster } from './adjuster.js'
-import { FsProcedureLoad } from './sexp.js'
 import { FsList, FsString } from './datatypes.js'
+import { getGlobalEnv } from './env.js'
+import { FsProcedureLoad } from './sexp.js'
 
 // Environment
 export class FizzBuzzScheme {

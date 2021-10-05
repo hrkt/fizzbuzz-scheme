@@ -1,8 +1,8 @@
 'use strict'
 
 import FS from 'fs'
-
 import log from 'loglevel'
+
 import { FsEvaluator } from './evaluator.js'
 import { FizzBuzzScheme } from './index.js'
 log.setLevel('info')

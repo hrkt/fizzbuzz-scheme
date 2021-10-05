@@ -1,7 +1,7 @@
 'use strict'
 
-import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { FsNumber } from '../src/datatypes.js'
+import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating (define a 1)', () => {
   const code = '(define a 1)'

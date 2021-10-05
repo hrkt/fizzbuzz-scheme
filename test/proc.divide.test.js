@@ -1,8 +1,8 @@
 'use strict'
 
+import { FsException } from '../src/common.js'
 import { FsNumber } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FsException } from '../src/common.js'
 
 test('evaluating (/ 1) yields 1', () => {
   const code = '(/ 1)'
