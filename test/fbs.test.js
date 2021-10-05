@@ -1,7 +1,8 @@
 'use strict'
 
-import { FizzBuzzScheme } from '../src/index.js'
 import log from 'loglevel'
+
+import { FizzBuzzScheme } from '../src/index.js'
 
 test('enabling debug mode success', () => {
   const fbs = new FizzBuzzScheme()

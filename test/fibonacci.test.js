@@ -1,10 +1,9 @@
 'use strict'
 
-import { FizzBuzzScheme as FBS } from '../src/index.js'
+import log from 'loglevel'
 
 import { FsNumber } from '../src/datatypes.js'
-
-import log from 'loglevel'
+import { FizzBuzzScheme as FBS } from '../src/index.js'
 log.setLevel('info')
 
 const fibonacci = '(define fib (lambda (n) (if (< n 2)' +

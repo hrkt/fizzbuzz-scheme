@@ -1,7 +1,7 @@
 'use strict'
 
-import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { FsNumber } from '../src/datatypes.js'
+import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating (- 1) yields 0', () => {
   const code = '(- 1)'

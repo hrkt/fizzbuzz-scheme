@@ -1,8 +1,8 @@
 'use strict'
 
+import { FsException } from '../src/common.js'
 import { FsBoolean } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FsException } from '../src/common.js'
 
 test('evaluating (load "test/code/load.test.scm") success', () => {
   // (define is-successfully-loaded #t) ; <- load this

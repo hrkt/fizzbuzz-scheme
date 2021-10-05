@@ -1,8 +1,9 @@
 'use strict'
-import { FsError, FsException } from './common.js'
-import { FsUndefined } from './sexp.js'
 import log from 'loglevel'
+
+import { FsError, FsException } from './common.js'
 import { FsList } from './datatypes.js'
+import { FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 export class FsAdjuster {

@@ -1,6 +1,7 @@
 'use strict'
 
 import { jest } from '@jest/globals'
+
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('exit success with given exit code', () => {

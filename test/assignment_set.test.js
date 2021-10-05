@@ -1,8 +1,8 @@
 'use strict'
 
+import { FsException } from '../src/common.js'
 import { FsNumber } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FsException } from '../src/common.js'
 
 test('evaluating (set! a 1) before defining symbol throws FsException', () => {
   const code = '(set! a 1)'
