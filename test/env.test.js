@@ -1,8 +1,8 @@
 'use strict'
 
-import { FsEnv, getGlobalEnv } from '../src/env'
 import { FsError } from '../src/common.js'
 import { FsNumber } from '../src/datatypes.js'
+import { FsEnv, getGlobalEnv } from '../src/env'
 import { FsSymbol } from '../src/symbol'
 
 test('define env success', () => {

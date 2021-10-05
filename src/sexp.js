@@ -2,14 +2,14 @@
 'use strict'
 
 import FS from 'fs'
-
-import { FsEvaluator } from './evaluator.js'
 import log from 'loglevel'
-import { FsError, FsException } from './common.js'
-import { FsEnv } from './env.js'
-import { FsParser } from './parser.js'
+
 import { FsAdjuster } from './adjuster.js'
+import { FsError, FsException } from './common.js'
 import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
+import { FsEnv } from './env.js'
+import { FsEvaluator } from './evaluator.js'
+import { FsParser } from './parser.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
 import { FsSymbol } from './symbol.js'
 

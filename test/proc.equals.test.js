@@ -1,8 +1,8 @@
 'use strict'
 
+import { FsException } from '../src/common.js'
 import { FsBoolean } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FsException } from '../src/common.js'
 
 test('evaluating (= 1 1) yields true', () => {
   expect(new FBS().eval('(= 1 1)')).toStrictEqual(FsBoolean.TRUE)

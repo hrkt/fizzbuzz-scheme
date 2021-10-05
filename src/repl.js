@@ -1,8 +1,8 @@
 // REPL tool
 'use strict'
 import FS from 'fs'
-import PromptSync from 'prompt-sync'
 import log from 'loglevel'
+import PromptSync from 'prompt-sync'
 
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 

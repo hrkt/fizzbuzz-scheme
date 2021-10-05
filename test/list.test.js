@@ -1,7 +1,7 @@
 'use strict'
 
-import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { FsBoolean, FsList, FsNumber } from '../src/datatypes.js'
+import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating slicing list', () => {
   const list = new FsList([1, 2, 3])

@@ -2,6 +2,7 @@
 'use strict'
 
 import log from 'loglevel'
+
 import { FsCli } from '../src/cli.js'
 log.setLevel('info')
 
