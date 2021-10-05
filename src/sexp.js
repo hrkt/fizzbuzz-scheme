@@ -11,26 +11,7 @@ import { FsParser } from './parser.js'
 import { FsAdjuster } from './adjuster.js'
 import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
-
-export class SExpFactory {
-  static build (s) {
-    if (s === undefined) {
-      throw new FsError('passed undefined.') // isNaN(undefined) ==> true
-    }
-    if (!isNaN(parseFloat(s)) && !isNaN(s - 0)) {
-      return new FsNumber(+s)
-    } else if (FsBoolean.isFsBooleanString(s)) {
-      return FsBoolean.fromString(s)
-    } else if (FsChar.isFsChar(s)) {
-      return FsChar.fromString(s)
-    } else if (s.startsWith('"')) { // equal or faster compared to  s.charAt(0), s.indexOf('"') === 0
-      const extracted = s.substring(1, s.length - 1)
-      return new FsString(extracted)
-    } else {
-      return FsSymbol.intern(s) // avoid creating Gabage
-    }
-  }
-}
+import { FsSymbol } from './symbol.js'
 
 export class FsIf extends FsSExp {
   /**
@@ -199,49 +180,6 @@ export class FsQuote extends FsSExp {
     } else {
       return new FsList(arg.value)
     }
-  }
-}
-
-export class FsSymbol extends FsAtom {
-  static IF = Object.freeze(new FsSymbol('if'))
-  static QUOTE = Object.freeze(new FsSymbol('quote'))
-  static SINGLE_QUOTE = Object.freeze(new FsSymbol('\''))
-  static DEFINE = Object.freeze(new FsSymbol('define'))
-  static SET_ = Object.freeze(new FsSymbol('set!'))
-  static SET_CDR_ = Object.freeze(new FsSymbol('set-cdr!'))
-  static BEGIN = Object.freeze(new FsSymbol('begin'))
-  static LAMBDA = Object.freeze(new FsSymbol('lambda'))
-  static LET = Object.freeze(new FsSymbol('let'))
-  static DOT = Object.freeze(new FsSymbol('.'))
-  static intern (str) {
-    switch (str) {
-      case 'if':
-        return this.IF
-      case 'quote':
-        return this.QUOTE
-      case '\'':
-        return this.SINGLE_QUOTE
-      case 'define':
-        return this.DEFINE
-      case 'set!':
-        return this.SET_
-      case 'set-cdr!':
-        return this.SET_CDR_
-      case 'begin':
-        return this.BEGIN
-      case 'lambda':
-        return this.LAMBDA
-      case 'let':
-        return this.LET
-      case '.':
-        return this.DOT
-      default:
-        return Object.freeze(new FsSymbol(str))
-    }
-  }
-
-  get type () {
-    return 'fssymbol'
   }
 }
 
