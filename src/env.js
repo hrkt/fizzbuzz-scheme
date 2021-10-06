@@ -4,7 +4,8 @@ import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
 import { FsList } from './datatypes.js'
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector, FsProcedureAbs, FsProcedureAppend, FsProcedureDivide, FsProcedureGt, FsProcedureGte, FsProcedureLastPair, FsProcedureLoad, FsProcedureLt, FsProcedureLte, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsProcedureMinus, FsProcedureMod, FsProcedureMultiply, FsProcedurePlus, FsProcedurePow, FsProcedureRound, FsProcedureSetCdr, FsProcedureVector, FsProcedureVectorRef, FsQuote, FsSet, FsWrite } from './sexp.js'
+import { FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FsPeekMemoryUsage, FsPredicateEq, FsPredicateEqual, FsProcedureAbs, FsProcedureAppend, FsProcedureDivide, FsProcedureGt, FsProcedureGte, FsProcedureLastPair, FsProcedureLoad, FsProcedureLt, FsProcedureLte, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsProcedureMinus, FsProcedureMod, FsProcedureMultiply, FsProcedurePlus, FsProcedurePow, FsProcedureRound, FsProcedureSetCdr, FsProcedureVector, FsProcedureVectorRef, FsQuote, FsSet, FsWrite } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Environment
