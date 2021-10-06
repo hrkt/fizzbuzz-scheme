@@ -6,11 +6,12 @@ import log from 'loglevel'
 
 import { FsAdjuster } from './adjuster.js'
 import { FsError, FsException } from './common.js'
-import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
+import { FsBoolean, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
 import { FsEnv } from './env.js'
 import { FsEvaluator } from './evaluator.js'
 import { FsParser } from './parser.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
+import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
 
 export class FsIf extends FsSExp {
@@ -193,20 +194,6 @@ export class FsUndefined extends FsAtom {
   }
 }
 
-function ensureListContains (list, length) {
-  if (!(list instanceof FsList) || list.length !== length) {
-    throw new FsException('this procedure must take ' + length + ' argument(s) as list')
-  }
-}
-
-function ensureListContainsTwo (list) {
-  ensureListContains(list, 2)
-}
-
-function ensureListContainsOne (list) {
-  ensureListContains(list, 1)
-}
-
 export class FspAbs extends FsSExp {
   static proc (list) {
     if (!(list.at(0) instanceof FsNumber)) {
@@ -324,58 +311,6 @@ export class FsEquals extends FsSExp {
     const rhs = list.at(1)
     if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
       return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
-    } else {
-      // prerequisites: only ascii characters are permitted
-      return lhs.toString() === rhs.toString() ? FsBoolean.TRUE : FsBoolean.FALSE
-      // non-ascii
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
-      // return lhs.toString().normalize() === rhs.toString().normalize()? FsBoolean.TRUE : FsBoolean.FALSE
-    }
-  }
-}
-
-export class FsPredicateEq extends FsSExp {
-  static proc (list) {
-    ensureListContainsTwo(list)
-    const lhs = list.at(0)
-    const rhs = list.at(1)
-    if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
-      return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
-    } else if (lhs instanceof FsChar && rhs instanceof FsChar) {
-      return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
-    } else if (lhs instanceof FsSymbol && rhs instanceof FsSymbol) {
-      // ex. (eq? 'a 'a)
-      return lhs.value === rhs.value ? FsBoolean.TRUE : FsBoolean.FALSE
-    } else if (lhs instanceof FsList && rhs instanceof FsList) {
-      if (lhs.length === 0 && rhs.length === 0) {
-        return FsBoolean.TRUE
-      } else if ((lhs.length === 1 && rhs.length === 1) &&
-      (lhs.at(0) === rhs.at(0))) {
-        // ex. (let ((x \'(a))) (eq? x x)); 2 objects point the same object on the memory
-        // ; It is not the comparison between their values
-        return FsBoolean.TRUE
-      } else {
-        return FsBoolean.FALSE
-      }
-    } else {
-      // prerequisites: only ascii characters are permitted
-      return lhs === rhs ? FsBoolean.TRUE : FsBoolean.FALSE
-      // non-ascii
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
-      // return lhs.toString().normalize() === rhs.toString().normalize()? FsBoolean.TRUE : FsBoolean.FALSE
-    }
-  }
-}
-
-export class FsPredicateEqual extends FsSExp {
-  static proc (list) {
-    ensureListContainsTwo(list)
-    const lhs = list.at(0)
-    const rhs = list.at(1)
-
-    if (lhs instanceof FsList && rhs instanceof FsList) {
-      // TODO: this might not be fast, but works.
-      return JSON.stringify(lhs) === JSON.stringify(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
     } else {
       // prerequisites: only ascii characters are permitted
       return lhs.toString() === rhs.toString() ? FsBoolean.TRUE : FsBoolean.FALSE

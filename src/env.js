@@ -4,8 +4,8 @@ import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
 import { FsList } from './datatypes.js'
-import { FsPredicateBoolean, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FsPeekMemoryUsage, FsPredicateEq, FsPredicateEqual, FspAbs, FspAppend, FspDivide, FspGt, FspGte, FspLastPair, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspVector, FspVectorRef, FsQuote, FsSet, FsWrite } from './sexp.js'
+import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FspAbs, FspAppend, FspDivide, FsPeekMemoryUsage, FspGt, FspGte, FspLastPair, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspVector, FspVectorRef, FsQuote, FsSet, FsWrite } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Environment
