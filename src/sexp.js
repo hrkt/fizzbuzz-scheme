@@ -169,18 +169,13 @@ export class FsQuote extends FsSExp {
     // arg ... e.g.  [{"_value":"'"},{"_value":"a"}]
     // '(a (b)) => (a (b))
     const quoteList = arg
-    if (quoteList.at(0) instanceof FsList) {
-      const innerList = quoteList.at(0)
-      if (FsSymbol.SINGLE_QUOTE.equals(innerList.at(0))) {
-        log.debug('returning FsList starting with FsSybol.SINGLE_QUOTE')
-        return new FsList([innerList.at(0), FsQuote.proc(innerList.slice(1))])
-      } else {
-        log.debug('returning FsList')
-        return FsList.proc(innerList)
-      }
-    } else {
-      return new FsList(arg.value)
+    if (!(quoteList.at(0) instanceof FsList)) {
+      throw new FsException('syntax error: ' + arg)
     }
+
+    const innerList = quoteList.at(0)
+    log.debug('returning FsList')
+    return FsList.proc(innerList)
   }
 }
 
@@ -571,5 +566,20 @@ export class FsCons extends FsSExp {
     } else {
       return new FsPair(arg.at(0), arg.at(1))
     }
+  }
+}
+
+export class FsSyntaxQuasiQuote {
+  static proc (arg, env) {
+    const quoteList = arg
+    const innerList = quoteList.at(0)
+    log.debug('returning FsList')
+    return FsList.proc(innerList)
+  }
+}
+
+export class FsSyntaxUnquote {
+  static proc (arg, env) {
+    return arg
   }
 }
