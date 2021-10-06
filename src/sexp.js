@@ -6,11 +6,12 @@ import log from 'loglevel'
 
 import { FsAdjuster } from './adjuster.js'
 import { FsError, FsException } from './common.js'
-import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
+import { FsBoolean, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
 import { FsEnv } from './env.js'
 import { FsEvaluator } from './evaluator.js'
 import { FsParser } from './parser.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
+import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
 
 export class FsIf extends FsSExp {
@@ -163,26 +164,6 @@ export class FsBegin extends FsSExp {
   }
 }
 
-export class FsQuote extends FsSExp {
-  static proc (arg) {
-    // arg ... e.g.  [{"_value":"'"},{"_value":"a"}]
-    // '(a (b)) => (a (b))
-    const quoteList = arg
-    if (quoteList.at(0) instanceof FsList) {
-      const innerList = quoteList.at(0)
-      if (FsSymbol.SINGLE_QUOTE.equals(innerList.at(0))) {
-        log.debug('returning FsList starting with FsSybol.SINGLE_QUOTE')
-        return new FsList([innerList.at(0), FsQuote.proc(innerList.slice(1))])
-      } else {
-        log.debug('returning FsList')
-        return FsList.proc(innerList)
-      }
-    } else {
-      return new FsList(arg.value)
-    }
-  }
-}
-
 export class FsUndefined extends FsAtom {
   static UNDEFINED_ = new FsUndefined()
 
@@ -193,21 +174,7 @@ export class FsUndefined extends FsAtom {
   }
 }
 
-function ensureListContains (list, length) {
-  if (!(list instanceof FsList) || list.length !== length) {
-    throw new FsException('this procedure must take ' + length + ' argument(s) as list')
-  }
-}
-
-function ensureListContainsTwo (list) {
-  ensureListContains(list, 2)
-}
-
-function ensureListContainsOne (list) {
-  ensureListContains(list, 1)
-}
-
-export class FsProcedureAbs extends FsSExp {
+export class FspAbs extends FsSExp {
   static proc (list) {
     if (!(list.at(0) instanceof FsNumber)) {
       throw new FsException('arg must be number')
@@ -216,7 +183,7 @@ export class FsProcedureAbs extends FsSExp {
   }
 }
 
-export class FsProcedurePlus extends FsSExp {
+export class FspPlus extends FsSExp {
   static proc (list) {
     // for the readability, use this line
     // return new FsNumber(list.map(n => n.value).reduce((a, b) => a + b, 0))
@@ -237,13 +204,13 @@ export class FsProcedurePlus extends FsSExp {
   }
 }
 
-export class FsProcedureRound extends FsSExp {
+export class FspRound extends FsSExp {
   static proc (list) {
     return new FsNumber(Math.round(list.at(0).value))
   }
 }
 
-export class FsProcedureMultiply extends FsSExp {
+export class FspMultiply extends FsSExp {
   static proc (list) {
     if (list.length === 0) {
       return new FsNumber(1)
@@ -257,7 +224,7 @@ export class FsProcedureMultiply extends FsSExp {
   }
 }
 
-export class FsProcedureMinus extends FsSExp {
+export class FspMinus extends FsSExp {
   static proc (list) {
     if (list.length === 2) {
       return new FsNumber(list.at(0).value - list.at(1).value)
@@ -265,7 +232,7 @@ export class FsProcedureMinus extends FsSExp {
       return new FsNumber(-1 * (list.at(0).value))
     } else {
       // for the readability, use this line
-      // return new FsNumber(list.at(0).value - FsProcedurePlus.proc(list.slice(1)))
+      // return new FsNumber(list.at(0).value - FspPlus.proc(list.slice(1)))
 
       // for the performance, use lines below. it may be bit faster.
       //
@@ -278,7 +245,7 @@ export class FsProcedureMinus extends FsSExp {
   }
 }
 
-export class FsProcedureDivide extends FsSExp {
+export class FspDivide extends FsSExp {
   static proc (list) {
     if (list.length === 1) {
       // TODO: support rational number
@@ -288,7 +255,7 @@ export class FsProcedureDivide extends FsSExp {
         throw new FsException('divide by 0')
       }
     } else {
-      const divisor = FsProcedureMultiply.proc(list.slice(1))
+      const divisor = FspMultiply.proc(list.slice(1))
       if (divisor.value !== 0) {
         return new FsNumber(list.at(0).value / divisor.value)
       } else {
@@ -298,7 +265,7 @@ export class FsProcedureDivide extends FsSExp {
   }
 }
 
-export class FsProcedureMod extends FsSExp {
+export class FspMod extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
     const dividend = list.at(0).value
@@ -307,7 +274,7 @@ export class FsProcedureMod extends FsSExp {
   }
 }
 
-export class FsProcedurePow extends FsSExp {
+export class FspPow extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
     return new FsNumber(Math.pow(list.at(0).value, list.at(1).value))
@@ -334,58 +301,6 @@ export class FsEquals extends FsSExp {
   }
 }
 
-export class FsPredicateEq extends FsSExp {
-  static proc (list) {
-    ensureListContainsTwo(list)
-    const lhs = list.at(0)
-    const rhs = list.at(1)
-    if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
-      return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
-    } else if (lhs instanceof FsChar && rhs instanceof FsChar) {
-      return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
-    } else if (lhs instanceof FsSymbol && rhs instanceof FsSymbol) {
-      // ex. (eq? 'a 'a)
-      return lhs.value === rhs.value ? FsBoolean.TRUE : FsBoolean.FALSE
-    } else if (lhs instanceof FsList && rhs instanceof FsList) {
-      if (lhs.length === 0 && rhs.length === 0) {
-        return FsBoolean.TRUE
-      } else if ((lhs.length === 1 && rhs.length === 1) &&
-      (lhs.at(0) === rhs.at(0))) {
-        // ex. (let ((x \'(a))) (eq? x x)); 2 objects point the same object on the memory
-        // ; It is not the comparison between their values
-        return FsBoolean.TRUE
-      } else {
-        return FsBoolean.FALSE
-      }
-    } else {
-      // prerequisites: only ascii characters are permitted
-      return lhs === rhs ? FsBoolean.TRUE : FsBoolean.FALSE
-      // non-ascii
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
-      // return lhs.toString().normalize() === rhs.toString().normalize()? FsBoolean.TRUE : FsBoolean.FALSE
-    }
-  }
-}
-
-export class FsPredicateEqual extends FsSExp {
-  static proc (list) {
-    ensureListContainsTwo(list)
-    const lhs = list.at(0)
-    const rhs = list.at(1)
-
-    if (lhs instanceof FsList && rhs instanceof FsList) {
-      // TODO: this might not be fast, but works.
-      return JSON.stringify(lhs) === JSON.stringify(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
-    } else {
-      // prerequisites: only ascii characters are permitted
-      return lhs.toString() === rhs.toString() ? FsBoolean.TRUE : FsBoolean.FALSE
-      // non-ascii
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
-      // return lhs.toString().normalize() === rhs.toString().normalize()? FsBoolean.TRUE : FsBoolean.FALSE
-    }
-  }
-}
-
 export class FsNumberEquals extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
@@ -398,25 +313,25 @@ export class FsNumberEquals extends FsSExp {
   }
 }
 
-export class FsProcedureLt extends FsSExp {
+export class FspLt extends FsSExp {
   static proc (list) {
     return list.at(0).value < list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
-export class FsProcedureLte extends FsSExp {
+export class FspLte extends FsSExp {
   static proc (list) {
     return list.at(0).value <= list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
-export class FsProcedureGt extends FsSExp {
+export class FspGt extends FsSExp {
   static proc (list) {
     return list.at(0).value > list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
-export class FsProcedureGte extends FsSExp {
+export class FspGte extends FsSExp {
   static proc (list) {
     return list.at(0).value >= list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
@@ -451,13 +366,13 @@ export class FsNot extends FsSExp {
   }
 }
 
-export class FsProcedureVector extends FsSExp {
+export class FspVector extends FsSExp {
   static proc (list) {
     return new FsVector(list.value)
   }
 }
 
-export class FsProcedureVectorRef extends FsSExp {
+export class FspVectorRef extends FsSExp {
   static proc (list) {
     const vec = list.at(0)
     if (!(vec instanceof FsVector)) {
@@ -468,7 +383,7 @@ export class FsProcedureVectorRef extends FsSExp {
   }
 }
 
-export class FsProcedureMap extends FsSExp {
+export class FspMap extends FsSExp {
   static proc (list, env) {
     const p = list.at(0)
     const body = list.at(1)
@@ -480,21 +395,21 @@ export class FsProcedureMap extends FsSExp {
   }
 }
 
-export class FsProcedureMax extends FsSExp {
+export class FspMax extends FsSExp {
   static proc (list) {
     const target = list.value.map(fsn => fsn.value)
     return new FsNumber(Math.max(...target))
   }
 }
 
-export class FsProcedureMin extends FsSExp {
+export class FspMin extends FsSExp {
   static proc (list) {
     const target = list.value.map(fsn => fsn.value)
     return new FsNumber(Math.min(...target))
   }
 }
 
-export class FsProcedureAppend extends FsSExp {
+export class FspAppend extends FsSExp {
   static proc (list) {
     const newList = []
     for (let j = 0; j < list.length; j++) {
@@ -506,7 +421,7 @@ export class FsProcedureAppend extends FsSExp {
   }
 }
 
-export class FsProcedureSetCdr extends FsSExp {
+export class FspSetCdr extends FsSExp {
   static proc (list, env) {
     const evaledCurrent = FsEvaluator.eval(list.at(0), env)
     if (evaledCurrent instanceof FsPair) {
@@ -523,7 +438,7 @@ export class FsProcedureSetCdr extends FsSExp {
   }
 }
 
-export class FsProcedureLastPair extends FsSExp {
+export class FspLastPair extends FsSExp {
   static proc (list, env) {
     if (list.at(0).type === 'fspair') {
       let current = list.at(0)
@@ -558,7 +473,7 @@ export class FsNewline extends FsSExp {
   }
 }
 
-export class FsProcedureLoad extends FsSExp {
+export class FspLoad extends FsSExp {
   static proc (list, env) {
     // TODO: utilize this in cli.js and index.js
     const file = list.at(0).value
@@ -639,57 +554,26 @@ export class FsCons extends FsSExp {
   }
 }
 
-export class FsPredicateNull extends FsSExp {
-  static proc (list) {
-    return list.at(0) instanceof FsList && (list.at(0)).length === 0 ? FsBoolean.TRUE : FsBoolean.FALSE
+export class FsSyntaxQuasiQuote {
+  static proc (arg, env) {
+    env.markAsQuasiquoted()
+    if (arg instanceof FsList) {
+      const vbuf = []
+      for (let i = 0; i < arg.length; i++) {
+        if (arg.at(i) instanceof FsList && arg.at(i).at(0) === FsSymbol.UNQUOTE) {
+          vbuf.push(FsEvaluator.eval(arg.at(i).at(1), env))
+        } else {
+          vbuf.push(arg.at(i))
+        }
+      }
+      return new FsList(vbuf)
+    } else {
+      throw new Error('not implemented')
+    }
   }
 }
-
-export class FsPredicateBoolean extends FsSExp {
-  static proc (list) {
-    return list.at(0) instanceof FsBoolean ? FsBoolean.TRUE : FsBoolean.FALSE
-  }
-}
-
-export class FsPredicateList extends FsSExp {
-  static proc (list) {
-    return list.at(0) instanceof FsList ? FsBoolean.TRUE : FsBoolean.FALSE
-  }
-}
-
-export class FsPredicateNumber extends FsSExp {
-  static proc (list) {
-    return list.at(0) instanceof FsNumber ? FsBoolean.TRUE : FsBoolean.FALSE
-  }
-}
-
-export class FsPredicateSymbol extends FsSExp {
-  static proc (list, env) {
-    return (list.at(0) instanceof FsSymbol)
-      ? FsBoolean.TRUE
-      : FsBoolean.FALSE
-  }
-}
-
-export class FsPredicateProcedure extends FsSExp {
-  static proc (list) {
-    return list.at(0) instanceof FsDefinedProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
-  }
-}
-
-export class FsPredicatePair extends FsSExp {
-  static proc (list) {
-    return list.at(0) instanceof FsPair ||
-    (list.at(0) instanceof FsList && !FsList.isEmptyList(list.at(0)))
-      ? FsBoolean.TRUE
-      : FsBoolean.FALSE
-  }
-}
-
-export class FsPredicateVector extends FsSExp {
-  static proc (list) {
-    return list.at(0) instanceof FsVector
-      ? FsBoolean.TRUE
-      : FsBoolean.FALSE
+export class FsSyntaxUnquote {
+  static proc (arg, env) {
+    throw new FsException('syntax error: unquote is called not inside of the quasiquote')
   }
 }

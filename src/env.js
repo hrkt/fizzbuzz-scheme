@@ -4,7 +4,8 @@ import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
 import { FsList } from './datatypes.js'
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FsPeekMemoryUsage, FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector, FsProcedureAbs, FsProcedureAppend, FsProcedureDivide, FsProcedureGt, FsProcedureGte, FsProcedureLastPair, FsProcedureLoad, FsProcedureLt, FsProcedureLte, FsProcedureMap, FsProcedureMax, FsProcedureMin, FsProcedureMinus, FsProcedureMod, FsProcedureMultiply, FsProcedurePlus, FsProcedurePow, FsProcedureRound, FsProcedureSetCdr, FsProcedureVector, FsProcedureVectorRef, FsQuote, FsSet, FsWrite } from './sexp.js'
+import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FspAbs, FspAppend, FspDivide, FsPeekMemoryUsage, FspGt, FspGte, FspLastPair, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote, FsWrite } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Environment
@@ -98,6 +99,14 @@ export class FsEnv {
     }
   }
 
+  markAsQuasiquoted () {
+    this.vars.__FBS__QUASIQUOTED = true
+  }
+
+  isMarkedAsQuasiquoted () {
+    return this.vars.__FBS__QUASIQUOTED !== undefined && this.vars.__FBS__QUASIQUOTED
+  }
+
   toString () {
     if (this.outer === null) {
       return '>>ROOT'
@@ -115,33 +124,33 @@ export function getGlobalEnv () {
   log.setLevel('error')
 
   // used in eval-each-switches
-  env.set(FsSymbol.IF, FsIf)
-  env.set(FsSymbol.QUOTE, FsQuote)
-  env.set(FsSymbol.DEFINE, FsDefine)
-  env.set(FsSymbol.SET_, FsSet)
-  env.set(FsSymbol.SET_CDR_, FsProcedureSetCdr)
   env.set(FsSymbol.BEGIN, FsBegin)
+  env.set(FsSymbol.IF, FsIf)
+  env.set(FsSymbol.DEFINE, FsDefine)
   env.set(FsSymbol.LAMBDA, FsLambda)
   env.set(FsSymbol.LET, FsLet)
+  env.set(FsSymbol.QUOTE, null)
+  env.set(FsSymbol.SET_, FsSet)
+  env.set(FsSymbol.SET_CDR_, FspSetCdr)
 
   // used in eval-last
-  env.set(new FsSymbol('+'), FsProcedurePlus.proc)
+  env.set(new FsSymbol('+'), FspPlus.proc)
   // also we can provide JS function as value like below.
   // env.set(new FsSymbol('+'), (list) => { return new FsNumber(list.value.map(n => n.value).reduce((a, b) => a + b, 0)) })
-  env.set(new FsSymbol('-'), FsProcedureMinus.proc)
-  env.set(new FsSymbol('*'), FsProcedureMultiply.proc)
-  env.set(new FsSymbol('/'), FsProcedureDivide.proc)
-  env.set(new FsSymbol('mod'), FsProcedureMod.proc)
-  env.set(new FsSymbol('pow'), FsProcedurePow.proc)
+  env.set(new FsSymbol('-'), FspMinus.proc)
+  env.set(new FsSymbol('*'), FspMultiply.proc)
+  env.set(new FsSymbol('/'), FspDivide.proc)
+  env.set(new FsSymbol('mod'), FspMod.proc)
+  env.set(new FsSymbol('pow'), FspPow.proc)
   env.set(new FsSymbol('='), FsNumberEquals.proc)
-  env.set(new FsSymbol('<'), FsProcedureLt.proc)
-  env.set(new FsSymbol('<='), FsProcedureLte.proc)
-  env.set(new FsSymbol('>'), FsProcedureGt.proc)
-  env.set(new FsSymbol('>='), FsProcedureGte.proc)
+  env.set(new FsSymbol('<'), FspLt.proc)
+  env.set(new FsSymbol('<='), FspLte.proc)
+  env.set(new FsSymbol('>'), FspGt.proc)
+  env.set(new FsSymbol('>='), FspGte.proc)
   env.set(new FsSymbol('\''), FsSymbol.SINGLE_QUOTE.proc)
   env.set(new FsSymbol('and'), FsAnd.proc)
-  env.set(new FsSymbol('append'), FsProcedureAppend.proc)
-  env.set(new FsSymbol('abs'), FsProcedureAbs.proc)
+  env.set(new FsSymbol('append'), FspAppend.proc)
+  env.set(new FsSymbol('abs'), FspAbs.proc)
   env.set(new FsSymbol('boolean?'), FsPredicateBoolean.proc)
   env.set(new FsSymbol('car'), FsCar.proc)
   env.set(new FsSymbol('cdr'), FsCdr.proc)
@@ -149,23 +158,25 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('display'), FsDisplay.proc)
   env.set(new FsSymbol('eq?'), FsPredicateEq.proc)
   env.set(new FsSymbol('equal?'), FsPredicateEqual.proc)
-  env.set(new FsSymbol('last-pair'), FsProcedureLastPair.proc)
+  env.set(new FsSymbol('last-pair'), FspLastPair.proc)
   env.set(new FsSymbol('list'), FsList.proc)
   env.set(new FsSymbol('list?'), FsPredicateList.proc)
-  env.set(new FsSymbol('load'), FsProcedureLoad.proc)
+  env.set(new FsSymbol('load'), FspLoad.proc)
   env.set(new FsSymbol('newline'), FsNewline.proc)
-  env.set(new FsSymbol('map'), FsProcedureMap.proc)
-  env.set(new FsSymbol('max'), FsProcedureMax.proc)
-  env.set(new FsSymbol('min'), FsProcedureMin.proc)
+  env.set(new FsSymbol('map'), FspMap.proc)
+  env.set(new FsSymbol('max'), FspMax.proc)
+  env.set(new FsSymbol('min'), FspMin.proc)
   env.set(new FsSymbol('null?'), FsPredicateNull.proc)
   env.set(new FsSymbol('number?'), FsPredicateNumber.proc)
   env.set(new FsSymbol('not'), FsNot.proc)
   env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
-  env.set(new FsSymbol('round'), FsProcedureRound.proc)
+  // env.set(new FsSymbol('quasiquote'), FsSyntaxQuasiQuote.proc)
+  env.set(new FsSymbol('round'), FspRound.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
-  env.set(new FsSymbol('vector'), FsProcedureVector.proc)
-  env.set(new FsSymbol('vector-ref'), FsProcedureVectorRef.proc)
+  env.set(new FsSymbol('unquote'), FsSyntaxUnquote.proc)
+  env.set(new FsSymbol('vector'), FspVector.proc)
+  env.set(new FsSymbol('vector-ref'), FspVectorRef.proc)
   env.set(new FsSymbol('vector?'), FsPredicateVector.proc)
   env.set(new FsSymbol('write'), FsWrite.proc)
 
