@@ -12,7 +12,6 @@ import { FsEvaluator } from './evaluator.js'
 import { FsParser } from './parser.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
-import { FsSymbol } from './symbol.js'
 
 export class FsIf extends FsSExp {
   /**
@@ -161,21 +160,6 @@ export class FsBegin extends FsSExp {
     //   ret = FsEvaluator.eval(list[i], env)
     // }
     // return ret
-  }
-}
-
-export class FsQuote extends FsSExp {
-  static proc (arg) {
-    // arg ... e.g.  [{"_value":"'"},{"_value":"a"}]
-    // '(a (b)) => (a (b))
-    const quoteList = arg
-    if (!(quoteList.at(0) instanceof FsList)) {
-      throw new FsException('syntax error: ' + arg)
-    }
-
-    const innerList = quoteList.at(0)
-    log.debug('returning FsList')
-    return FsList.proc(innerList)
   }
 }
 
@@ -566,20 +550,5 @@ export class FsCons extends FsSExp {
     } else {
       return new FsPair(arg.at(0), arg.at(1))
     }
-  }
-}
-
-export class FsSyntaxQuasiQuote {
-  static proc (arg, env) {
-    const quoteList = arg
-    const innerList = quoteList.at(0)
-    log.debug('returning FsList')
-    return FsList.proc(innerList)
-  }
-}
-
-export class FsSyntaxUnquote {
-  static proc (arg, env) {
-    return arg
   }
 }

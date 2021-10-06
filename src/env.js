@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 import { FsList } from './datatypes.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FspAbs, FspAppend, FspDivide, FsPeekMemoryUsage, FspGt, FspGte, FspLastPair, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspVector, FspVectorRef, FsQuote, FsSet, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FspAbs, FspAppend, FspDivide, FsPeekMemoryUsage, FspGt, FspGte, FspLastPair, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspVector, FspVectorRef, FsSet, FsWrite } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Environment
@@ -99,6 +99,14 @@ export class FsEnv {
     }
   }
 
+  markAsQuasiquoted () {
+    this.vars.__FBS__QUASIQUOTED = true
+  }
+
+  isMarkedAsQuasiquoted () {
+    return this.vars.__FBS__QUASIQUOTED !== undefined && this.vars.__FBS__QUASIQUOTED
+  }
+
   toString () {
     if (this.outer === null) {
       return '>>ROOT'
@@ -117,7 +125,7 @@ export function getGlobalEnv () {
 
   // used in eval-each-switches
   env.set(FsSymbol.IF, FsIf)
-  env.set(FsSymbol.QUOTE, FsQuote)
+  env.set(FsSymbol.QUOTE, null)
   env.set(FsSymbol.DEFINE, FsDefine)
   env.set(FsSymbol.SET_, FsSet)
   env.set(FsSymbol.SET_CDR_, FspSetCdr)
@@ -163,8 +171,10 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('not'), FsNot.proc)
   env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
+  // env.set(new FsSymbol('quasiquote'), FsSyntaxQuasiQuote.proc)
   env.set(new FsSymbol('round'), FspRound.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
+  // env.set(new FsSymbol('unquote'), FsSyntaxUnquote.proc)
   env.set(new FsSymbol('vector'), FspVector.proc)
   env.set(new FsSymbol('vector-ref'), FspVectorRef.proc)
   env.set(new FsSymbol('vector?'), FsPredicateVector.proc)
