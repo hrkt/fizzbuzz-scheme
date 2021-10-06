@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsList } from './datatypes.js'
 import { FsEnv, getGlobalEnv } from './env.js'
-import { FsDefine, FsLambda, FsLet, FsProcedureSetCdr, FsSet } from './sexp.js'
+import { FsDefine, FsLambda, FsLet, FspSetCdr, FsSet } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Evaluator
@@ -50,7 +50,7 @@ export class FsEvaluator {
         } else if (FsSymbol.SET_ === firstSymbol) {
           return FsSet.proc(sexp.slice(1), env)
         } else if (FsSymbol.SET_CDR_ === firstSymbol) {
-          return FsProcedureSetCdr.proc(sexp.slice(1), env)
+          return FspSetCdr.proc(sexp.slice(1), env)
         } else if (FsSymbol.BEGIN === firstSymbol) {
           let ret = null
           for (let i = 1; i < sexp.length; i++) {

@@ -7,14 +7,14 @@ import { FsParser as FP } from '../src/parser.js'
 import { FsAdjuster } from './adjuster.js'
 import { FsList, FsString } from './datatypes.js'
 import { getGlobalEnv } from './env.js'
-import { FsProcedureLoad } from './sexp.js'
+import { FspLoad } from './sexp.js'
 
 // Environment
 export class FizzBuzzScheme {
   constructor () {
     this.env = getGlobalEnv()
     this.debugMode = false
-    FsProcedureLoad.proc(new FsList([new FsString('src/basic.scm')]), this.env)
+    FspLoad.proc(new FsList([new FsString('src/basic.scm')]), this.env)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('=======================================================================-')
     }

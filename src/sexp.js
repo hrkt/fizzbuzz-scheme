@@ -207,7 +207,7 @@ function ensureListContainsOne (list) {
   ensureListContains(list, 1)
 }
 
-export class FsProcedureAbs extends FsSExp {
+export class FspAbs extends FsSExp {
   static proc (list) {
     if (!(list.at(0) instanceof FsNumber)) {
       throw new FsException('arg must be number')
@@ -216,7 +216,7 @@ export class FsProcedureAbs extends FsSExp {
   }
 }
 
-export class FsProcedurePlus extends FsSExp {
+export class FspPlus extends FsSExp {
   static proc (list) {
     // for the readability, use this line
     // return new FsNumber(list.map(n => n.value).reduce((a, b) => a + b, 0))
@@ -237,13 +237,13 @@ export class FsProcedurePlus extends FsSExp {
   }
 }
 
-export class FsProcedureRound extends FsSExp {
+export class FspRound extends FsSExp {
   static proc (list) {
     return new FsNumber(Math.round(list.at(0).value))
   }
 }
 
-export class FsProcedureMultiply extends FsSExp {
+export class FspMultiply extends FsSExp {
   static proc (list) {
     if (list.length === 0) {
       return new FsNumber(1)
@@ -257,7 +257,7 @@ export class FsProcedureMultiply extends FsSExp {
   }
 }
 
-export class FsProcedureMinus extends FsSExp {
+export class FspMinus extends FsSExp {
   static proc (list) {
     if (list.length === 2) {
       return new FsNumber(list.at(0).value - list.at(1).value)
@@ -265,7 +265,7 @@ export class FsProcedureMinus extends FsSExp {
       return new FsNumber(-1 * (list.at(0).value))
     } else {
       // for the readability, use this line
-      // return new FsNumber(list.at(0).value - FsProcedurePlus.proc(list.slice(1)))
+      // return new FsNumber(list.at(0).value - FspPlus.proc(list.slice(1)))
 
       // for the performance, use lines below. it may be bit faster.
       //
@@ -278,7 +278,7 @@ export class FsProcedureMinus extends FsSExp {
   }
 }
 
-export class FsProcedureDivide extends FsSExp {
+export class FspDivide extends FsSExp {
   static proc (list) {
     if (list.length === 1) {
       // TODO: support rational number
@@ -288,7 +288,7 @@ export class FsProcedureDivide extends FsSExp {
         throw new FsException('divide by 0')
       }
     } else {
-      const divisor = FsProcedureMultiply.proc(list.slice(1))
+      const divisor = FspMultiply.proc(list.slice(1))
       if (divisor.value !== 0) {
         return new FsNumber(list.at(0).value / divisor.value)
       } else {
@@ -298,7 +298,7 @@ export class FsProcedureDivide extends FsSExp {
   }
 }
 
-export class FsProcedureMod extends FsSExp {
+export class FspMod extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
     const dividend = list.at(0).value
@@ -307,7 +307,7 @@ export class FsProcedureMod extends FsSExp {
   }
 }
 
-export class FsProcedurePow extends FsSExp {
+export class FspPow extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
     return new FsNumber(Math.pow(list.at(0).value, list.at(1).value))
@@ -398,25 +398,25 @@ export class FsNumberEquals extends FsSExp {
   }
 }
 
-export class FsProcedureLt extends FsSExp {
+export class FspLt extends FsSExp {
   static proc (list) {
     return list.at(0).value < list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
-export class FsProcedureLte extends FsSExp {
+export class FspLte extends FsSExp {
   static proc (list) {
     return list.at(0).value <= list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
-export class FsProcedureGt extends FsSExp {
+export class FspGt extends FsSExp {
   static proc (list) {
     return list.at(0).value > list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
-export class FsProcedureGte extends FsSExp {
+export class FspGte extends FsSExp {
   static proc (list) {
     return list.at(0).value >= list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
   }
@@ -451,13 +451,13 @@ export class FsNot extends FsSExp {
   }
 }
 
-export class FsProcedureVector extends FsSExp {
+export class FspVector extends FsSExp {
   static proc (list) {
     return new FsVector(list.value)
   }
 }
 
-export class FsProcedureVectorRef extends FsSExp {
+export class FspVectorRef extends FsSExp {
   static proc (list) {
     const vec = list.at(0)
     if (!(vec instanceof FsVector)) {
@@ -468,7 +468,7 @@ export class FsProcedureVectorRef extends FsSExp {
   }
 }
 
-export class FsProcedureMap extends FsSExp {
+export class FspMap extends FsSExp {
   static proc (list, env) {
     const p = list.at(0)
     const body = list.at(1)
@@ -480,21 +480,21 @@ export class FsProcedureMap extends FsSExp {
   }
 }
 
-export class FsProcedureMax extends FsSExp {
+export class FspMax extends FsSExp {
   static proc (list) {
     const target = list.value.map(fsn => fsn.value)
     return new FsNumber(Math.max(...target))
   }
 }
 
-export class FsProcedureMin extends FsSExp {
+export class FspMin extends FsSExp {
   static proc (list) {
     const target = list.value.map(fsn => fsn.value)
     return new FsNumber(Math.min(...target))
   }
 }
 
-export class FsProcedureAppend extends FsSExp {
+export class FspAppend extends FsSExp {
   static proc (list) {
     const newList = []
     for (let j = 0; j < list.length; j++) {
@@ -506,7 +506,7 @@ export class FsProcedureAppend extends FsSExp {
   }
 }
 
-export class FsProcedureSetCdr extends FsSExp {
+export class FspSetCdr extends FsSExp {
   static proc (list, env) {
     const evaledCurrent = FsEvaluator.eval(list.at(0), env)
     if (evaledCurrent instanceof FsPair) {
@@ -523,7 +523,7 @@ export class FsProcedureSetCdr extends FsSExp {
   }
 }
 
-export class FsProcedureLastPair extends FsSExp {
+export class FspLastPair extends FsSExp {
   static proc (list, env) {
     if (list.at(0).type === 'fspair') {
       let current = list.at(0)
@@ -558,7 +558,7 @@ export class FsNewline extends FsSExp {
   }
 }
 
-export class FsProcedureLoad extends FsSExp {
+export class FspLoad extends FsSExp {
   static proc (list, env) {
     // TODO: utilize this in cli.js and index.js
     const file = list.at(0).value
