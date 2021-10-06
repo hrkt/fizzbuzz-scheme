@@ -12,6 +12,7 @@ import { FsEvaluator } from './evaluator.js'
 import { FsParser } from './parser.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
+import { FsSymbol } from './symbol.js'
 
 export class FsIf extends FsSExp {
   /**
@@ -550,5 +551,29 @@ export class FsCons extends FsSExp {
     } else {
       return new FsPair(arg.at(0), arg.at(1))
     }
+  }
+}
+
+export class FsSyntaxQuasiQuote {
+  static proc (arg, env) {
+    env.markAsQuasiquoted()
+    if (arg instanceof FsList) {
+      const vbuf = []
+      for (let i = 0; i < arg.length; i++) {
+        if (arg.at(i) instanceof FsList && arg.at(i).at(0) === FsSymbol.UNQUOTE) {
+          vbuf.push(FsEvaluator.eval(arg.at(i).at(1), env))
+        } else {
+          vbuf.push(arg.at(i))
+        }
+      }
+      return new FsList(vbuf)
+    } else {
+      throw new Error('not implemented')
+    }
+  }
+}
+export class FsSyntaxUnquote {
+  static proc (arg, env) {
+    throw new FsException('syntax error: unquote is called not inside of the quasiquote')
   }
 }
