@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsAtom } from './sexpbase'
+import { FsAtom } from './sexpbase.js'
 
 export class FsSymbol extends FsAtom {
     static IF = Object.freeze(new FsSymbol('if'))
