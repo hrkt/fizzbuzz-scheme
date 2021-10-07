@@ -50,7 +50,7 @@ export class FsParser {
       }
 
       // found brackets or quote chars, then use it as token and continue.
-      if (c === '(' || c === ')' || c === '\'') {
+      if (c === '(' || c === ')' || c === '\'' || c === '`' || c === ',') {
         tokenList.push(c)
         i++
         continue
@@ -146,10 +146,16 @@ export class FsParser {
   static readTokens (tokenized, inQuoted = false) {
     const t = tokenized.shift()
     // quoted
-    if (t === '\'') {
+    if (t === '\'' || t === '`' || t === ',') {
       const l = new FsList()
       // l.push(FsParser.element('\''))
-      l.push(FsSymbol.SINGLE_QUOTE)
+      if (t === '\'') {
+        l.push(FsSymbol.SINGLE_QUOTE)
+      } else if (t === '`') {
+        l.push(FsSymbol.BACK_QUOTE)
+      } else if (t === ',') {
+        l.push(FsSymbol.COMMA)
+      }
       l.push(FsParser.readTokens(tokenized, true))
       log.trace('created array : ' + l.length + ' of ' + l)
 

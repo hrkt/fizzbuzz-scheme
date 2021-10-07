@@ -138,6 +138,15 @@ test('✅4.2.3_2', () => {
   mockStdoutWrite.mockRestore()
 })
 
+test('🚧4.2.6', () => {
+  expect(new FBS().eval('`(list ,(+ 1 2) 4)').toString()).toBe('(list 3 4)')
+  expect(new FBS().eval('(let ((name \'a)) `(list ,name \',name))').toString()).toBe('(list a (quote a))')
+
+  expect(new FBS().eval('(quasiquote (list (unquote (+ 1 2)) 4))').toString()).toBe('(list 3 4)')
+  // expect(new FBS().eval('(quasiquote (list (unquote (+ 1 2)) 4))').toString()).toBe('`(list ,(+ 1 2) 4)') //  may vary between implementations.
+  expect(new FBS().eval('\'(quasiquote (list (unquote (+ 1 2)) 4))').toString()).toBe('(quasiquote (list (unquote (+ 1 2)) 4))')
+})
+
 // 5. Program structure
 
 // 6. Standard procedures

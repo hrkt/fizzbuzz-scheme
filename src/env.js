@@ -124,6 +124,7 @@ export function getGlobalEnv () {
   log.setLevel('error')
 
   // used in eval-each-switches
+  env.set(FsSymbol.BACK_QUOTE, null)
   env.set(FsSymbol.BEGIN, FsBegin)
   env.set(FsSymbol.IF, FsIf)
   env.set(FsSymbol.DEFINE, FsDefine)

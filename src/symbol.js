@@ -3,7 +3,9 @@
 import { FsAtom } from './sexpbase.js'
 
 export class FsSymbol extends FsAtom {
+  static BACK_QUOTE = Object.freeze(new FsSymbol('`'))
   static BEGIN = Object.freeze(new FsSymbol('begin'))
+  static COMMA = Object.freeze(new FsSymbol(','))
   static DOT = Object.freeze(new FsSymbol('.'))
   static DEFINE = Object.freeze(new FsSymbol('define'))
   static IF = Object.freeze(new FsSymbol('if'))
@@ -19,8 +21,12 @@ export class FsSymbol extends FsAtom {
     switch (str) {
       case '.':
         return this.DOT
+      case ',':
+        return this.COMMA
       case '\'':
         return this.SINGLE_QUOTE
+      case '`':
+        return this.BACK_QUOTE
       case 'begin':
         return this.BEGIN
       case 'define':

@@ -560,15 +560,26 @@ export class FsSyntaxQuasiQuote {
     if (arg instanceof FsList) {
       const vbuf = []
       for (let i = 0; i < arg.length; i++) {
-        if (arg.at(i) instanceof FsList && arg.at(i).at(0) === FsSymbol.UNQUOTE) {
+        if (arg.at(i) instanceof FsList &&
+        (arg.at(i).at(0) === FsSymbol.UNQUOTE || arg.at(i).at(0) === FsSymbol.COMMA)) {
           vbuf.push(FsEvaluator.eval(arg.at(i).at(1), env))
         } else {
-          vbuf.push(arg.at(i))
+          if (arg.at(i) instanceof FsList &&
+         (arg.at(i).at(0) && arg.at(i).at(0) === FsSymbol.SINGLE_QUOTE) &&
+        (arg.at(i).at(1) && arg.at(i).at(1).at(0) === FsSymbol.COMMA)) {
+            // e.g. (let ((name 'a)) `(list ,name ',name))
+            const l = new FsList()
+            l.push(FsSymbol.QUOTE)
+            l.push(FsEvaluator.eval(arg.at(i).at(1).at(1), env))
+            vbuf.push(l)
+          } else {
+            vbuf.push(arg.at(i))
+          }
         }
       }
       return new FsList(vbuf)
     } else {
-      throw new Error('not implemented')
+      return arg
     }
   }
 }
