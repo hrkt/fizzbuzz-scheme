@@ -3,6 +3,7 @@
 import { FsAtom } from './sexpbase.js'
 
 export class FsSymbol extends FsAtom {
+  static BACK_QUOTE = Object.freeze(new FsSymbol('`'))
   static BEGIN = Object.freeze(new FsSymbol('begin'))
   static DOT = Object.freeze(new FsSymbol('.'))
   static DEFINE = Object.freeze(new FsSymbol('define'))
@@ -21,6 +22,8 @@ export class FsSymbol extends FsAtom {
         return this.DOT
       case '\'':
         return this.SINGLE_QUOTE
+      case '`':
+        return this.BACK_QUOTE
       case 'begin':
         return this.BEGIN
       case 'define':

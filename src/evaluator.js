@@ -45,7 +45,7 @@ export class FsEvaluator {
           FsEvaluator.eval(sexp.at(1), env).value ? sexp = sexp.at(2) : sexp = sexp.at(3)
         } else if (FsSymbol.QUOTE === firstSymbol || FsSymbol.SINGLE_QUOTE === firstSymbol) {
           return sexp.at(1)
-        } else if (FsSymbol.QUASIQUOTE === firstSymbol) {
+        } else if (FsSymbol.QUASIQUOTE === firstSymbol || FsSymbol.BACK_QUOTE === firstSymbol) {
           return FsSyntaxQuasiQuote.proc(sexp.at(1), env)
         } else if (FsSymbol.DEFINE === firstSymbol) {
           return FsDefine.proc(sexp.slice(1), env)

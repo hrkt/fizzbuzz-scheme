@@ -568,7 +568,7 @@ export class FsSyntaxQuasiQuote {
       }
       return new FsList(vbuf)
     } else {
-      throw new Error('not implemented')
+      return arg
     }
   }
 }
