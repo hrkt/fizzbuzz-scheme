@@ -44,7 +44,12 @@ export class FsEvaluator {
         if (FsSymbol.IF === firstSymbol) {
           FsEvaluator.eval(sexp.at(1), env).value ? sexp = sexp.at(2) : sexp = sexp.at(3)
         } else if (FsSymbol.QUOTE === firstSymbol || FsSymbol.SINGLE_QUOTE === firstSymbol) {
-          return sexp.at(1)
+          if (env.isMarkedAsQuasiquoted() && sexp.at(1) === FsSymbol.COMMA) {
+            return FsEvaluator.eval(sexp.at(2), env)
+          } else {
+            // default
+            return sexp.at(1)
+          }
         } else if (FsSymbol.QUASIQUOTE === firstSymbol || FsSymbol.BACK_QUOTE === firstSymbol) {
           return FsSyntaxQuasiQuote.proc(sexp.at(1), env)
         } else if (FsSymbol.DEFINE === firstSymbol) {
