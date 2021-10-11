@@ -160,6 +160,7 @@ export function getGlobalEnv () {
   env.set(FsSymbol.QUOTE, null)
   env.set(FsSymbol.SET_, FsSet)
   env.set(FsSymbol.SET_CDR_, FspSetCdr)
+  env.set(FsSymbol.UNQUOTE, null) // treated inside of FsSyntaxQuasiQuote()
 
   // used in eval-last
   env.set(new FsSymbol('+'), FspPlus.proc)
@@ -203,7 +204,7 @@ export function getGlobalEnv () {
   // env.set(new FsSymbol('quasiquote'), FsSyntaxQuasiQuote.proc)
   env.set(new FsSymbol('round'), FspRound.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
-  env.set(new FsSymbol('unquote'), FsSyntaxUnquote.proc)
+  // env.set(new FsSymbol('unquote'), FsSyntaxUnquote.proc)
   env.set(new FsSymbol('vector'), FspVector.proc)
   env.set(new FsSymbol('vector-ref'), FspVectorRef.proc)
   env.set(new FsSymbol('vector?'), FsPredicateVector.proc)

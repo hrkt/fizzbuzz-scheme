@@ -602,16 +602,6 @@ export class FsSyntaxQuasiQuote {
 export class FsSyntaxUnquote {
   static proc (arg, env) {
     log.debug('UNQUOTE>>>>>' + arg)
-    const newEnv = new FsEnv(env)
-    newEnv.increaseUnquoteDepth()
-    if (newEnv.isUnquoteLevelIsEqualOrDeeperThanQuasiquoteLevel()) {
-      if (arg.at(1) instanceof FsList) {
-        return FsEvaluator.eval(arg.at(1), newEnv)
-      } else {
-        return FsEvaluator.eval(arg.slice(1), newEnv)
-      }
-    } else {
-      return arg
-    }
+    throw new Error('came here!')
   }
 }
