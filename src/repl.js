@@ -39,7 +39,7 @@ while (loop) {
     loadSamples(fbs)
   } else if (exp === 'd') {
     fbs.enableDebugMode()
-    fbs.eval('(define fib (lambda (n) (if (< n 2) n (+ (fib (- n 2)) (fib (- n 1))))))')
+    // fbs.eval('(define fib (lambda (n) (if (< n 2) n (+ (fib (- n 2)) (fib (- n 1))))))')
   } else if (exp === 'q') {
     console.log('bye.')
     loop = false
