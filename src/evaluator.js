@@ -35,21 +35,16 @@ export class FsEvaluator {
       } else if (sexp.type !== 'fslist') {
       // i.e. FsNumber, FsBoolean...
         return sexp
-      // } else if (sexp === FsList.EMPTY) {
         // after this case, "sexp" is a instance of FsList
       } else if (sexp.length === 0) {
         return FsList.EMPTY
       } else { // list-case
         const firstSymbol = sexp.at(0)
+
         if (FsSymbol.IF === firstSymbol) {
           FsEvaluator.eval(sexp.at(1), env).value ? sexp = sexp.at(2) : sexp = sexp.at(3)
         } else if (FsSymbol.QUOTE === firstSymbol || FsSymbol.SINGLE_QUOTE === firstSymbol) {
-          if (env.isMarkedAsQuasiquoted() && sexp.at(1) === FsSymbol.COMMA) {
-            return FsEvaluator.eval(sexp.at(2), env)
-          } else {
-            // default
-            return sexp.at(1)
-          }
+          return sexp.at(1)
         } else if (FsSymbol.QUASIQUOTE === firstSymbol || FsSymbol.BACK_QUOTE === firstSymbol) {
           return FsSyntaxQuasiQuote.proc(sexp.at(1), env)
         } else if (FsSymbol.DEFINE === firstSymbol) {
@@ -77,7 +72,6 @@ export class FsEvaluator {
           // for (let i = 0; i < sexp.length; i++) {
           //   evaled.push(FsEvaluator.eval(sexp[i], env))
           // }
-
           const p = FsEvaluator.eval(firstSymbol, env)
           if (p.type === 'fsdefinedprocedure') {
             const innerEnv = new FsEnv(p.env)
@@ -142,6 +136,7 @@ export class FsEvaluator {
             for (let i = 1; i < sexp.length; i++) {
               evaled.set(i - 1, FsEvaluator.eval(sexp.at(i), env))
             }
+            log.debug('p:' + p)
             return p(evaled, env) // for testing map
           }
         } // user-defined-proc or pre-defined proc
