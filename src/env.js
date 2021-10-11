@@ -3,21 +3,26 @@
 import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
-import { FsList } from './datatypes.js'
+import { FsList, FsNumber } from './datatypes.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
 import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FspAbs, FspAppend, FspDivide, FsPeekMemoryUsage, FspGt, FspGte, FspLastPair, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote, FsWrite } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
+const __FBS__QUASIQUOTE_LEVEL = '__FBS__QUASIQUOTE_LEVEL'
+const FBS_QUASIQUOTE_LEVEL = new FsSymbol(__FBS__QUASIQUOTE_LEVEL)
+const __FBS__UNQUOTE_LEVEL = '__FBS__UNQUOTE_LEVEL'
+const FBS_UNQUOTE_LEVEL = new FsSymbol(__FBS__UNQUOTE_LEVEL)
+
 // Environment
 export class FsEnv {
-  // static counter = 0
+  static counter = 0
 
   // use {} instead of new Map() because it is bit faster on benchmarking on fib(30)
   // constructor (outer = null, vars = new Map()) {
   constructor (outer = null, vars = Object.create(null)) {
     this.outer = outer
     this.vars = vars
-    // this._id = FsEnv.counter++
+    this._id = FsEnv.counter++
   }
 
   get id () {
@@ -99,12 +104,34 @@ export class FsEnv {
     }
   }
 
-  markAsQuasiquoted () {
-    this.vars.__FBS__QUASIQUOTED = true
+  increaseQuasiquoteDepth () {
+    const current = this.find(FBS_QUASIQUOTE_LEVEL)
+    const next = new FsNumber(current.value + 1)
+    const key = FsEnv.toKey(FBS_QUASIQUOTE_LEVEL)
+    this.vars[key] = next
   }
 
-  isMarkedAsQuasiquoted () {
-    return this.vars.__FBS__QUASIQUOTED !== undefined && this.vars.__FBS__QUASIQUOTED
+  increaseUnquoteDepth () {
+    const current = this.find(FBS_UNQUOTE_LEVEL)
+    const next = new FsNumber(current.value + 1)
+    const key = FsEnv.toKey(FBS_UNQUOTE_LEVEL)
+    this.vars[key] = next
+  }
+
+  isInQuasiquote () {
+    return (this.find(FBS_QUASIQUOTE_LEVEL)).value > 0
+  }
+
+  isSameQuasiquoteAndUnquoteLevel () {
+    const quasiquoteLevel = this.find(FBS_QUASIQUOTE_LEVEL)
+    const unquoteLevel = this.find(FBS_UNQUOTE_LEVEL)
+    return quasiquoteLevel.value === unquoteLevel.value
+  }
+
+  isUnquoteLevelIsEqualOrDeeperThanQuasiquoteLevel () {
+    const quasiquoteLevel = this.find(FBS_QUASIQUOTE_LEVEL)
+    const unquoteLevel = this.find(FBS_UNQUOTE_LEVEL)
+    return unquoteLevel.value >= quasiquoteLevel.value
   }
 
   toString () {
@@ -141,6 +168,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('-'), FspMinus.proc)
   env.set(new FsSymbol('*'), FspMultiply.proc)
   env.set(new FsSymbol('/'), FspDivide.proc)
+  env.set(new FsSymbol(','), FsSyntaxUnquote.proc)
   env.set(new FsSymbol('mod'), FspMod.proc)
   env.set(new FsSymbol('pow'), FspPow.proc)
   env.set(new FsSymbol('='), FsNumberEquals.proc)
@@ -185,6 +213,9 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('exit'), (list) => { list !== undefined && list.length > 0 ? process.exit(list.at(0).value) : process.exit(0) })
   env.set(new FsSymbol('fs-set-loglevel'), (list) => { list !== undefined && list.length === 1 ? log.setLevel(list.at(0).value) : process.exit(0) })
   env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage.proc)
+
+  env.set(FBS_QUASIQUOTE_LEVEL, new FsNumber(0))
+  env.set(FBS_UNQUOTE_LEVEL, new FsNumber(0))
 
   log.setLevel(prev)
   return env

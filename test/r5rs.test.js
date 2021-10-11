@@ -140,7 +140,16 @@ test('✅4.2.3_2', () => {
 
 test('🚧4.2.6', () => {
   expect(new FBS().eval('`(list ,(+ 1 2) 4)').toString()).toBe('(list 3 4)')
-  expect(new FBS().eval('(let ((name \'a)) `(list ,name \',name))').toString()).toBe('(list a (quote a))')
+  // expect(new FBS().eval('(let ((name \'a)) `(list ,name \',name))').toString()).toBe('(list a (quote a))')
+  expect(new FBS().eval('(let ((name \'a)) `(list ,name \',name))').toString()).toBe('(list a \'a)')
+
+  expect(new FBS().eval('`(a `(b ,(+ 1 2) ,(foo ,(+ 1 3) d) e) f)').toString()).toBe('(a `(b ,(+ 1 2) ,(foo 4 d) e) f)')
+  const code = `
+  (let ((name1 'x)
+  (name2 'y))
+  \`(a \`(b ,,name1 ,',name2 d) e))
+  `
+  expect(new FBS().eval(code).toString()).toBe('(a `(b ,x ,\'y d) e)')
 
   expect(new FBS().eval('(quasiquote (list (unquote (+ 1 2)) 4))').toString()).toBe('(list 3 4)')
   // expect(new FBS().eval('(quasiquote (list (unquote (+ 1 2)) 4))').toString()).toBe('`(list ,(+ 1 2) 4)') //  may vary between implementations.

@@ -555,36 +555,63 @@ export class FsCons extends FsSExp {
 }
 
 export class FsSyntaxQuasiQuote {
-  static proc (arg, env) {
-    env.markAsQuasiquoted()
-    if (arg instanceof FsList) {
-      const vbuf = []
-      for (let i = 0; i < arg.length; i++) {
-        if (arg.at(i) instanceof FsList &&
-        (arg.at(i).at(0) === FsSymbol.UNQUOTE || arg.at(i).at(0) === FsSymbol.COMMA)) {
-          vbuf.push(FsEvaluator.eval(arg.at(i).at(1), env))
-        } else {
-          if (arg.at(i) instanceof FsList &&
-         (arg.at(i).at(0) && arg.at(i).at(0) === FsSymbol.SINGLE_QUOTE) &&
-        (arg.at(i).at(1) && arg.at(i).at(1).at(0) === FsSymbol.COMMA)) {
-            // e.g. (let ((name 'a)) `(list ,name ',name))
-            const l = new FsList()
-            l.push(FsSymbol.QUOTE)
-            l.push(FsEvaluator.eval(arg.at(i).at(1).at(1), env))
-            vbuf.push(l)
-          } else {
-            vbuf.push(arg.at(i))
-          }
-        }
-      }
-      return new FsList(vbuf)
-    } else {
+  static procInner (arg, env) {
+    if (!(arg instanceof FsList)) {
       return arg
+    } else {
+      // arg is FsList
+      const t = arg.at(0)
+      if (t === FsSymbol.COMMA || t === FsSymbol.UNQUOTE) {
+        const newEnv = new FsEnv(env)
+        newEnv.increaseUnquoteDepth()
+        if (newEnv.isSameQuasiquoteAndUnquoteLevel()) {
+          // eval and replace
+          return FsEvaluator.eval(arg.at(1), newEnv)
+        } else {
+          // do not eval, preserve unquote
+          const buf = []
+          buf.push(t)
+          buf.push(this.procInner(arg.at(1), newEnv))
+          return new FsList(buf)
+        }
+      } else {
+        let nextEnv = null
+        if (t === FsSymbol.QUASIQUOTE || t === FsSymbol.BACK_QUOTE) {
+          nextEnv = new FsEnv(env)
+          env.increaseQuasiquoteDepth()
+        } else {
+          nextEnv = env
+        }
+
+        const buf = []
+        for (let i = 0; i < arg.length; i++) {
+          buf.push(this.procInner(arg.at(i), nextEnv))
+        }
+        return new FsList(buf)
+      }
     }
+  }
+
+  static proc (arg, env) {
+    // when we find "`", increase quote depth
+    const quotedEnv = new FsEnv(env)
+    quotedEnv.increaseQuasiquoteDepth()
+    return this.procInner(arg, quotedEnv)
   }
 }
 export class FsSyntaxUnquote {
   static proc (arg, env) {
-    throw new FsException('syntax error: unquote is called not inside of the quasiquote')
+    log.debug('UNQUOTE>>>>>' + arg)
+    const newEnv = new FsEnv(env)
+    newEnv.increaseUnquoteDepth()
+    if (newEnv.isUnquoteLevelIsEqualOrDeeperThanQuasiquoteLevel()) {
+      if (arg.at(1) instanceof FsList) {
+        return FsEvaluator.eval(arg.at(1), newEnv)
+      } else {
+        return FsEvaluator.eval(arg.slice(1), newEnv)
+      }
+    } else {
+      return arg
+    }
   }
 }

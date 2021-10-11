@@ -115,6 +115,12 @@ export class FsList extends FsSExp {
       if (this.value[0] && this.value[0].value === '\'') {
         log.debug('PRINTING AS SINGLE_QUOTE')
         return '\'' + this.value[1].toString()
+      } else if (this.value[0] && this.value[0].value === '`') {
+        log.debug('PRINTING AS QUASI_QUOTE')
+        return '`' + this.value[1].toString()
+      } else if (this.value[0] && this.value[0].value === ',') {
+        log.debug('PRINTING AS UNQUOTE')
+        return ',' + this.value[1].toString()
       } else {
         // TODO: this is not optimal, but pass sample code in R5RS
         log.debug('PRINTING AS LIST')
