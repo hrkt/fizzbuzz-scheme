@@ -561,7 +561,7 @@ export class FsSyntaxQuasiQuote {
     } else {
       // arg is FsList
       const t = arg.at(0)
-      if (t === FsSymbol.COMMA || t === FsSymbol.UNQUOTE) {
+      if (t === FsSymbol.COMMA || t === FsSymbol.UNQUOTE || t === FsSymbol.COMMA_FOLLOWED_BY_AT) {
         const newEnv = new FsEnv(env)
         newEnv.increaseUnquoteDepth()
         if (newEnv.isSameQuasiquoteAndUnquoteLevel()) {
@@ -585,7 +585,13 @@ export class FsSyntaxQuasiQuote {
 
         const buf = []
         for (let i = 0; i < arg.length; i++) {
-          buf.push(this.procInner(arg.at(i), nextEnv))
+          const t = arg.at(i)
+          if (t instanceof FsList && t.length > 1 && t.at(0) === FsSymbol.COMMA_FOLLOWED_BY_AT) {
+            const proced = this.procInner(t, nextEnv)
+            buf.push(...proced.value)
+          } else {
+            buf.push(this.procInner(t, nextEnv))
+          }
         }
         return new FsList(buf)
       }

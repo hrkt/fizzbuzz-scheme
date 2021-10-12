@@ -51,8 +51,14 @@ export class FsParser {
 
       // found brackets or quote chars, then use it as token and continue.
       if (c === '(' || c === ')' || c === '\'' || c === '`' || c === ',') {
-        tokenList.push(c)
-        i++
+        if (c === ',' && i + 1 < code.length && code.charAt(i + 1) === '@') {
+          // quasi-quote special case
+          tokenList.push(',@')
+          i++ // @
+        } else {
+          tokenList.push(c)
+        }
+        i++ // token
         continue
       }
 
@@ -146,7 +152,7 @@ export class FsParser {
   static readTokens (tokenized, inQuoted = false) {
     const t = tokenized.shift()
     // quoted
-    if (t === '\'' || t === '`' || t === ',') {
+    if (t === '\'' || t === '`' || t === ',' || t === ',@') {
       const l = new FsList()
       // l.push(FsParser.element('\''))
       if (t === '\'') {
@@ -155,6 +161,8 @@ export class FsParser {
         l.push(FsSymbol.BACK_QUOTE)
       } else if (t === ',') {
         l.push(FsSymbol.COMMA)
+      } else if (t === ',@') {
+        l.push(FsSymbol.COMMA_FOLLOWED_BY_AT)
       }
       l.push(FsParser.readTokens(tokenized, true))
       log.trace('created array : ' + l.length + ' of ' + l)
