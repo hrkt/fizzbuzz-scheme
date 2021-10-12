@@ -281,6 +281,12 @@ export class FspPow extends FsSExp {
   }
 }
 
+export class FspSqrt extends FsSExp {
+  static proc (list) {
+    return Math.sqrt(list.value)
+  }
+}
+
 // in scheme,
 // '=' checks two numbers are equal,
 // eqv?, eq are described in 6.1 https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.1
@@ -556,7 +562,7 @@ export class FsCons extends FsSExp {
 
 export class FsSyntaxQuasiQuote {
   static procInner (arg, env) {
-    if (!(arg instanceof FsList)) {
+    if (!(arg instanceof FsList || arg instanceof FsVector)) {
       return arg
     } else {
       // arg is FsList
@@ -593,7 +599,11 @@ export class FsSyntaxQuasiQuote {
             buf.push(this.procInner(t, nextEnv))
           }
         }
-        return new FsList(buf)
+        if (arg instanceof FsList) {
+          return new FsList(buf)
+        } else {
+          return new FsVector(buf)
+        }
       }
     }
   }
