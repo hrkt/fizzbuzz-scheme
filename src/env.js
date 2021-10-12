@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 import { FsList, FsNumber } from './datatypes.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FspAbs, FspAppend, FspDivide, FsPeekMemoryUsage, FspGt, FspGte, FspLastPair, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FspAbs, FspAppend, FspDivide, FsPeekMemoryUsage, FspGt, FspGte, FspLastPair, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote, FsWrite } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 const __FBS__QUASIQUOTE_LEVEL = '__FBS__QUASIQUOTE_LEVEL'
@@ -160,6 +160,7 @@ export function getGlobalEnv () {
   env.set(FsSymbol.QUOTE, null)
   env.set(FsSymbol.SET_, FsSet)
   env.set(FsSymbol.SET_CDR_, FspSetCdr)
+  env.set(FsSymbol.UNQUOTE, null) // treated inside of FsSyntaxQuasiQuote()
 
   // used in eval-last
   env.set(new FsSymbol('+'), FspPlus.proc)
@@ -202,8 +203,9 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
   // env.set(new FsSymbol('quasiquote'), FsSyntaxQuasiQuote.proc)
   env.set(new FsSymbol('round'), FspRound.proc)
+  env.set(new FsSymbol('sqrt'), FspSqrt.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
-  env.set(new FsSymbol('unquote'), FsSyntaxUnquote.proc)
+  // env.set(new FsSymbol('unquote'), FsSyntaxUnquote.proc)
   env.set(new FsSymbol('vector'), FspVector.proc)
   env.set(new FsSymbol('vector-ref'), FspVectorRef.proc)
   env.set(new FsSymbol('vector?'), FsPredicateVector.proc)

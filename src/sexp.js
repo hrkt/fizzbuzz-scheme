@@ -281,6 +281,12 @@ export class FspPow extends FsSExp {
   }
 }
 
+export class FspSqrt extends FsSExp {
+  static proc (list) {
+    return Math.sqrt(list.value)
+  }
+}
+
 // in scheme,
 // '=' checks two numbers are equal,
 // eqv?, eq are described in 6.1 https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.1
@@ -556,12 +562,12 @@ export class FsCons extends FsSExp {
 
 export class FsSyntaxQuasiQuote {
   static procInner (arg, env) {
-    if (!(arg instanceof FsList)) {
+    if (!(arg instanceof FsList || arg instanceof FsVector)) {
       return arg
     } else {
       // arg is FsList
       const t = arg.at(0)
-      if (t === FsSymbol.COMMA || t === FsSymbol.UNQUOTE) {
+      if (t === FsSymbol.COMMA || t === FsSymbol.UNQUOTE || t === FsSymbol.COMMA_FOLLOWED_BY_AT) {
         const newEnv = new FsEnv(env)
         newEnv.increaseUnquoteDepth()
         if (newEnv.isSameQuasiquoteAndUnquoteLevel()) {
@@ -585,9 +591,19 @@ export class FsSyntaxQuasiQuote {
 
         const buf = []
         for (let i = 0; i < arg.length; i++) {
-          buf.push(this.procInner(arg.at(i), nextEnv))
+          const t = arg.at(i)
+          if (t instanceof FsList && t.length > 1 && t.at(0) === FsSymbol.COMMA_FOLLOWED_BY_AT) {
+            const proced = this.procInner(t, nextEnv)
+            buf.push(...proced.value)
+          } else {
+            buf.push(this.procInner(t, nextEnv))
+          }
         }
-        return new FsList(buf)
+        if (arg instanceof FsList) {
+          return new FsList(buf)
+        } else {
+          return new FsVector(buf)
+        }
       }
     }
   }
@@ -602,16 +618,6 @@ export class FsSyntaxQuasiQuote {
 export class FsSyntaxUnquote {
   static proc (arg, env) {
     log.debug('UNQUOTE>>>>>' + arg)
-    const newEnv = new FsEnv(env)
-    newEnv.increaseUnquoteDepth()
-    if (newEnv.isUnquoteLevelIsEqualOrDeeperThanQuasiquoteLevel()) {
-      if (arg.at(1) instanceof FsList) {
-        return FsEvaluator.eval(arg.at(1), newEnv)
-      } else {
-        return FsEvaluator.eval(arg.slice(1), newEnv)
-      }
-    } else {
-      return arg
-    }
+    throw new Error('came here!')
   }
 }

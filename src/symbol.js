@@ -6,6 +6,7 @@ export class FsSymbol extends FsAtom {
   static BACK_QUOTE = Object.freeze(new FsSymbol('`'))
   static BEGIN = Object.freeze(new FsSymbol('begin'))
   static COMMA = Object.freeze(new FsSymbol(','))
+  static COMMA_FOLLOWED_BY_AT = Object.freeze(new FsSymbol(',@'))
   static DOT = Object.freeze(new FsSymbol('.'))
   static DEFINE = Object.freeze(new FsSymbol('define'))
   static IF = Object.freeze(new FsSymbol('if'))
@@ -23,6 +24,8 @@ export class FsSymbol extends FsAtom {
         return this.DOT
       case ',':
         return this.COMMA
+      case ',@':
+        return this.COMMA_FOLLOWED_BY_AT
       case '\'':
         return this.SINGLE_QUOTE
       case '`':

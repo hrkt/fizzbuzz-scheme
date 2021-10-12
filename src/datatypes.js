@@ -168,6 +168,10 @@ export class FsVector extends FsSExp {
     return this.value[index]
   }
 
+  get length () {
+    return this.value.length
+  }
+
   toString () {
     return '#(' + this.value.map(s => s.toString()).join(' ') + ')'
   }
