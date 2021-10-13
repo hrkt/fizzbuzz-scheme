@@ -138,7 +138,8 @@ test('✅4.2.3_2', () => {
   mockStdoutWrite.mockRestore()
 })
 
-test('🚧4.2.6', () => {
+// all cleared 😊
+test('✅4.2.6', () => {
   expect(new FBS().eval('`(list ,(+ 1 2) 4)').toString()).toBe('(list 3 4)')
   // expect(new FBS().eval('(let ((name \'a)) `(list ,name \',name))').toString()).toBe('(list a (quote a))')
   expect(new FBS().eval('(let ((name \'a)) `(list ,name \',name))').toString()).toBe('(list a \'a)')
@@ -152,6 +153,7 @@ test('🚧4.2.6', () => {
   expect(new FBS().eval(code).toString()).toBe('(a `(b ,x ,\'y d) e)')
 
   expect(new FBS().eval('`(a ,(+ 1 2) ,@(map abs \'(4 -5 6)) b)').toString()).toBe('(a 3 4 5 6 b)')
+  expect(new FBS().eval('`(( foo ,(- 10 3)) ,@(cdr \'(c)) . ,(car \'(cons)))').toString()).toBe('((foo 7) . cons)')
   expect(new FBS().eval('`#(10 5 ,(sqrt 4) ,@(map sqrt \'(16 9)) 8) ').toString()).toBe('#(10 5 2 4 3 8)')
 
   expect(new FBS().eval('(quasiquote (list (unquote (+ 1 2)) 4))').toString()).toBe('(list 3 4)')

@@ -1,6 +1,6 @@
 {
   "name": "fizzbuzz-scheme",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "A tiny scheme subset interpreter that can evaluate fizz-buzz code.",
   "main": "src/index.js",
   "scripts": {
