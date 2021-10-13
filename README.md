@@ -88,6 +88,7 @@ $ npm run majestic
 - ✅[sequencing](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.3)
 - ✅(partly)[Proper tail recursion](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-6.html#%_sec_3.5)
 - ✅some predicates for type-checking (boolean?, null?, number?, procedure?, symbol?)
+- ✅[quasiquotation](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.6)
 
 Test cases for a few part of R5RS are in [r5rs.test.js](test/r5rs.test.js)
 
@@ -99,8 +100,6 @@ _many_ feachers like ...
 - ❌[macro](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.3)
 - ❌call with current continuation
 - ❌ports other than CLI
-- ❌[quasiquotation](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.6)
-
 
 ## Fizz-Buzz Scheme original procedures
 

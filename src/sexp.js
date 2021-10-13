@@ -597,34 +597,36 @@ export class FsSyntaxQuasiQuote {
 
         // pair
         if (arg instanceof FsPair) {
-          const currentTargetPair = arg
+          let currentPair = arg
 
-          let car = null
-          let cdr = null
+          const retPairRoot = new FsPair()
+          let retPairTail = retPairRoot
+          retPairTail.car = this.procInner(currentPair.car, nextEnv)
 
-          const tcar = currentTargetPair.car
-          if (tcar instanceof FsList && tcar.length > 1 && tcar.at(0) === FsSymbol.COMMA_FOLLOWED_BY_AT) {
-            const buf = []
-            const proced = this.procInner(tcar, nextEnv)
-            buf.push(...proced.value)
-            car = new FsList(buf)
-          } else {
-            car = this.procInner(tcar, nextEnv)
-          }
+          do {
+            currentPair = currentPair.cdr
+            const newPair = new FsPair()
+            retPairTail.cdr = newPair
+            // treat ,@
+            // newPair.car = this.procInner(currentPair.car, nextEnv)
+            const t = currentPair.car
+            if (t instanceof FsList && t.length > 1 && t.at(0) === FsSymbol.COMMA_FOLLOWED_BY_AT) {
+              const proced = this.procInner(t, nextEnv)
+              if (proced instanceof FsList && proced.length === 0) {
+                // edge case
+                // do not append ()
+              } else {
+                newPair.car = proced
+                retPairTail = newPair
+              }
+            } else {
+              newPair.car = this.procInner(currentPair.car, nextEnv)
+              retPairTail = newPair
+            }
+          } while (currentPair.cdr instanceof FsPair)
+          retPairTail.cdr = this.procInner(currentPair.cdr, nextEnv)
 
-          const tcdr = currentTargetPair.cdr
-          if (tcdr instanceof FsList && tcdr.length > 1 && tcdr.at(0) === FsSymbol.COMMA_FOLLOWED_BY_AT) {
-            const buf = []
-            const proced = this.procInner(tcdr, nextEnv)
-            buf.push(...proced.value)
-            cdr = new FsList(buf)
-          } else {
-            cdr = this.procInner(tcdr, nextEnv)
-          }
-
-          // const retPair = FsCons.proc(new FsList([car, cdr]), nextEnv)
-          const retPair = new FsPair(car, cdr)
-          return retPair
+          return retPairRoot
         }
 
         // list and vector
