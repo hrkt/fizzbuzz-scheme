@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsVector } from './datatypes.js'
+import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
 import { FsDefinedProcedure } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsTwo } from './sexputils.js'
@@ -90,6 +90,24 @@ export class FsPredicateEq extends FsSExp {
       // non-ascii
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
       // return lhs.toString().normalize() === rhs.toString().normalize()? FsBoolean.TRUE : FsBoolean.FALSE
+    }
+  }
+}
+
+export class FsPredicateEqv extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const lhs = list.at(0)
+    const rhs = list.at(1)
+
+    if ((lhs === FsBoolean.TRUE && rhs === FsBoolean.TRUE) ||
+      (lhs === FsBoolean.FALSE && rhs === FsBoolean.FALSE)) {
+      return FsBoolean.TRUE
+    } else if (lhs instanceof FsSymbol && rhs instanceof FsSymbol &&
+      lhs.value === rhs.value) {
+      return FsBoolean.TRUE
+    } else {
+      return FsBoolean.FALSE
     }
   }
 }

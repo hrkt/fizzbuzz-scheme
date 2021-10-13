@@ -372,6 +372,12 @@ export class FsNot extends FsSExp {
   }
 }
 
+export class FspSymbolToString extends FsSExp {
+  static proc (list) {
+    return new FsString(list.at(0).value)
+  }
+}
+
 export class FspVector extends FsSExp {
   static proc (list) {
     return new FsVector(list.value)
@@ -565,7 +571,7 @@ export class FsSyntaxQuasiQuote {
     if (!(arg instanceof FsList || arg instanceof FsVector)) {
       return arg
     } else {
-      // arg is FsList
+      // arg is FsList or FsVector or FsPair
       const t = arg.at(0)
       if (t === FsSymbol.COMMA || t === FsSymbol.UNQUOTE || t === FsSymbol.COMMA_FOLLOWED_BY_AT) {
         const newEnv = new FsEnv(env)
@@ -589,6 +595,39 @@ export class FsSyntaxQuasiQuote {
           nextEnv = env
         }
 
+        // pair
+        if (arg instanceof FsPair) {
+          const currentTargetPair = arg
+
+          let car = null
+          let cdr = null
+
+          const tcar = currentTargetPair.car
+          if (tcar instanceof FsList && tcar.length > 1 && tcar.at(0) === FsSymbol.COMMA_FOLLOWED_BY_AT) {
+            const buf = []
+            const proced = this.procInner(tcar, nextEnv)
+            buf.push(...proced.value)
+            car = new FsList(buf)
+          } else {
+            car = this.procInner(tcar, nextEnv)
+          }
+
+          const tcdr = currentTargetPair.cdr
+          if (tcdr instanceof FsList && tcdr.length > 1 && tcdr.at(0) === FsSymbol.COMMA_FOLLOWED_BY_AT) {
+            const buf = []
+            const proced = this.procInner(tcdr, nextEnv)
+            buf.push(...proced.value)
+            cdr = new FsList(buf)
+          } else {
+            cdr = this.procInner(tcdr, nextEnv)
+          }
+
+          // const retPair = FsCons.proc(new FsList([car, cdr]), nextEnv)
+          const retPair = new FsPair(car, cdr)
+          return retPair
+        }
+
+        // list and vector
         const buf = []
         for (let i = 0; i < arg.length; i++) {
           const t = arg.at(i)
@@ -599,10 +638,13 @@ export class FsSyntaxQuasiQuote {
             buf.push(this.procInner(t, nextEnv))
           }
         }
+
         if (arg instanceof FsList) {
           return new FsList(buf)
-        } else {
+        } else if (arg instanceof FsVector) {
           return new FsVector(buf)
+        } else {
+          throw new Error('unsupported datatype' + arg)
         }
       }
     }
