@@ -163,6 +163,15 @@ test('🚧4.2.6', () => {
 
 // 6. Standard procedures
 
+test('🚧6.1_1', () => {
+  // eq? checks 2 objects point the same point of memory
+  expect(new FBS().eval('(eqv? #t #t').toString()).toBe('#t')
+  expect(new FBS().eval('(eqv? #f #f').toString()).toBe('#t')
+
+  expect(new FBS().eval('(eqv? \'a \'a)').toString()).toBe('#t')
+  expect(new FBS().eval('(eqv? \'a \'b)').toString()).toBe('#f')
+})
+
 // (eq? "" "")                             ===>  unspecified
 // (eq? '() '())                           ===>  #t
 // (eq? 2 2)                               ===>  unspecified

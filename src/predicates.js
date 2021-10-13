@@ -94,6 +94,24 @@ export class FsPredicateEq extends FsSExp {
   }
 }
 
+export class FsPredicateEqv extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const lhs = list.at(0)
+    const rhs = list.at(1)
+
+    if ((lhs === FsBoolean.TRUE && rhs === FsBoolean.TRUE) ||
+      (lhs === FsBoolean.FALSE && rhs === FsBoolean.FALSE)) {
+      return FsBoolean.TRUE
+    } else if (lhs instanceof FsSymbol && rhs instanceof FsSymbol &&
+      lhs.value === rhs.value) {
+      return FsBoolean.TRUE
+    } else {
+      return FsBoolean.FALSE
+    }
+  }
+}
+
 export class FsPredicateEqual extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
