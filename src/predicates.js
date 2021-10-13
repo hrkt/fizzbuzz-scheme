@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
+import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsVector } from './datatypes.js'
 import { FsDefinedProcedure } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsTwo } from './sexputils.js'
