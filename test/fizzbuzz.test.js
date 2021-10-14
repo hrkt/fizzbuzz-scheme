@@ -8,11 +8,10 @@ import { FizzBuzzScheme } from '../src/index.js'
 // log.setLevel('debug')
 
 function testStdoutCalled (fbs, arg, str) {
-  const mockStdout = mockProcess.mockProcessStdout()
   const mockStdoutWrite = jest.spyOn(process.stdout, 'write').mockImplementation(() => {})
   fbs.eval('(fizzbuzz ' + arg + ')')
   expect(mockStdoutWrite).toHaveBeenCalledWith(str)
-  mockStdout.mockRestore()
+  mockStdoutWrite.mockRestore()
 }
 
 test('executing fizz-buzz sample success', () => {
