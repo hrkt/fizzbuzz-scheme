@@ -115,6 +115,7 @@ MIT
 ## CI
 
 ![GitHub Actions](https://github.com/hrkt/fizzbuzz-scheme/actions/workflows/node.js.yml/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hrkt_fizzbuzz-scheme&metric=alert_status)](https://sonarcloud.io/dashboard?id=hrkt_fizzbuzz-scheme)
 
 ## Appendix
 
