@@ -1,16 +1,16 @@
 'use strict'
 import { jest } from '@jest/globals'
 import FS from 'fs'
-import mockProcess from 'jest-mock-process'
 
 import { FizzBuzzScheme } from '../src/index.js'
 
 // log.setLevel('debug')
 
-function testStdoutCalled (fbs, code) {
-  const mockStdout = mockProcess.mockProcessStdout()
-  fbs.eval('(fizzbuzz 1)')
-  mockStdout.mockRestore()
+function testStdoutCalled (fbs, arg, str) {
+  const mockStdoutWrite = jest.spyOn(process.stdout, 'write').mockImplementation(() => {})
+  fbs.eval('(fizzbuzz ' + arg + ')')
+  expect(mockStdoutWrite).toHaveBeenCalledWith(str)
+  mockStdoutWrite.mockRestore()
 }
 
 test('executing fizz-buzz sample success', () => {
