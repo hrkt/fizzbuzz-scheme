@@ -16,3 +16,12 @@ export function ensureListContainsTwo (list) {
 export function ensureListContainsOne (list) {
   ensureListContains(list, 1)
 }
+
+// e.g.
+// let x = 1
+// ensurePredicate(x, (x) => {return x > 0}, ' should be plus')
+export function ensurePredicate (x, predicateFunction, message = '') {
+  if (!predicateFunction(x)) {
+    throw new FsException('ERROR: ' + x + ' ' + message)
+  }
+}
