@@ -665,3 +665,14 @@ export class FsSyntaxUnquote {
     throw new Error('came here!')
   }
 }
+
+export class FspGensym {
+  static id = 100
+  static proc (arg, env) {
+    FspGensym.id++
+    const v = 'FSG_' + FspGensym.id
+    const s = new FsSymbol(v)
+    env.set(s, null)
+    return s
+  }
+}
