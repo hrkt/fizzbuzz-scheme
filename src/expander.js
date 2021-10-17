@@ -6,7 +6,7 @@ import { FsList } from './datatypes.js'
 import { FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
-export class FsAdjuster {
+export class FsExpander {
   // pre process sexp
   static adjust (sexpList) {
     if (sexpList === undefined) {
@@ -16,7 +16,7 @@ export class FsAdjuster {
       throw new FsError('ERROR: should pass array to adjest() ')
     }
 
-    const ret = sexpList.map(sexp => FsAdjuster.adjustInner(sexp))
+    const ret = sexpList.map(sexp => FsExpander.adjustInner(sexp))
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('------')
       log.debug(ret.length)
@@ -51,8 +51,8 @@ export class FsAdjuster {
         // ex. [if #t 1] => [if #t 1 null]
         sexp.push(FsUndefined.UNDEFINED)
       }
-      // return sexp.map(sexp => FsAdjuster.adjustInner(sexp))
-      return new FsList(sexp.value.map(sexp => FsAdjuster.adjustInner(sexp)))
+      // return sexp.map(sexp => FsExpander.adjustInner(sexp))
+      return new FsList(sexp.value.map(sexp => FsExpander.adjustInner(sexp)))
     } else if (sexp.at(0) instanceof FsSymbol && (
       sexp.at(0).value === '<' ||
       sexp.at(0).value === '<=' ||
@@ -62,8 +62,8 @@ export class FsAdjuster {
       if (sexp.length <= 2) {
         throw new FsException('Syntax Error: malformed :' + sexp)
       }
-      // return sexp.map(sexp => FsAdjuster.adjustInner(sexp))
-      return new FsList(sexp.value.map(sexp => FsAdjuster.adjustInner(sexp)))
+      // return sexp.map(sexp => FsExpander.adjustInner(sexp))
+      return new FsList(sexp.value.map(sexp => FsExpander.adjustInner(sexp)))
     } else if (sexp.at(0) instanceof FsSymbol && sexp.at(0).value === 'set!') {
       if (sexp.length !== 3) {
         throw new FsException('Syntax Error: malformed :' + sexp)

@@ -2,11 +2,11 @@
 
 import log from 'loglevel'
 
-import { FsEvaluator as FE } from '../src/evaluator.js'
-import { FsParser as FP } from '../src/parser.js'
-import { FsAdjuster } from './adjuster.js'
 import { FsList, FsString } from './datatypes.js'
 import { getGlobalEnv } from './env.js'
+import { FsEvaluator as FE } from './evaluator.js'
+import { FsExpander } from './expander.js'
+import { FsParser as FP } from './parser.js'
 import { FspLoad } from './sexp.js'
 
 // Environment
@@ -22,7 +22,7 @@ export class FizzBuzzScheme {
 
   eval (code) {
     const orders = FP.parse(code)
-    const adjusted = FsAdjuster.adjust(orders)
+    const adjusted = FsExpander.adjust(orders)
     log.debug('🤖')
     log.debug('orders.length = ' + orders.length)
     log.debug('adjusted.length = ' + adjusted.length)

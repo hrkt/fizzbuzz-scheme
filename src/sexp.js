@@ -4,7 +4,7 @@
 import FS from 'fs'
 import log from 'loglevel'
 
-import { FsAdjuster } from './adjuster.js'
+import { FsExpander } from './expander.js'
 import { FsError, FsException } from './common.js'
 import { FsBoolean, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
 import { FsEnv } from './env.js'
@@ -493,7 +493,7 @@ export class FspLoad extends FsSExp {
     try {
       const data = FS.readFileSync(file, 'utf8')
       const parsed = FsParser.parse(data)
-      const adjusted = FsAdjuster.adjust(parsed)
+      const adjusted = FsExpander.adjust(parsed)
       for (let i = 0; i < adjusted.length; i++) {
         FsEvaluator.eval(adjusted[i], env)
       }
