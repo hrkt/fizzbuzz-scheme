@@ -60,7 +60,7 @@ export class FsDefinedProcedure extends FsSExp {
    * @deprecated since version 0.1.6, this function is inlined to eval-loop
    */
   proc (execParams) {
-    throw new FsError('do not call me.')
+    // throw new FsError('do not call me.')
   }
 
   toString () {
@@ -663,6 +663,39 @@ export class FsSyntaxUnquote {
   static proc (arg, env) {
     log.debug('UNQUOTE>>>>>' + arg)
     throw new Error('came here!')
+  }
+}
+
+export class FsExceptionForCallCc {
+  constructor () {
+    this.retVal = null
+  }
+}
+export class FspCallCc {
+  static proc (arg, env) {
+    const ball = new FsExceptionForCallCc()
+    const newEnv = new FsEnv(env)
+    const s = new FsSymbol(FspGensym.proc(null, newEnv))
+    ball.forSymbol = s
+    try {
+      // a function that is invoked when the given symbol is used.
+      const throwBack = (arg, env) => {
+        ball.retVal = arg.at(0)
+        throw ball
+      }
+      // s.proc = throwBack // do not need to set proc like this because it is lookuped from Symbol Table
+      newEnv.set(s, throwBack)
+      const sexp = new FsList([arg.at(0), s])
+      return FsEvaluator.eval(sexp, newEnv)
+    } catch (e) {
+      if (e instanceof FsExceptionForCallCc && e.forSymbol === s) {
+        // Yes, I passed this ball to the procedure and it thrown back now.
+        return e.retVal
+      } else {
+        // I don't care thrown error here. It may be FsExceptionForCallCc or not.
+        throw e
+      }
+    }
   }
 }
 
