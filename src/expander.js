@@ -10,10 +10,10 @@ export class FsExpander {
   // pre process sexp
   static expand (sexpList) {
     if (sexpList === undefined) {
-      throw new FsError('ERROR: "undefined" was passed to adjest() ')
+      throw new FsError('ERROR: "undefined" was passed to expand() ')
     }
     if (!Array.isArray(sexpList)) {
-      throw new FsError('ERROR: should pass array to adjest() ')
+      throw new FsError('ERROR: should pass array to expand() ')
     }
 
     const ret = sexpList.map(sexp => FsExpander.expandInner(sexp))
