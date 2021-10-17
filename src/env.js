@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsError, FsException } from './common.js'
 import { FsList, FsNumber } from './datatypes.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FspAbs, FspAppend, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FspAbs, FspAppend, FspCallCc, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote, FsWrite } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 const __FBS__QUASIQUOTE_LEVEL = '__FBS__QUASIQUOTE_LEVEL'
@@ -182,6 +182,8 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('append'), FspAppend.proc)
   env.set(new FsSymbol('abs'), FspAbs.proc)
   env.set(new FsSymbol('boolean?'), FsPredicateBoolean.proc)
+  env.set(new FsSymbol('call-with-current-continuation'), FspCallCc.proc)
+  env.set(new FsSymbol('call/cc'), FspCallCc.proc)
   env.set(new FsSymbol('car'), FsCar.proc)
   env.set(new FsSymbol('cdr'), FsCdr.proc)
   env.set(new FsSymbol('cons'), FsCons.proc)
