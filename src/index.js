@@ -22,16 +22,16 @@ export class FizzBuzzScheme {
 
   eval (code) {
     const orders = FP.parse(code)
-    const adjusted = FsExpander.adjust(orders)
+    const expanded = FsExpander.expand(orders)
     log.debug('🤖')
     log.debug('orders.length = ' + orders.length)
-    log.debug('adjusted.length = ' + adjusted.length)
+    log.debug('expanded.length = ' + expanded.length)
     let ret = null
-    for (let i = 0; i < adjusted.length; i++) {
+    for (let i = 0; i < expanded.length; i++) {
       if (!this.debugMode) {
-        ret = FE.eval(adjusted[i], this.env)
+        ret = FE.eval(expanded[i], this.env)
       } else {
-        ret = FE.evalOuter(adjusted[i], this.env)
+        ret = FE.evalOuter(expanded[i], this.env)
       }
     }
     return ret

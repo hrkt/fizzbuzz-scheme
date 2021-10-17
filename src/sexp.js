@@ -4,11 +4,11 @@
 import FS from 'fs'
 import log from 'loglevel'
 
-import { FsExpander } from './expander.js'
 import { FsError, FsException } from './common.js'
 import { FsBoolean, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
 import { FsEnv } from './env.js'
 import { FsEvaluator } from './evaluator.js'
+import { FsExpander } from './expander.js'
 import { FsParser } from './parser.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
@@ -493,9 +493,9 @@ export class FspLoad extends FsSExp {
     try {
       const data = FS.readFileSync(file, 'utf8')
       const parsed = FsParser.parse(data)
-      const adjusted = FsExpander.adjust(parsed)
-      for (let i = 0; i < adjusted.length; i++) {
-        FsEvaluator.eval(adjusted[i], env)
+      const expanded = FsExpander.expand(parsed)
+      for (let i = 0; i < expanded.length; i++) {
+        FsEvaluator.eval(expanded[i], env)
       }
       return FsUndefined.UNDEFINED
     } catch {
