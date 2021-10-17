@@ -69,6 +69,28 @@ export class FsExpander {
         throw new FsException('Syntax Error: malformed :' + sexp)
       }
       return sexp
+    } else if (sexp.at(0) === FsSymbol.DEFINE) {
+      log.debug('change the form of define: ' + sexp)
+      if (!(sexp.at(1) instanceof FsList)) {
+        // e.g.
+        // (define x1 (lambda (x) (* x 2)))
+        // const proc = sexp.at(2)
+        // env.set(car, FsEvaluator.eval(cdr, env))
+        // if (log.getLevel() <= log.levels.DEBUG) {
+        //   log.debug('define symbol - symbol:' + car + ' value:' + cdr)
+        // }
+        // return car
+        return sexp
+      } else {
+        // e.g.
+        // (define (x2 x) (* x 2))
+        const funcName = sexp.at(1).at(0)
+        const params = sexp.at(1).slice(1)
+        const body = sexp.at(2) // TODO: multiple bodies
+        const lambdaSExp = new FsList([FsSymbol.LAMBDA, params, body])
+        const defineSExp = new FsList([FsSymbol.DEFINE, funcName, lambdaSExp])
+        return this.expandInner(defineSExp)
+      }
     } else {
       return sexp
     }

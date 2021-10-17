@@ -115,16 +115,8 @@ export class FsDefine extends FsSExp {
     } else {
       // e.g.
       // (define (x2 x) (* x 2))
-      const funcName = car.at(0)
-      const params = car.slice(1)
-      const cdr = list.slice(1)
-      const body = cdr
-      const procedure = new FsDefinedProcedure(params, body, env)
-      if (log.getLevel() <= log.levels.DEBUG) {
-        log.debug('define functiton - funcName:' + funcName + ' procedure:' + procedure)
-      }
-      env.set(funcName, procedure)
-      return funcName
+      // is expanded to (define x2 (lambda (x2) (* x 2))) in the expander.
+      throw new Error('System Error.')
     }
   }
 }
