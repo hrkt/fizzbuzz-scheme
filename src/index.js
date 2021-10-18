@@ -7,13 +7,14 @@ import { getGlobalEnv } from './env.js'
 import { FsEvaluator as FE } from './evaluator.js'
 import { FsExpander } from './expander.js'
 import { FsParser as FP } from './parser.js'
-import { FspLoad } from './sexp.js'
+import { FspLoad, FsUndefined } from './sexp.js'
 
 // Environment
 export class FizzBuzzScheme {
   constructor () {
     this.env = getGlobalEnv()
     this.debugMode = false
+    this.expander = new FsExpander()
     FspLoad.proc(new FsList([new FsString('src/basic.scm')]), this.env)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('=======================================================================-')
@@ -22,12 +23,16 @@ export class FizzBuzzScheme {
 
   eval (code) {
     const orders = FP.parse(code)
-    const expanded = FsExpander.expand(orders)
+    const expanded = this.expander.expand(orders, true)
     log.debug('🤖')
     log.debug('orders.length = ' + orders.length)
     log.debug('expanded.length = ' + expanded.length)
     let ret = null
     for (let i = 0; i < expanded.length; i++) {
+      if (expanded[i] === FsUndefined.UNDEFINED) {
+        // macro
+        return FsUndefined.UNDEFINED
+      }
       if (!this.debugMode) {
         ret = FE.eval(expanded[i], this.env)
       } else {

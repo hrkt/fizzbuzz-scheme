@@ -61,6 +61,12 @@ export class FsDefinedProcedure extends FsSExp {
    */
   proc (execParams) {
     // throw new FsError('do not call me.')
+
+    // These lines are used to expand macro in expand().
+    // TODO: try to unifh this and logic in eval()
+    const newEnv = new FsEnv(this.env)
+    newEnv.set(this.params, execParams)
+    return FsEvaluator.eval(this.body.at(0), newEnv)
   }
 
   toString () {
@@ -341,6 +347,8 @@ export class FsAnd extends FsSExp {
       const lhs = list.at(0)
       const rhs = list.at(1)
       return lhs === FsBoolean.TRUE && rhs === FsBoolean.TRUE ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else if (list.length === 1) {
+      return list.at(0)
     } else {
       for (let i = 0; i < list.length; i++) {
         if (list.at(0) !== list.at(i)) {
@@ -367,6 +375,16 @@ export class FsNot extends FsSExp {
 export class FspSymbolToString extends FsSExp {
   static proc (list) {
     return new FsString(list.at(0).value)
+  }
+}
+
+export class FspLength extends FsSExp {
+  static proc (list) {
+    if (list instanceof FsList && list.at(0) instanceof FsList) {
+      return new FsNumber(list.at(0).value.length)
+    } else {
+      throw new Error('not implemented')
+    }
   }
 }
 
@@ -485,7 +503,8 @@ export class FspLoad extends FsSExp {
     try {
       const data = FS.readFileSync(file, 'utf8')
       const parsed = FsParser.parse(data)
-      const expanded = FsExpander.expand(parsed)
+      const expander = new FsExpander()
+      const expanded = expander.expand(parsed)
       for (let i = 0; i < expanded.length; i++) {
         FsEvaluator.eval(expanded[i], env)
       }
