@@ -18,3 +18,11 @@ test('evaluating (and #f #t) yields #f', () => {
 test('evaluating (and #f #f) yields #f', () => {
   expect(new FBS().eval('(and #f #f)')).toBe(FsBoolean.FALSE)
 })
+
+test('evaluating (and #f) yields #f', () => {
+  expect(new FBS().eval('(and #f)')).toBe(FsBoolean.FALSE)
+})
+
+test('evaluating (and #t) yields #t', () => {
+  expect(new FBS().eval('(and #t)')).toBe(FsBoolean.TRUE)
+})
