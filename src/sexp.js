@@ -1,15 +1,12 @@
 // various S-expressions
 'use strict'
 
-import FS from 'fs'
 import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
 import { FsBoolean, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
 import { FsEnv } from './env.js'
 import { FsEvaluator } from './evaluator.js'
-import { FsExpander } from './expander.js'
-import { FsParser } from './parser.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
@@ -477,40 +474,6 @@ export class FspLastPair extends FsSExp {
       return current
     } else {
       return (list.at(0)).at(list.at(0).length - 1)
-    }
-  }
-}
-
-export class FsWrite extends FsSExp {
-  static proc (list) {
-    process.stdout.write(list.value.map(s => s.value).join(' '))
-    return FsUndefined.UNDEFINED
-  }
-}
-
-export class FsNewline extends FsSExp {
-  static proc (list) {
-    console.log()
-    return FsUndefined.UNDEFINED
-  }
-}
-
-export class FspLoad extends FsSExp {
-  static proc (list, env) {
-    // TODO: utilize this in cli.js and index.js
-    const file = list.at(0).value
-    log.debug('loading ' + file)
-    try {
-      const data = FS.readFileSync(file, 'utf8')
-      const parsed = FsParser.parse(data)
-      const expander = new FsExpander()
-      const expanded = expander.expand(parsed)
-      for (let i = 0; i < expanded.length; i++) {
-        FsEvaluator.eval(expanded[i], env)
-      }
-      return FsUndefined.UNDEFINED
-    } catch {
-      throw new FsException('error in loading file:' + file)
     }
   }
 }

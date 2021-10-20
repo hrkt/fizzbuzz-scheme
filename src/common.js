@@ -2,9 +2,10 @@
 
 /** Represents a Scheme "Error" */
 export class FsException {
-  constructor (message) {
+  constructor (message, innerException = null) {
     this.message = message
     this.name = 'FsException'
+    this.innerException = innerException
   }
 
   toString () {
@@ -14,9 +15,10 @@ export class FsException {
 
 /** Represents a system error */
 export class FsError extends Error {
-  constructor (message) {
+  constructor (message, innerException = null) {
     super(message)
     this.name = 'FsError'
+    this.innerException = innerException
   }
 
   toString () {

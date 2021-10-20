@@ -10,6 +10,7 @@ export class FsSymbol extends FsAtom {
   static DOT = Object.freeze(new FsSymbol('.'))
   static DEFINE = Object.freeze(new FsSymbol('define'))
   static DEFINE_MACRO = Object.freeze(new FsSymbol('define-macro'))
+  static EOF_OBJECT = Object.freeze(new FsSymbol('eof-object'))
   static IF = Object.freeze(new FsSymbol('if'))
   static LAMBDA = Object.freeze(new FsSymbol('lambda'))
   static LET = Object.freeze(new FsSymbol('let'))
