@@ -4,8 +4,9 @@ import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
 import { FsList, FsNumber } from './datatypes.js'
+import { FspCloseInputPort, FspCloseOutputPort, FspLoad, FspNewline, FspOpenInputFile, FspReadChar, FspWrite } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNewline, FsNot, FsNumberEquals, FspAbs, FspAppend, FspCallCc, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLength, FspLoad, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote, FsWrite } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNot, FsNumberEquals, FspAbs, FspAppend, FspCallCc, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLength, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 const __FBS__QUASIQUOTE_LEVEL = '__FBS__QUASIQUOTE_LEVEL'
@@ -186,6 +187,8 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('call/cc'), FspCallCc.proc)
   env.set(new FsSymbol('car'), FsCar.proc)
   env.set(new FsSymbol('cdr'), FsCdr.proc)
+  env.set(new FsSymbol('close-input-port'), FspCloseInputPort.proc)
+  env.set(new FsSymbol('close-output-port'), FspCloseOutputPort.proc)
   env.set(new FsSymbol('cons'), FsCons.proc)
   env.set(new FsSymbol('display'), FsDisplay.proc)
   env.set(new FsSymbol('eq?'), FsPredicateEq.proc)
@@ -197,16 +200,18 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('list'), FsList.proc)
   env.set(new FsSymbol('list?'), FsPredicateList.proc)
   env.set(new FsSymbol('load'), FspLoad.proc)
-  env.set(new FsSymbol('newline'), FsNewline.proc)
   env.set(new FsSymbol('map'), FspMap.proc)
   env.set(new FsSymbol('max'), FspMax.proc)
   env.set(new FsSymbol('min'), FspMin.proc)
+  env.set(new FsSymbol('newline'), FspNewline.proc)
+  env.set(new FsSymbol('not'), FsNot.proc)
   env.set(new FsSymbol('null?'), FsPredicateNull.proc)
   env.set(new FsSymbol('number?'), FsPredicateNumber.proc)
-  env.set(new FsSymbol('not'), FsNot.proc)
+  env.set(new FsSymbol('open-input-file'), FspOpenInputFile.proc)
   env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
   // env.set(new FsSymbol('quasiquote'), FsSyntaxQuasiQuote.proc)
+  env.set(new FsSymbol('read-char'), FspReadChar.proc)
   env.set(new FsSymbol('round'), FspRound.proc)
   env.set(new FsSymbol('sqrt'), FspSqrt.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
@@ -215,7 +220,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('vector'), FspVector.proc)
   env.set(new FsSymbol('vector-ref'), FspVectorRef.proc)
   env.set(new FsSymbol('vector?'), FsPredicateVector.proc)
-  env.set(new FsSymbol('write'), FsWrite.proc)
+  env.set(new FsSymbol('write'), FspWrite.proc)
 
   // original
   env.set(new FsSymbol('exit'), (list) => { list !== undefined && list.length > 0 ? process.exit(list.at(0).value) : process.exit(0) })

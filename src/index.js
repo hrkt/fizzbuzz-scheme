@@ -7,7 +7,8 @@ import { getGlobalEnv } from './env.js'
 import { FsEvaluator as FE } from './evaluator.js'
 import { FsExpander } from './expander.js'
 import { FsParser as FP } from './parser.js'
-import { FspLoad, FsUndefined } from './sexp.js'
+import { FspLoad } from './port.js'
+import { FsUndefined } from './sexp.js'
 
 // Environment
 export class FizzBuzzScheme {
