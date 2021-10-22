@@ -2,14 +2,16 @@
 
 import FS from 'fs'
 import log from 'loglevel'
+import * as os from 'os'
 
 import { FsException } from './common.js'
-import { FsBoolean } from './datatypes.js'
+import { FsBoolean, FsString } from './datatypes.js'
 import { FsEvaluator } from './evaluator.js'
 import { FsExpander } from './expander.js'
 import { FsParser } from './parser.js'
 import { FsUndefined } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
+import { ensureListLengthAtLeast } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
 
 export class PortManager {
@@ -57,6 +59,10 @@ export class PortManager {
       throw new FsException('error in closing fd:' + fd, e)
     }
   }
+
+  writeToFile (fd, str) {
+    FS.writeSync(fd, str)
+  }
 }
 
 // ports
@@ -95,6 +101,45 @@ export class FsFileOutputPort extends FsOutputPort {
     const portManager = new PortManager()
     portManager.closeOutputFile(this.#fd)
   }
+
+  write (obj) {
+    const portManager = new PortManager()
+    portManager.writeToFile(this.#fd, '' + obj)
+  }
+}
+
+export class FsConsoleInputPort extends FsOutputPort {
+  constructor (fd) {
+    super()
+  }
+
+  close () {
+    super.close()
+  }
+
+  write (obj) {
+    const portManager = new PortManager()
+    return portManager.getStandardOutputPort().read()
+  }
+}
+
+export class FsConsoleOutputPort extends FsOutputPort {
+  constructor (fd) {
+    super()
+  }
+
+  close () {
+    super.close()
+  }
+
+  write (obj) {
+    const portManager = new PortManager()
+    portManager.getStandardOutputPort().write(obj)
+  }
+
+  writeln (obj) {
+    this.write(obj + os.EOL)
+  }
 }
 
 export class FsStringInputPort extends FsInputPort {
@@ -112,6 +157,18 @@ export class FsStringInputPort extends FsInputPort {
       return FsSymbol.EOF_OBJECT
     }
     return this.#data.charAt(this.#pos++)
+  }
+}
+
+export class FspCurrentInputPort {
+  static proc (args, env) {
+    return env.getCurrentInputPort()
+  }
+}
+
+export class FspCurrentOutputPort {
+  static proc (args, env) {
+    return env.getCurrentOutputPort()
   }
 }
 
@@ -153,6 +210,7 @@ export class FspCloseOutputPort {
     if (args.at(0) instanceof FsOutputPort) {
       const p = args.at(0)
       p.close()
+      return FsUndefined.UNDEFINED
     } else {
       throw new FsException('not an input port: ' + args.at(0))
     }
@@ -187,15 +245,36 @@ export class FspReadChar {
 }
 
 export class FspWrite extends FsSExp {
-  static proc (list) {
-    process.stdout.write(list.value.map(s => s.value).join(' '))
+  static proc (list, env) {
+    ensureListLengthAtLeast(list, 1)
+    const port = (list.length === 1) ? env.getCurrentOutputPort() : list.at(1)
+    if (!(port instanceof FsOutputPort)) {
+      throw new FsException('given arg is not a port:' + port)
+    }
+    port.write('' + list.at(0).value)
     return FsUndefined.UNDEFINED
   }
 }
 
 export class FspNewline extends FsSExp {
-  static proc (list) {
-    console.log()
+  static proc (list, env) {
+    const port = (list.length === 0) ? env.getCurrentOutputPort() : list.at(0)
+    if (!(port instanceof FsOutputPort)) {
+      throw new FsException('given arg is not a port:' + port)
+    }
+    port.writeln('')
+    return FsUndefined.UNDEFINED
+  }
+}
+
+// print s-exp in list. For FsString, print its value without double quotes.
+export class FspDisplay extends FsSExp {
+  static proc (list, env) {
+    ensureListLengthAtLeast(list, 1)
+    const v = (list.at(0) instanceof FsString ? list.at(0).value : list.at(0).toString())
+    list.value[0] = new FsString(v)
+    FspWrite.proc(list, env)
+
     return FsUndefined.UNDEFINED
   }
 }

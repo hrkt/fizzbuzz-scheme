@@ -15,5 +15,5 @@ test('enabling debug mode success', () => {
 
 test('evalToJs success', () => {
   const fbs = new FizzBuzzScheme()
-  expect(fbs.evalToJs('(+ 1 2)')).toBe(3)
+  expect(fbs.evalToJs('(+ 1 2)')).toBe('3')
 })

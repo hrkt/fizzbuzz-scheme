@@ -4,15 +4,20 @@ import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
 import { FsList, FsNumber } from './datatypes.js'
-import { FspCloseInputPort, FspCloseOutputPort, FspLoad, FspNewline, FspOpenInputFile, FspReadChar, FspWrite } from './port.js'
+import { FsConsoleInputPort, FsConsoleOutputPort, FspCloseInputPort, FspCloseOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspDisplay, FspLoad, FspNewline, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort, FspWrite } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsDisplay, FsIf, FsLambda, FsLet, FsNot, FsNumberEquals, FspAbs, FspAppend, FspCallCc, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLength, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsIf, FsLambda, FsLet, FsNot, FsNumberEquals, FspAbs, FspAppend, FspCallCc, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLength, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 const __FBS__QUASIQUOTE_LEVEL = '__FBS__QUASIQUOTE_LEVEL'
 const FBS_QUASIQUOTE_LEVEL = new FsSymbol(__FBS__QUASIQUOTE_LEVEL)
 const __FBS__UNQUOTE_LEVEL = '__FBS__UNQUOTE_LEVEL'
 const FBS_UNQUOTE_LEVEL = new FsSymbol(__FBS__UNQUOTE_LEVEL)
+
+const __FBS__CURRENT_INPUT_PORT = '__FBS__CURRENT_INPUT_PORT'
+const FBS__CURRENT_INPUT_PORT = new FsSymbol(__FBS__CURRENT_INPUT_PORT)
+const __FBS__CURRENT_OUTPUT_PORT = '__FBS__CURRENT_OUTPUT_PORT'
+const FBS__CURRENT_OUTPUT_PORT = new FsSymbol(__FBS__CURRENT_OUTPUT_PORT)
 
 // Environment
 export class FsEnv {
@@ -135,6 +140,22 @@ export class FsEnv {
     return unquoteLevel.value >= quasiquoteLevel.value
   }
 
+  getCurrentInputPort () {
+    return this.find(FBS__CURRENT_INPUT_PORT)
+  }
+
+  setCurrentInputPort (port) {
+    this.vars[FsEnv.toKey(FBS__CURRENT_INPUT_PORT)] = port
+  }
+
+  getCurrentOutputPort () {
+    return this.find(FBS__CURRENT_OUTPUT_PORT)
+  }
+
+  setCurrentOutputPort (port) {
+    this.vars[FsEnv.toKey(FBS__CURRENT_OUTPUT_PORT)] = port
+  }
+
   toString () {
     if (this.outer === null) {
       return '>>ROOT'
@@ -190,7 +211,9 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('close-input-port'), FspCloseInputPort.proc)
   env.set(new FsSymbol('close-output-port'), FspCloseOutputPort.proc)
   env.set(new FsSymbol('cons'), FsCons.proc)
-  env.set(new FsSymbol('display'), FsDisplay.proc)
+  env.set(new FsSymbol('current-input-port'), FspCurrentInputPort.proc)
+  env.set(new FsSymbol('current-output-port'), FspCurrentOutputPort.proc)
+  env.set(new FsSymbol('display'), FspDisplay.proc)
   env.set(new FsSymbol('eq?'), FsPredicateEq.proc)
   env.set(new FsSymbol('eqv?'), FsPredicateEqv.proc)
   env.set(new FsSymbol('equal?'), FsPredicateEqual.proc)
@@ -208,12 +231,15 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('null?'), FsPredicateNull.proc)
   env.set(new FsSymbol('number?'), FsPredicateNumber.proc)
   env.set(new FsSymbol('open-input-file'), FspOpenInputFile.proc)
+  env.set(new FsSymbol('open-output-file'), FspOpenOutputFile.proc)
   env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
   // env.set(new FsSymbol('quasiquote'), FsSyntaxQuasiQuote.proc)
   env.set(new FsSymbol('read-char'), FspReadChar.proc)
   env.set(new FsSymbol('round'), FspRound.proc)
   env.set(new FsSymbol('sqrt'), FspSqrt.proc)
+  env.set(new FsSymbol('standard-input-port'), FspStandardInputPort.proc)
+  env.set(new FsSymbol('standard-output-port'), FspStandardOutputPort.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
   env.set(new FsSymbol('symbol->string'), FspSymbolToString.proc)
   // env.set(new FsSymbol('unquote'), FsSyntaxUnquote.proc)
@@ -229,6 +255,10 @@ export function getGlobalEnv () {
 
   env.set(FBS_QUASIQUOTE_LEVEL, new FsNumber(0))
   env.set(FBS_UNQUOTE_LEVEL, new FsNumber(0))
+
+  // set default port
+  env.setCurrentInputPort(new FsConsoleInputPort())
+  env.setCurrentOutputPort(new FsConsoleOutputPort())
 
   log.setLevel(prev)
   return env

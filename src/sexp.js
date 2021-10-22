@@ -77,7 +77,6 @@ export class FsDefinedProcedure extends FsSExp {
 
 export class FsLet extends FsSExp {
   static proc (list, env) {
-    ensureListContainsTwo(list)
     let varDefs = null
     if (Array.isArray(list) && !(Array.isArray(list.at(0).at(0)))) {
       throw new FsException('syntax error: bindings should have the form ((k 1) ..')
@@ -90,9 +89,13 @@ export class FsLet extends FsSExp {
       innerEnv.set(varDefs.at(i).at(0), FsEvaluator.eval(varDefs.at(i).at(1), env))
     }
 
-    const body = list.at(1)
+    let ret = null
+    for (let i = 1; i < list.length; i++) {
+      const body = list.at(i)
+      ret = FsEvaluator.eval(body, innerEnv)
+    }
 
-    return FsEvaluator.eval(body, innerEnv)
+    return ret
   }
 
   toString () {
@@ -485,14 +488,6 @@ export class FsPeekMemoryUsage extends FsSExp {
   static proc (list) {
     const m = process.memoryUsage()
     return new FsString(JSON.stringify(m))
-  }
-}
-
-// print s-exp in list. For FsString, print its value without double quotes.
-export class FsDisplay extends FsSExp {
-  static proc (list) {
-    process.stdout.write(list.value.map(s => (s instanceof FsString ? s.value : s.toString())).join(' '))
-    return FsUndefined.UNDEFINED
   }
 }
 

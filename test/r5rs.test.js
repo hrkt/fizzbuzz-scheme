@@ -13,7 +13,7 @@ import { FsDefinedProcedure } from '../src/sexp.js'
 // all cleared 😊
 test('✅1.3.4', () => {
   const code = '(* 5 8)'
-  expect(new FBS().eval(code).toString()).toBe(40)
+  expect(new FBS().eval(code).toString()).toBe('40')
 })
 
 // all cleared 😊
@@ -28,7 +28,7 @@ test('✅2.2', () => {
   (fact 10)
   `
 
-  expect(new FBS().eval(code).toString()).toBe(3628800)
+  expect(new FBS().eval(code).toString()).toBe('3628800')
 })
 
 // 2. Lexical conventions
@@ -41,7 +41,7 @@ test('✅2.2', () => {
 test('✅4.1.1', () => {
   const fbs = new FBS()
   fbs.eval('(define x 28)')
-  expect(fbs.eval('x').toString()).toBe(28)
+  expect(fbs.eval('x').toString()).toBe('28')
 })
 
 test('🚧4.1.2', () => {
@@ -55,8 +55,8 @@ test('🚧4.1.2', () => {
 
 // all cleared 😊
 test('✅4.1.3', () => {
-  expect(new FBS().eval('(+ 3 4)').toString()).toBe(7)
-  expect(new FBS().eval('((if #f + *) 3 4)').toString()).toBe(12)
+  expect(new FBS().eval('(+ 3 4)').toString()).toBe('7')
+  expect(new FBS().eval('((if #f + *) 3 4)').toString()).toBe('12')
 })
 
 // all cleared 😊
@@ -64,14 +64,14 @@ test('✅4.1.4', () => {
   const fbs = new FBS()
   expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsDefinedProcedure).toBe(true)
 
-  expect(new FBS().eval('((lambda (x) (+ x x)) 4)').toString()).toBe(8)
+  expect(new FBS().eval('((lambda (x) (+ x x)) 4)').toString()).toBe('8')
 
   {
     const code = `(define reverse-subtract
       (lambda (x y) (- y x)))
     (reverse-subtract 7 10)
     `
-    expect(new FBS().eval(code).toString()).toBe(3)
+    expect(new FBS().eval(code).toString()).toBe('3')
   }
 
   {
@@ -80,7 +80,7 @@ test('✅4.1.4', () => {
         (lambda (y) (+ x y))))
     (add4 6)
     `
-    expect(new FBS().eval(code).toString()).toBe(10)
+    expect(new FBS().eval(code).toString()).toBe('10')
   }
 
   expect(new FBS().eval('((lambda x x) 3 4 5 6)').toString()).toBe('(3 4 5 6)')
@@ -96,7 +96,7 @@ test('✅4.1.5', () => {
     (- 3 2)
     (+ 3 2))
     `
-    expect(new FBS().eval(code).toString()).toBe(1)
+    expect(new FBS().eval(code).toString()).toBe('1')
   }
 })
 
@@ -104,13 +104,13 @@ test('✅4.1.5', () => {
 test('✅4.1.6', () => {
   const fbs = new FBS()
   fbs.eval('(define x 2)')
-  expect(fbs.eval('(+ x 1)').toString()).toBe(3)
+  expect(fbs.eval('(+ x 1)').toString()).toBe('3')
   fbs.eval('(set! x 4)') // unspecified
-  expect(fbs.eval('(+ x 1)').toString()).toBe(5)
+  expect(fbs.eval('(+ x 1)').toString()).toBe('5')
 })
 
 test('🚧4.2.2', () => {
-  expect(new FBS().eval('(let ((x 2) (y 3)) (* x y))').toString()).toBe(6)
+  expect(new FBS().eval('(let ((x 2) (y 3)) (* x y))').toString()).toBe('6')
 })
 
 // all cleared 😊
@@ -120,7 +120,7 @@ test('✅4.2.3_1', () => {
   (begin (set! x 5)
        (+ x 1))
   `
-  expect(new FBS().eval(code).toString()).toBe(6)
+  expect(new FBS().eval(code).toString()).toBe('6')
 })
 
 // all cleared 😊
@@ -223,10 +223,10 @@ test('🚧6.1_3', () => {
 // })
 
 test('🚧6.2.5', () => {
-  expect(new FBS().eval('(+ 3 4)').toString()).toBe(7)
-  expect(new FBS().eval('(+)').toString()).toBe(0)
-  expect(new FBS().eval('(* 4)').toString()).toBe(4)
-  expect(new FBS().eval('(*)').toString()).toBe(1)
+  expect(new FBS().eval('(+ 3 4)').toString()).toBe('7')
+  expect(new FBS().eval('(+)').toString()).toBe('0')
+  expect(new FBS().eval('(* 4)').toString()).toBe('4')
+  expect(new FBS().eval('(*)').toString()).toBe('1')
 })
 
 // all cleared 😊
@@ -285,7 +285,7 @@ test('🚧6.3.2_3', () => {
 
   expect(new FBS().eval('(car \'(a b c))').toString()).toBe('a')
   expect(new FBS().eval('(car \'((a) b c d))').toString()).toBe('(a)')
-  expect(new FBS().eval('(car \'(1 . 2))').toString()).toBe(1)
+  expect(new FBS().eval('(car \'(1 . 2))').toString()).toBe('1')
   expect(() => { new FBS().eval('car \'())') }).toThrow(FsException)
 })
 
@@ -308,7 +308,7 @@ test('🚧6.3.6', () => {
   expect(new FBS().eval('#(0 (2 2 2 2) "Anna")').toString()).toBe('#(0 (2 2 2 2) "Anna")')
   expect(new FBS().eval('(vector \'a \'b \'c)').toString()).toBe('#(a b c)')
   expect(new FBS().eval('(vector? (vector \'a \'b \'c))').toString()).toBe('#t') // additional: from its definition
-  expect(new FBS().eval('(vector-ref \'#(1 1 2 3 5 8 13 21) 5)').toString()).toBe(8)
+  expect(new FBS().eval('(vector-ref \'#(1 1 2 3 5 8 13 21) 5)').toString()).toBe('8')
 })
 
 // 7. Format Syntax and semantics

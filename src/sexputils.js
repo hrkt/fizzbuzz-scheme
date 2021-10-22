@@ -3,6 +3,12 @@
 import { FsException } from './common.js'
 import { FsList } from './datatypes.js'
 
+export function ensureListLengthAtLeast (list, length) {
+  if (!(list instanceof FsList) || list.length < length) {
+    throw new FsException('this procedure must take at least ' + length + ' argument(s) as list')
+  }
+}
+
 function ensureListContains (list, length) {
   if (!(list instanceof FsList) || list.length !== length) {
     throw new FsException('this procedure must take ' + length + ' argument(s) as list')
