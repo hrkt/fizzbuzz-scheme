@@ -32,7 +32,7 @@ export class FsBoolean extends FsAtom {
 
 export class FsNumber extends FsAtom {
   toString () {
-    return this.value
+    return '' + this.value
   }
 
   equals (target) {

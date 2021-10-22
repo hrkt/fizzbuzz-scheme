@@ -2,6 +2,7 @@
 import FS from 'fs'
 
 import { FsBoolean, FsList, FsString } from '../src/datatypes.js'
+import { FizzBuzzScheme } from '../src/index.js'
 import { FspCloseOutputPort, FspOpenOutputFile, FsPredicatePort, FspStandardOutputPort, PortManager } from '../src/port.js'
 
 test('new PortManager() always gives the same instance', () => {
@@ -26,6 +27,29 @@ test('open-output-file and close-output-port success', () => {
   FspCloseOutputPort.proc(new FsList([outputPort]))
 
   try {
+    FS.rmSync(filename)
+  } catch (e) {
+    console.error(e)
+  }
+})
+
+test('open-output-file, write and close-output-port success', () => {
+  const filename = 'test_output'
+
+  const code = `
+  (let
+    ( (port (open-output-file "${filename}")) )
+    (display "Hello" port)
+    (close-output-port port)
+  )`
+  const fbs = new FizzBuzzScheme()
+  fbs.eval(code)
+
+  try {
+    expect(FS.existsSync(filename)).toBe(true)
+    const buf = FS.readFileSync(filename)
+    expect(buf.toString()).toBe('Hello')
+
     FS.rmSync(filename)
   } catch (e) {
     console.error(e)
