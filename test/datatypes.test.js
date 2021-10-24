@@ -23,4 +23,3 @@ test('(1 . ()) is  a proper list', () => {
 test('FsString is not a proper list', () => {
   expect(isProperList(new FsString(''))).toBe(false)
 })
-
