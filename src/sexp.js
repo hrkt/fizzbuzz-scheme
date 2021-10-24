@@ -4,7 +4,7 @@
 import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
-import { FsBoolean, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
+import { FsBoolean, FsList, FsNumber, FsPair, FsString, FsVector, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
 import { FsEvaluator } from './evaluator.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
@@ -380,7 +380,12 @@ export class FspSymbolToString extends FsSExp {
 
 export class FspLength extends FsSExp {
   static proc (list) {
-    if (list instanceof FsList && list.at(0) instanceof FsList) {
+    if (!isProperList(list.at(0))) {
+      throw new FsException('arg must be proper list but got ' + list)
+    }
+    if (list.at(0) instanceof FsPair) {
+      return new FsNumber(list.at(0).length)
+    } else if (list instanceof FsList && list.at(0) instanceof FsList) {
       return new FsNumber(list.at(0).value.length)
     } else {
       throw new Error('not implemented')
