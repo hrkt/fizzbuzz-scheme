@@ -1,6 +1,7 @@
 'use strict'
 import log from 'loglevel'
 
+import { FsException } from './common.js'
 import { FsAtom, FsSExp } from './sexpbase.js'
 
 export class FsBoolean extends FsAtom {
@@ -188,7 +189,47 @@ export class FsPair extends FsList {
     return 'fspair'
   }
 
+  get length () {
+    let next = this
+    let len = 1
+    if (next.cdr === FsList.EMPTY) {
+      return len
+    }
+
+    while (this.cdr instanceof FsPair) {
+      next = next.cdr
+      len++
+      if (next.cdr === FsList.EMPTY) {
+        return len
+      }
+    }
+    throw new FsException('can not measure length of an improper pair')
+  }
+
   toString () {
     return '(' + this.car + ' . ' + this.cdr + ')'
+  }
+}
+
+export function isProperList (arg) {
+  if (arg === null) {
+    return false
+  } else if (arg instanceof FsPair) {
+    let next = arg
+    if (next.cdr === FsList.EMPTY) {
+      return true
+    }
+
+    while (next.cdr instanceof FsPair) {
+      next = next.cdr
+      if (next.cdr === FsList.EMPTY) {
+        return true
+      }
+    }
+    return false
+  } else if (arg instanceof FsList) {
+    return true
+  } else {
+    return false
   }
 }
