@@ -16,6 +16,8 @@ test('✅1.3.4', () => {
   expect(new FBS().eval(code).toString()).toBe('40')
 })
 
+// 2. Lexical conventions
+
 // all cleared 😊
 test('✅2.2', () => {
   const code = `;;; The FACT procedure computes the factorial
@@ -31,7 +33,8 @@ test('✅2.2', () => {
   expect(new FBS().eval(code).toString()).toBe('3628800')
 })
 
-// 2. Lexical conventions
+// 2.3  Other notations
+// will be covered with tests in chapters hereafter
 
 // 3. Basic concepts
 
@@ -44,13 +47,26 @@ test('✅4.1.1', () => {
   expect(fbs.eval('x').toString()).toBe('28')
 })
 
-test('🚧4.1.2', () => {
+// all cleared 😊
+test('✅4.1.2', () => {
   expect(new FBS().eval('(quote a)').toString()).toBe('a')
-
-  // TODO:
-  // expect(new FBS().eval('(quote #(a b c))','#(a b c)')
-
+  expect(new FBS().eval('(quote #(a b c))').toString()).toBe('#(a b c)')
   expect(new FBS().eval('(quote (+ 1 2))').toString()).toBe('(+ 1 2)')
+
+  expect(new FBS().eval('\'a').toString()).toBe('a')
+  expect(new FBS().eval('\'#(a b c) ').toString()).toBe('#(a b c)')
+  expect(new FBS().eval('\'()').toString()).toBe('()')
+  expect(new FBS().eval('\'(+ 1 2)').toString()).toBe('(+ 1 2)')
+  expect(new FBS().eval('\'(quote a)').toString()).toBe('(quote a)')
+  // expect(new FBS().eval('\'\'a').toString()).toBe('(quote a)')
+  expect(new FBS().eval('\'\'a').toString()).toBe('\'a') // same value as above
+
+  expect(new FBS().eval('\'"abc"').toString()).toBe('"abc"')
+  expect(new FBS().eval('"abc"').toString()).toBe('"abc"')
+  expect(new FBS().eval('\'145932').toString()).toBe('145932')
+  expect(new FBS().eval('145932').toString()).toBe('145932')
+  expect(new FBS().eval('\'#t').toString()).toBe('#t')
+  expect(new FBS().eval('#t').toString()).toBe('#t')
 })
 
 // all cleared 😊
