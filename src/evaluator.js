@@ -73,6 +73,9 @@ export class FsEvaluator {
           //   evaled.push(FsEvaluator.eval(sexp[i], env))
           // }
           const p = FsEvaluator.eval(firstSymbol, env)
+          if (!p) {
+            throw new FsException('Syntax error: got an unbound symbol: ' + firstSymbol)
+          }
           if (p.type === 'fsdefinedprocedure') {
             const innerEnv = new FsEnv(p.env)
             if (p.params.type === 'fssymbol') {
