@@ -8,7 +8,7 @@ import { FsConsoleInputPort, FsConsoleOutputPort, FspCloseInputPort, FspCloseOut
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
 import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsIf, FsLambda, FsLet, FsNot, FsNumberEquals, FspAbs, FspAppend, FspCallCc, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLength, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FsSet, FsSyntaxUnquote } from './sexp.js'
 import { FsSymbol } from './symbol.js'
-import { FspVector, FspVectorRef } from './vector-operations.js'
+import { FspVector, FspVectorRef, FspVectorSet } from './vector-operations.js'
 
 const __FBS__QUASIQUOTE_LEVEL = '__FBS__QUASIQUOTE_LEVEL'
 const FBS_QUASIQUOTE_LEVEL = new FsSymbol(__FBS__QUASIQUOTE_LEVEL)
@@ -246,6 +246,7 @@ export function getGlobalEnv () {
   // env.set(new FsSymbol('unquote'), FsSyntaxUnquote.proc)
   env.set(new FsSymbol('vector'), FspVector.proc)
   env.set(new FsSymbol('vector-ref'), FspVectorRef.proc)
+  env.set(new FsSymbol('vector-set!'), FspVectorSet.proc)
   env.set(new FsSymbol('vector?'), FsPredicateVector.proc)
   env.set(new FsSymbol('write'), FspWrite.proc)
 
