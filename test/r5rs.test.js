@@ -325,6 +325,16 @@ test('🚧6.3.6', () => {
   expect(new FBS().eval('(vector \'a \'b \'c)').toString()).toBe('#(a b c)')
   expect(new FBS().eval('(vector? (vector \'a \'b \'c))').toString()).toBe('#t') // additional: from its definition
   expect(new FBS().eval('(vector-ref \'#(1 1 2 3 5 8 13 21) 5)').toString()).toBe('8')
+
+  const code = `
+  (let ((vec (vector 0 '(2 2 2 2) "Anna")))
+  (vector-set! vec 1 '("Sue" "Sue"))
+  vec)`
+  expect(new FBS().eval(code).toString()).toBe('#(0 ("Sue" "Sue") "Anna")')
+
+  // gauche, mit-scheme does not seems to throw error, while r5rs spec throws error.
+  // trying to follow spec.
+  expect(() => { new FBS().eval('(vector-set! \'#(0 1 2) 1 "doe") ') }).toThrow(FsException)
 })
 
 // 7. Format Syntax and semantics

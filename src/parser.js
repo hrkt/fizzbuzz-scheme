@@ -175,7 +175,8 @@ export class FsParser {
     }
     // vector
     if (t === '#') {
-      return new FsVector(FsParser.readTokens(tokenized, inQuoted).value)
+      const mutable = !inQuoted
+      return new FsVector(FsParser.readTokens(tokenized, inQuoted).value, mutable)
     }
     // list
     if (t === '(') {

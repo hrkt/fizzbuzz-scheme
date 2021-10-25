@@ -26,6 +26,9 @@ export class FspVectorSet extends FsSExp {
     if (!(vec instanceof FsVector)) {
       throw new FsException('a vector is required while arg is ' + list.at(0))
     }
+    if (!vec.isMutable) {
+      throw new FsException('a vector constant is immutable' + list.at(0))
+    }
     const index = list.at(1)
     if (!(index instanceof FsNumber)) {
       throw new FsException('a number is required while arg is ' + list.at(1))
