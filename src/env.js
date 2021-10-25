@@ -6,8 +6,9 @@ import { FsError, FsException } from './common.js'
 import { FsList, FsNumber } from './datatypes.js'
 import { FsConsoleInputPort, FsConsoleOutputPort, FspCloseInputPort, FspCloseOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspDisplay, FspLoad, FspNewline, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort, FspWrite } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsIf, FsLambda, FsLet, FsNot, FsNumberEquals, FspAbs, FspAppend, FspCallCc, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLength, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FspVector, FspVectorRef, FsSet, FsSyntaxUnquote } from './sexp.js'
+import { FsAnd, FsBegin, FsCar, FsCdr, FsCons, FsDefine, FsIf, FsLambda, FsLet, FsNot, FsNumberEquals, FspAbs, FspAppend, FspCallCc, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLength, FspLt, FspLte, FspMap, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FsSet, FsSyntaxUnquote } from './sexp.js'
 import { FsSymbol } from './symbol.js'
+import { FspVector, FspVectorRef } from './vector-operations.js'
 
 const __FBS__QUASIQUOTE_LEVEL = '__FBS__QUASIQUOTE_LEVEL'
 const FBS_QUASIQUOTE_LEVEL = new FsSymbol(__FBS__QUASIQUOTE_LEVEL)

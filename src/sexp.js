@@ -393,23 +393,6 @@ export class FspLength extends FsSExp {
   }
 }
 
-export class FspVector extends FsSExp {
-  static proc (list) {
-    return new FsVector(list.value)
-  }
-}
-
-export class FspVectorRef extends FsSExp {
-  static proc (list) {
-    const vec = list.at(0)
-    if (!(vec instanceof FsVector)) {
-      throw new FsException('a vector is required')
-    }
-    const index = list.at(1).value
-    return list.at(0).at(index)
-  }
-}
-
 export class FspMap extends FsSExp {
   static proc (list, env) {
     const p = list.at(0)
