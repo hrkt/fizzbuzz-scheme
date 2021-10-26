@@ -4,14 +4,14 @@ import log from 'loglevel'
 
 import { FsException } from './common.js'
 import { FsList } from './datatypes.js'
-import { FsEnv, getGlobalEnv } from './env.js'
+import { FsEnv } from './env.js'
 import { FslsLet, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Evaluator
 export class FsEvaluator {
   static evalCounter = 0
-  static evalOuter (sexp, env = getGlobalEnv()) {
+  static evalOuter (sexp, env) {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('----------------------------------------------------')
       log.debug('EVAL:' + sexp + ' in ' + env.toString())
@@ -26,7 +26,7 @@ export class FsEvaluator {
   }
 
   // static eval (sexp, env = getGlobalEnv()) {
-  static eval (sexp, env = getGlobalEnv()) {
+  static eval (sexp, env) {
     while (true) {
       // FsEvaluator.evalCounter++
       // do not use sexp.instanceof XXXX because it's slower than simple field comparison

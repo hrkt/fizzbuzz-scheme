@@ -2,7 +2,8 @@
 
 import { FsError } from '../src/common.js'
 import { FsNumber } from '../src/datatypes.js'
-import { FsEnv, getGlobalEnv } from '../src/env'
+import { FsEnv } from '../src/env'
+import { getGlobalEnv } from '../src/global-env.js'
 import { FsSymbol } from '../src/symbol'
 
 test('define env success', () => {
