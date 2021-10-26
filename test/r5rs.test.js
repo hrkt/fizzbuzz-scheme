@@ -154,6 +154,24 @@ test('✅4.2.3_2', () => {
   mockStdoutWrite.mockRestore()
 })
 
+test('🚧4.2.4', () => {
+  const code1 = `
+  (do ((vec (make-vector 5))
+     (i 0 (+ i 1)))
+    ((= i 5) vec)
+  (vector-set! vec i i))
+  `
+  expect(new FBS().eval(code1).toString()).toBe('#(0 1 2 3 4)')
+
+  const code2 = `
+  (let ((x '(1 3 5 7 9)))
+  (do ((x x (cdr x))
+       (sum 0 (+ sum (car x))))
+      ((null? x) sum)))
+  `
+  expect(new FBS().eval(code2).toString()).toBe('25')
+})
+
 // all cleared 😊
 test('✅4.2.6', () => {
   expect(new FBS().eval('`(list ,(+ 1 2) 4)').toString()).toBe('(list 3 4)')

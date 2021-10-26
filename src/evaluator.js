@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsList } from './datatypes.js'
 import { FsEnv } from './env.js'
-import { FslsLet, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
+import { FslsDo, FslsLet, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Evaluator
@@ -49,6 +49,8 @@ export class FsEvaluator {
           return FssQuasiQuote.proc(sexp.at(1), env)
         } else if (FsSymbol.DEFINE === firstSymbol) {
           return FssDefine.proc(sexp.slice(1), env)
+        } else if (FsSymbol.DO === firstSymbol) {
+          return FslsDo.proc(sexp.slice(1), env)
         } else if (FsSymbol.SET_ === firstSymbol) {
           return FssSet.proc(sexp.slice(1), env)
         } else if (FsSymbol.SET_CDR_ === firstSymbol) {

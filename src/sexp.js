@@ -211,6 +211,59 @@ export class FslsAnd extends FsSExp {
   }
 }
 
+export class FslsDo extends FsSExp {
+  static proc (list, env) {
+    const newEnv = new FsEnv(env)
+    const varList = list.at(0)
+    const symbolToStepMap = new Map()
+    const symbols = []
+    for (let i = 0; i < varList.length; i++) {
+      // init
+      const def = varList.at(i)
+      const symbol = def.at(0)
+      const init = FsEvaluator.eval(def.at(1), newEnv)
+
+      const stepExp = def.length === 2 ? def.at(0) : def.at(2)
+      newEnv.set(symbol, init)
+      symbols[i] = symbol
+      symbolToStepMap.set(symbol, stepExp)
+    }
+
+    const testExp = list.at(1).at(0)
+    // const retExps = list.at(1).slice(1)
+    const commands = list.slice(2)
+
+    while (FsEvaluator.eval(testExp, newEnv) === FsBoolean.FALSE) {
+      // command
+      for (let i = 0; i < commands.length; i++) {
+        FsEvaluator.eval(commands.at(i), newEnv)
+      }
+      // step
+      const nextValueMap = new Map()
+      for (let i = 0; i < symbols.length; i++) {
+        const v = FsEvaluator.eval(symbolToStepMap.get(symbols[i]), newEnv)
+        nextValueMap.set(symbols[i], v)
+      }
+
+      nextValueMap.forEach((value, key) => {
+        newEnv.set(key, value)
+      })
+    }
+
+    const retExps = list.at(1).slice(1)
+    const buf = []
+    for (let i = 0; i < retExps.length; i++) {
+      buf[i] = FsEvaluator.eval(retExps.at(i), newEnv)
+    }
+
+    if (retExps.length === 1) {
+      return buf[0]
+    } else {
+      return new FsList(buf)
+    }
+  }
+}
+
 export class FslpNot extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)

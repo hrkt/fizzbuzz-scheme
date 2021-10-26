@@ -9,7 +9,7 @@ import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
 import { FslpAbs, FspDivide, FspGt, FspGte, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspNumberEquals, FspPlus, FspPow, FspRound, FspSqrt } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote } from './sexp.js'
+import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 import { FspMakeVector, FspVector, FspVectorRef, FspVectorSet } from './vector-operations.js'
 
@@ -60,6 +60,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('current-input-port'), FspCurrentInputPort.proc)
   env.set(new FsSymbol('current-output-port'), FspCurrentOutputPort.proc)
   env.set(new FsSymbol('display'), FslpDisplay.proc)
+  env.set(new FsSymbol('do'), FslsDo.proc)
   env.set(new FsSymbol('eq?'), FsPredicateEq.proc)
   env.set(new FsSymbol('eqv?'), FsPredicateEqv.proc)
   env.set(new FsSymbol('equal?'), FsPredicateEqual.proc)
