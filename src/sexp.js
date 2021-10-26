@@ -11,7 +11,7 @@ import { FsAtom, FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
 
-export class FsIf extends FsSExp {
+export class FssIf extends FsSExp {
   /**
    * @deprecated since version 0.1.6, this function is inlined to eval-loop
    */
@@ -20,7 +20,7 @@ export class FsIf extends FsSExp {
   }
 }
 
-export class FsLambda extends FsSExp {
+export class FssLambda extends FsSExp {
   static proc (list, env) {
     const params = list.at(0)
 
@@ -31,12 +31,12 @@ export class FsLambda extends FsSExp {
     // case 3. (<v1> <v2> ... <vn> . <vn+1>) ; takes n or more arguments
 
     const body = list.slice(1)
-    const procedure = new FsDefinedProcedure(params, body, env)
+    const procedure = new FssDefinedProcedure(params, body, env)
     return procedure
   }
 }
 
-export class FsDefinedProcedure extends FsSExp {
+export class FssDefinedProcedure extends FsSExp {
   constructor (params, body, env) {
     super()
     this.params = params
@@ -44,7 +44,7 @@ export class FsDefinedProcedure extends FsSExp {
     this.env = env
 
     if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('ctor. FsDefinedProcedure with params:' + params + ',body:' + body)
+      log.debug('ctor. FssDefinedProcedure with params:' + params + ',body:' + body)
       log.debug('--params--')
       log.debug(params)
       log.debug('--body--')
@@ -67,15 +67,15 @@ export class FsDefinedProcedure extends FsSExp {
   }
 
   toString () {
-    return 'FsDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+    return 'FssDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
   }
 
   get type () {
-    return 'fsdefinedprocedure'
+    return 'FssDefinedprocedure'
   }
 }
 
-export class FsLet extends FsSExp {
+export class FslsLet extends FsSExp {
   static proc (list, env) {
     let varDefs = null
     if (Array.isArray(list) && !(Array.isArray(list.at(0).at(0)))) {
@@ -99,12 +99,12 @@ export class FsLet extends FsSExp {
   }
 
   toString () {
-    return 'FsDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+    return 'FssDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
   }
 }
 
 // https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6
-export class FsDefine extends FsSExp {
+export class FssDefine extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
     const car = list.at(0)
@@ -128,7 +128,7 @@ export class FsDefine extends FsSExp {
 }
 
 // https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6
-export class FsSet extends FsSExp {
+export class FssSet extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
     const symbol = list.at(0)
@@ -148,7 +148,7 @@ export class FsSet extends FsSExp {
   }
 }
 
-export class FsBegin extends FsSExp {
+export class FssBegin extends FsSExp {
   /**
    * @deprecated since version 0.1.6, this function is inlined to eval-loop
    */
@@ -172,7 +172,7 @@ export class FsUndefined extends FsAtom {
   }
 }
 
-export class FspAbs extends FsSExp {
+export class FslpAbs extends FsSExp {
   static proc (list) {
     if (!(list.at(0) instanceof FsNumber)) {
       throw new FsException('arg must be number')
@@ -305,7 +305,7 @@ export class FsEquals extends FsSExp {
   }
 }
 
-export class FsNumberEquals extends FsSExp {
+export class FspNumberEquals extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
     const lhs = list.at(0)
@@ -341,7 +341,7 @@ export class FspGte extends FsSExp {
   }
 }
 
-export class FsAnd extends FsSExp {
+export class FslsAnd extends FsSExp {
   static proc (list) {
     if (list.length === 2) {
       const lhs = list.at(0)
@@ -360,7 +360,7 @@ export class FsAnd extends FsSExp {
   }
 }
 
-export class FsNot extends FsSExp {
+export class FslpNot extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
     const target = list.at(0)
@@ -378,7 +378,7 @@ export class FspSymbolToString extends FsSExp {
   }
 }
 
-export class FspLength extends FsSExp {
+export class FslpLength extends FsSExp {
   static proc (list) {
     if (!isProperList(list.at(0))) {
       throw new FsException('arg must be proper list but got ' + list)
@@ -393,7 +393,7 @@ export class FspLength extends FsSExp {
   }
 }
 
-export class FspMap extends FsSExp {
+export class FslpMap extends FsSExp {
   static proc (list, env) {
     const p = list.at(0)
     const body = list.at(1)
@@ -419,7 +419,7 @@ export class FspMin extends FsSExp {
   }
 }
 
-export class FspAppend extends FsSExp {
+export class FslpAppend extends FsSExp {
   static proc (list) {
     const newList = []
     for (let j = 0; j < list.length; j++) {
@@ -479,7 +479,7 @@ export class FsPeekMemoryUsage extends FsSExp {
   }
 }
 
-export class FsCar extends FsSExp {
+export class FspCar extends FsSExp {
   static proc (arg) {
     const target = arg.at(0)
     if (target instanceof FsPair) {
@@ -495,7 +495,7 @@ export class FsCar extends FsSExp {
   }
 }
 
-export class FsCdr extends FsSExp {
+export class FspCdr extends FsSExp {
   static proc (arg) {
     const target = arg.at(0)
     if (target instanceof FsPair) {
@@ -511,7 +511,7 @@ export class FsCdr extends FsSExp {
   }
 }
 
-export class FsCons extends FsSExp {
+export class FspCons extends FsSExp {
   static proc (arg) {
     ensureListContainsTwo(arg)
     // TODO dot pair
@@ -523,7 +523,13 @@ export class FsCons extends FsSExp {
   }
 }
 
-export class FsSyntaxQuasiQuote {
+export class FslpList {
+  static proc (arg) {
+    return arg.length === 0 ? FsList.EMPTY : new FsList(arg.value)
+  }
+}
+
+export class FssQuasiQuote {
   static procInner (arg, env) {
     if (!(arg instanceof FsList || arg instanceof FsVector)) {
       return arg
@@ -616,7 +622,7 @@ export class FsSyntaxQuasiQuote {
     return this.procInner(arg, quotedEnv)
   }
 }
-export class FsSyntaxUnquote {
+export class FssUnquote {
   static proc (arg, env) {
     log.debug('UNQUOTE>>>>>' + arg)
     throw new Error('came here!')

@@ -1,7 +1,7 @@
 'use strict'
 
 import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsVector } from './datatypes.js'
-import { FsDefinedProcedure } from './sexp.js'
+import { FssDefinedProcedure } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsTwo } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
@@ -40,7 +40,7 @@ export class FsPredicateSymbol extends FsSExp {
 
 export class FsPredicateProcedure extends FsSExp {
   static proc (list) {
-    return list.at(0) instanceof FsDefinedProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0) instanceof FssDefinedProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 

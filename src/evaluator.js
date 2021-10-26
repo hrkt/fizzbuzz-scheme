@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsList } from './datatypes.js'
 import { FsEnv, getGlobalEnv } from './env.js'
-import { FsDefine, FsLambda, FsLet, FspSetCdr, FsSet, FsSyntaxQuasiQuote } from './sexp.js'
+import { FslsLet, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Evaluator
@@ -46,11 +46,11 @@ export class FsEvaluator {
         } else if (FsSymbol.QUOTE === firstSymbol || FsSymbol.SINGLE_QUOTE === firstSymbol) {
           return sexp.at(1)
         } else if (FsSymbol.QUASIQUOTE === firstSymbol || FsSymbol.BACK_QUOTE === firstSymbol) {
-          return FsSyntaxQuasiQuote.proc(sexp.at(1), env)
+          return FssQuasiQuote.proc(sexp.at(1), env)
         } else if (FsSymbol.DEFINE === firstSymbol) {
-          return FsDefine.proc(sexp.slice(1), env)
+          return FssDefine.proc(sexp.slice(1), env)
         } else if (FsSymbol.SET_ === firstSymbol) {
-          return FsSet.proc(sexp.slice(1), env)
+          return FssSet.proc(sexp.slice(1), env)
         } else if (FsSymbol.SET_CDR_ === firstSymbol) {
           return FspSetCdr.proc(sexp.slice(1), env)
         } else if (FsSymbol.BEGIN === firstSymbol) {
@@ -60,9 +60,9 @@ export class FsEvaluator {
           }
           sexp = ret
         } else if (FsSymbol.LAMBDA === firstSymbol) {
-          return FsLambda.proc(sexp.slice(1), env)
+          return FssLambda.proc(sexp.slice(1), env)
         } else if (FsSymbol.LET === firstSymbol) {
-          return FsLet.proc(sexp.slice(1), env)
+          return FslsLet.proc(sexp.slice(1), env)
         } else {
         // for the readability, use this line
         // const args = sexp.slice(1).map(s => this.eval(s, env))
@@ -76,7 +76,7 @@ export class FsEvaluator {
           if (!p) {
             throw new FsException('Syntax error: got an unbound symbol: ' + firstSymbol)
           }
-          if (p.type === 'fsdefinedprocedure') {
+          if (p.type === 'FssDefinedprocedure') {
             const innerEnv = new FsEnv(p.env)
             if (p.params.type === 'fssymbol') {
               // e.g. ((lambda x x) 3 4 5 6)

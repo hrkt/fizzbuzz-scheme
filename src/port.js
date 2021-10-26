@@ -108,7 +108,7 @@ export class FsFileOutputPort extends FsOutputPort {
   }
 }
 
-export class FsConsoleInputPort extends FsOutputPort {
+export class FspConsoleInputPort extends FsOutputPort {
   constructor (fd) {
     super()
   }
@@ -123,7 +123,7 @@ export class FsConsoleInputPort extends FsOutputPort {
   }
 }
 
-export class FsConsoleOutputPort extends FsOutputPort {
+export class FspConsoleOutputPort extends FsOutputPort {
   constructor (fd) {
     super()
   }
@@ -244,7 +244,7 @@ export class FspReadChar {
   }
 }
 
-export class FspWrite extends FsSExp {
+export class FslpWrite extends FsSExp {
   static proc (list, env) {
     ensureListLengthAtLeast(list, 1)
     const port = (list.length === 1) ? env.getCurrentOutputPort() : list.at(1)
@@ -256,7 +256,7 @@ export class FspWrite extends FsSExp {
   }
 }
 
-export class FspNewline extends FsSExp {
+export class FslpNewline extends FsSExp {
   static proc (list, env) {
     const port = (list.length === 0) ? env.getCurrentOutputPort() : list.at(0)
     if (!(port instanceof FsOutputPort)) {
@@ -268,18 +268,18 @@ export class FspNewline extends FsSExp {
 }
 
 // print s-exp in list. For FsString, print its value without double quotes.
-export class FspDisplay extends FsSExp {
+export class FslpDisplay extends FsSExp {
   static proc (list, env) {
     ensureListLengthAtLeast(list, 1)
     const v = (list.at(0) instanceof FsString ? list.at(0).value : list.at(0).toString())
     list.value[0] = new FsString(v)
-    FspWrite.proc(list, env)
+    FslpWrite.proc(list, env)
 
     return FsUndefined.UNDEFINED
   }
 }
 
-export class FspLoad extends FsSExp {
+export class FsopLoad extends FsSExp {
   static proc (list, env) {
     // TODO: utilize this in cli.js and index.js
     const file = list.at(0).value
