@@ -4,9 +4,10 @@ import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
 import { FsNumber } from './datatypes.js'
+import { FslpAbs, FspDivide, FspGt, FspGte, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspNumberEquals, FspPlus, FspPow, FspRound, FspSqrt } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FslpAbs, FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspNumberEquals, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote } from './sexp.js'
+import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 import { FspMakeVector, FspVector, FspVectorRef, FspVectorSet } from './vector-operations.js'
 
