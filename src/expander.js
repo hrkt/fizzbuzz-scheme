@@ -8,8 +8,9 @@ import { FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 export class FsExpander {
-  constructor () {
+  constructor (env) {
     this.macroTable = new Map()
+    this.globalEnv = env
   }
 
   // pre process sexp
@@ -98,7 +99,7 @@ export class FsExpander {
           if (!atToplevel) {
             throw new FsException('Syntax Error: define-macro should be at top level.')
           }
-          const proc = FsEvaluator.eval(sexp.at(2))
+          const proc = FsEvaluator.eval(sexp.at(2), this.globalEnv)
           const procName = sexp.at(1)
           this.macroTable.set(procName.value, proc) // TODO:multpile bodies
 

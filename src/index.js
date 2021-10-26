@@ -3,11 +3,11 @@
 import log from 'loglevel'
 
 import { FsList, FsString } from './datatypes.js'
-import { getGlobalEnv } from './env.js'
 import { FsEvaluator as FE } from './evaluator.js'
 import { FsExpander } from './expander.js'
+import { getGlobalEnv } from './global-env.js'
 import { FsParser as FP } from './parser.js'
-import { FspLoad } from './port.js'
+import { FsopLoad } from './port.js'
 import { FsUndefined } from './sexp.js'
 
 // Environment
@@ -15,8 +15,8 @@ export class FizzBuzzScheme {
   constructor () {
     this.env = getGlobalEnv()
     this.debugMode = false
-    this.expander = new FsExpander()
-    FspLoad.proc(new FsList([new FsString('src/basic.scm')]), this.env)
+    this.expander = new FsExpander(this.env)
+    FsopLoad.proc(new FsList([new FsString('src/basic.scm')]), this.env)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('=======================================================================-')
     }

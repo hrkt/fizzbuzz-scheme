@@ -7,6 +7,7 @@ export class FsSymbol extends FsAtom {
   static BEGIN = Object.freeze(new FsSymbol('begin'))
   static COMMA = Object.freeze(new FsSymbol(','))
   static COMMA_FOLLOWED_BY_AT = Object.freeze(new FsSymbol(',@'))
+  static DO = Object.freeze(new FsSymbol('do'))
   static DOT = Object.freeze(new FsSymbol('.'))
   static DEFINE = Object.freeze(new FsSymbol('define'))
   static DEFINE_MACRO = Object.freeze(new FsSymbol('define-macro'))
@@ -38,6 +39,8 @@ export class FsSymbol extends FsAtom {
         return this.DEFINE
       case 'define-macro':
         return this.DEFINE_MACRO
+      case 'do':
+        return this.DO
       case 'if':
         return this.IF
       case 'lambda':

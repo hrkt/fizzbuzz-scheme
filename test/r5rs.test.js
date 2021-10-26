@@ -6,7 +6,7 @@ import { jest } from '@jest/globals'
 
 import { FsException } from '../src/common.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FsDefinedProcedure } from '../src/sexp.js'
+import { FssDefinedProcedure } from '../src/sexp.js'
 
 // 1. Overview of scheme
 
@@ -78,7 +78,7 @@ test('✅4.1.3', () => {
 // all cleared 😊
 test('✅4.1.4', () => {
   const fbs = new FBS()
-  expect(fbs.eval('(lambda (x) (+ x x))') instanceof FsDefinedProcedure).toBe(true)
+  expect(fbs.eval('(lambda (x) (+ x x))') instanceof FssDefinedProcedure).toBe(true)
 
   expect(new FBS().eval('((lambda (x) (+ x x)) 4)').toString()).toBe('8')
 
@@ -152,6 +152,24 @@ test('✅4.2.3_2', () => {
   expect(mockStdoutWrite).toHaveBeenNthCalledWith(1, '4 plus 1 equals ')
   expect(mockStdoutWrite).toHaveBeenNthCalledWith(2, '5')
   mockStdoutWrite.mockRestore()
+})
+
+test('🚧4.2.4', () => {
+  const code1 = `
+  (do ((vec (make-vector 5))
+     (i 0 (+ i 1)))
+    ((= i 5) vec)
+  (vector-set! vec i i))
+  `
+  expect(new FBS().eval(code1).toString()).toBe('#(0 1 2 3 4)')
+
+  const code2 = `
+  (let ((x '(1 3 5 7 9)))
+  (do ((x x (cdr x))
+       (sum 0 (+ sum (car x))))
+      ((null? x) sum)))
+  `
+  expect(new FBS().eval(code2).toString()).toBe('25')
 })
 
 // all cleared 😊
@@ -325,6 +343,16 @@ test('🚧6.3.6', () => {
   expect(new FBS().eval('(vector \'a \'b \'c)').toString()).toBe('#(a b c)')
   expect(new FBS().eval('(vector? (vector \'a \'b \'c))').toString()).toBe('#t') // additional: from its definition
   expect(new FBS().eval('(vector-ref \'#(1 1 2 3 5 8 13 21) 5)').toString()).toBe('8')
+
+  const code = `
+  (let ((vec (vector 0 '(2 2 2 2) "Anna")))
+  (vector-set! vec 1 '("Sue" "Sue"))
+  vec)`
+  expect(new FBS().eval(code).toString()).toBe('#(0 ("Sue" "Sue") "Anna")')
+
+  // gauche, mit-scheme does not seems to throw error, while r5rs spec throws error.
+  // trying to follow spec.
+  expect(() => { new FBS().eval('(vector-set! \'#(0 1 2) 1 "doe") ') }).toThrow(FsException)
 })
 
 // 7. Format Syntax and semantics

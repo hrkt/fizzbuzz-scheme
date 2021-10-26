@@ -101,10 +101,6 @@ export class FsList extends FsSExp {
       this.value[index] = v
     }
 
-    static proc (arg) {
-      return arg.length === 0 ? FsList.EMPTY : new FsList(arg.value)
-    }
-
     static isEmptyList (arg) {
       return (arg instanceof FsList) && arg.length === 0
     }
@@ -160,9 +156,10 @@ export class FsVector extends FsSExp {
      *
      * @param {*} arg Array
      */
-  constructor (arg) {
+  constructor (arg, mutable = true) {
     super()
     this.value = arg
+    this.mutable = mutable
   }
 
   at (index) {
@@ -171,6 +168,10 @@ export class FsVector extends FsSExp {
 
   get length () {
     return this.value.length
+  }
+
+  get isMutable () {
+    return this.mutable
   }
 
   toString () {

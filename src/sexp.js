@@ -11,7 +11,7 @@ import { FsAtom, FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
 
-export class FsIf extends FsSExp {
+export class FssIf extends FsSExp {
   /**
    * @deprecated since version 0.1.6, this function is inlined to eval-loop
    */
@@ -20,7 +20,7 @@ export class FsIf extends FsSExp {
   }
 }
 
-export class FsLambda extends FsSExp {
+export class FssLambda extends FsSExp {
   static proc (list, env) {
     const params = list.at(0)
 
@@ -31,12 +31,12 @@ export class FsLambda extends FsSExp {
     // case 3. (<v1> <v2> ... <vn> . <vn+1>) ; takes n or more arguments
 
     const body = list.slice(1)
-    const procedure = new FsDefinedProcedure(params, body, env)
+    const procedure = new FssDefinedProcedure(params, body, env)
     return procedure
   }
 }
 
-export class FsDefinedProcedure extends FsSExp {
+export class FssDefinedProcedure extends FsSExp {
   constructor (params, body, env) {
     super()
     this.params = params
@@ -44,7 +44,7 @@ export class FsDefinedProcedure extends FsSExp {
     this.env = env
 
     if (log.getLevel() <= log.levels.DEBUG) {
-      log.debug('ctor. FsDefinedProcedure with params:' + params + ',body:' + body)
+      log.debug('ctor. FssDefinedProcedure with params:' + params + ',body:' + body)
       log.debug('--params--')
       log.debug(params)
       log.debug('--body--')
@@ -67,15 +67,15 @@ export class FsDefinedProcedure extends FsSExp {
   }
 
   toString () {
-    return 'FsDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+    return 'FssDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
   }
 
   get type () {
-    return 'fsdefinedprocedure'
+    return 'FssDefinedprocedure'
   }
 }
 
-export class FsLet extends FsSExp {
+export class FslsLet extends FsSExp {
   static proc (list, env) {
     let varDefs = null
     if (Array.isArray(list) && !(Array.isArray(list.at(0).at(0)))) {
@@ -99,12 +99,12 @@ export class FsLet extends FsSExp {
   }
 
   toString () {
-    return 'FsDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+    return 'FssDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
   }
 }
 
 // https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6
-export class FsDefine extends FsSExp {
+export class FssDefine extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
     const car = list.at(0)
@@ -128,7 +128,7 @@ export class FsDefine extends FsSExp {
 }
 
 // https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6
-export class FsSet extends FsSExp {
+export class FssSet extends FsSExp {
   static proc (list, env) {
     ensureListContainsTwo(list)
     const symbol = list.at(0)
@@ -148,7 +148,7 @@ export class FsSet extends FsSExp {
   }
 }
 
-export class FsBegin extends FsSExp {
+export class FssBegin extends FsSExp {
   /**
    * @deprecated since version 0.1.6, this function is inlined to eval-loop
    */
@@ -172,119 +172,6 @@ export class FsUndefined extends FsAtom {
   }
 }
 
-export class FspAbs extends FsSExp {
-  static proc (list) {
-    if (!(list.at(0) instanceof FsNumber)) {
-      throw new FsException('arg must be number')
-    }
-    return new FsNumber(Math.abs(list.at(0).value))
-  }
-}
-
-export class FspPlus extends FsSExp {
-  static proc (list) {
-    // for the readability, use this line
-    // return new FsNumber(list.map(n => n.value).reduce((a, b) => a + b, 0))
-
-    // for the performance, use lines below. it may be bit faster.
-    //
-    if (list.length === 2) {
-      return new FsNumber(list.at(0).value + list.at(1).value)
-    } else if (list.length === 1) {
-      return new FsNumber(list.at(0).value)
-    } else {
-      let buf = 0
-      for (let i = 0; i < list.length; i++) {
-        buf += list.at(i).value
-      }
-      return new FsNumber(buf)
-    }
-  }
-}
-
-export class FspRound extends FsSExp {
-  static proc (list) {
-    return new FsNumber(Math.round(list.at(0).value))
-  }
-}
-
-export class FspMultiply extends FsSExp {
-  static proc (list) {
-    if (list.length === 0) {
-      return new FsNumber(1)
-    }
-    // return new FsNumber(list.map(n => n.value).reduce((a, b) => a * b, 1))
-    let buf = list.at(0).value
-    for (let i = 1; i < list.length; i++) {
-      buf *= list.at(i).value
-    }
-    return new FsNumber(buf)
-  }
-}
-
-export class FspMinus extends FsSExp {
-  static proc (list) {
-    if (list.length === 2) {
-      return new FsNumber(list.at(0).value - list.at(1).value)
-    } else if (list.length === 1) {
-      return new FsNumber(-1 * (list.at(0).value))
-    } else {
-      // for the readability, use this line
-      // return new FsNumber(list.at(0).value - FspPlus.proc(list.slice(1)))
-
-      // for the performance, use lines below. it may be bit faster.
-      //
-      let buf = list.at(0).value
-      for (let i = 1; i < list.length; i++) {
-        buf -= list.at(i)
-      }
-      return new FsNumber(buf)
-    }
-  }
-}
-
-export class FspDivide extends FsSExp {
-  static proc (list) {
-    if (list.length === 1) {
-      // TODO: support rational number
-      if (list.at(0).value !== 0) {
-        return new FsNumber(list.at(0).value)
-      } else {
-        throw new FsException('divide by 0')
-      }
-    } else {
-      const divisor = FspMultiply.proc(list.slice(1))
-      if (divisor.value !== 0) {
-        return new FsNumber(list.at(0).value / divisor.value)
-      } else {
-        throw new FsException('divide by 0')
-      }
-    }
-  }
-}
-
-export class FspMod extends FsSExp {
-  static proc (list) {
-    ensureListContainsTwo(list)
-    const dividend = list.at(0).value
-    const divisor = list.at(1).value
-    return new FsNumber(dividend % divisor)
-  }
-}
-
-export class FspPow extends FsSExp {
-  static proc (list) {
-    ensureListContainsTwo(list)
-    return new FsNumber(Math.pow(list.at(0).value, list.at(1).value))
-  }
-}
-
-export class FspSqrt extends FsSExp {
-  static proc (list) {
-    return Math.sqrt(list.value)
-  }
-}
-
 // in scheme,
 // '=' checks two numbers are equal,
 // eqv?, eq are described in 6.1 https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.1
@@ -305,43 +192,7 @@ export class FsEquals extends FsSExp {
   }
 }
 
-export class FsNumberEquals extends FsSExp {
-  static proc (list) {
-    ensureListContainsTwo(list)
-    const lhs = list.at(0)
-    const rhs = list.at(1)
-    if (lhs.type !== 'fsnumber' || rhs.type !== 'fsnumber') {
-      throw new FsException('parameter for "=" must be a number.')
-    }
-    return lhs.value === rhs.value ? FsBoolean.TRUE : FsBoolean.FALSE
-  }
-}
-
-export class FspLt extends FsSExp {
-  static proc (list) {
-    return list.at(0).value < list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
-  }
-}
-
-export class FspLte extends FsSExp {
-  static proc (list) {
-    return list.at(0).value <= list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
-  }
-}
-
-export class FspGt extends FsSExp {
-  static proc (list) {
-    return list.at(0).value > list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
-  }
-}
-
-export class FspGte extends FsSExp {
-  static proc (list) {
-    return list.at(0).value >= list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
-  }
-}
-
-export class FsAnd extends FsSExp {
+export class FslsAnd extends FsSExp {
   static proc (list) {
     if (list.length === 2) {
       const lhs = list.at(0)
@@ -360,7 +211,60 @@ export class FsAnd extends FsSExp {
   }
 }
 
-export class FsNot extends FsSExp {
+export class FslsDo extends FsSExp {
+  static proc (list, env) {
+    const newEnv = new FsEnv(env)
+    const varList = list.at(0)
+    const symbolToStepMap = new Map()
+    const symbols = []
+    for (let i = 0; i < varList.length; i++) {
+      // init
+      const def = varList.at(i)
+      const symbol = def.at(0)
+      const init = FsEvaluator.eval(def.at(1), newEnv)
+
+      const stepExp = def.length === 2 ? def.at(0) : def.at(2)
+      newEnv.set(symbol, init)
+      symbols[i] = symbol
+      symbolToStepMap.set(symbol, stepExp)
+    }
+
+    const testExp = list.at(1).at(0)
+    // const retExps = list.at(1).slice(1)
+    const commands = list.slice(2)
+
+    while (FsEvaluator.eval(testExp, newEnv) === FsBoolean.FALSE) {
+      // command
+      for (let i = 0; i < commands.length; i++) {
+        FsEvaluator.eval(commands.at(i), newEnv)
+      }
+      // step
+      const nextValueMap = new Map()
+      for (let i = 0; i < symbols.length; i++) {
+        const v = FsEvaluator.eval(symbolToStepMap.get(symbols[i]), newEnv)
+        nextValueMap.set(symbols[i], v)
+      }
+
+      nextValueMap.forEach((value, key) => {
+        newEnv.set(key, value)
+      })
+    }
+
+    const retExps = list.at(1).slice(1)
+    const buf = []
+    for (let i = 0; i < retExps.length; i++) {
+      buf[i] = FsEvaluator.eval(retExps.at(i), newEnv)
+    }
+
+    if (retExps.length === 1) {
+      return buf[0]
+    } else {
+      return new FsList(buf)
+    }
+  }
+}
+
+export class FslpNot extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
     const target = list.at(0)
@@ -378,7 +282,7 @@ export class FspSymbolToString extends FsSExp {
   }
 }
 
-export class FspLength extends FsSExp {
+export class FslpLength extends FsSExp {
   static proc (list) {
     if (!isProperList(list.at(0))) {
       throw new FsException('arg must be proper list but got ' + list)
@@ -393,24 +297,7 @@ export class FspLength extends FsSExp {
   }
 }
 
-export class FspVector extends FsSExp {
-  static proc (list) {
-    return new FsVector(list.value)
-  }
-}
-
-export class FspVectorRef extends FsSExp {
-  static proc (list) {
-    const vec = list.at(0)
-    if (!(vec instanceof FsVector)) {
-      throw new FsException('a vector is required')
-    }
-    const index = list.at(1).value
-    return list.at(0).at(index)
-  }
-}
-
-export class FspMap extends FsSExp {
+export class FslpMap extends FsSExp {
   static proc (list, env) {
     const p = list.at(0)
     const body = list.at(1)
@@ -422,21 +309,7 @@ export class FspMap extends FsSExp {
   }
 }
 
-export class FspMax extends FsSExp {
-  static proc (list) {
-    const target = list.value.map(fsn => fsn.value)
-    return new FsNumber(Math.max(...target))
-  }
-}
-
-export class FspMin extends FsSExp {
-  static proc (list) {
-    const target = list.value.map(fsn => fsn.value)
-    return new FsNumber(Math.min(...target))
-  }
-}
-
-export class FspAppend extends FsSExp {
+export class FslpAppend extends FsSExp {
   static proc (list) {
     const newList = []
     for (let j = 0; j < list.length; j++) {
@@ -496,7 +369,7 @@ export class FsPeekMemoryUsage extends FsSExp {
   }
 }
 
-export class FsCar extends FsSExp {
+export class FspCar extends FsSExp {
   static proc (arg) {
     const target = arg.at(0)
     if (target instanceof FsPair) {
@@ -512,7 +385,7 @@ export class FsCar extends FsSExp {
   }
 }
 
-export class FsCdr extends FsSExp {
+export class FspCdr extends FsSExp {
   static proc (arg) {
     const target = arg.at(0)
     if (target instanceof FsPair) {
@@ -528,7 +401,7 @@ export class FsCdr extends FsSExp {
   }
 }
 
-export class FsCons extends FsSExp {
+export class FspCons extends FsSExp {
   static proc (arg) {
     ensureListContainsTwo(arg)
     // TODO dot pair
@@ -540,7 +413,13 @@ export class FsCons extends FsSExp {
   }
 }
 
-export class FsSyntaxQuasiQuote {
+export class FslpList {
+  static proc (arg) {
+    return arg.length === 0 ? FsList.EMPTY : new FsList(arg.value)
+  }
+}
+
+export class FssQuasiQuote {
   static procInner (arg, env) {
     if (!(arg instanceof FsList || arg instanceof FsVector)) {
       return arg
@@ -633,7 +512,7 @@ export class FsSyntaxQuasiQuote {
     return this.procInner(arg, quotedEnv)
   }
 }
-export class FsSyntaxUnquote {
+export class FssUnquote {
   static proc (arg, env) {
     log.debug('UNQUOTE>>>>>' + arg)
     throw new Error('came here!')
