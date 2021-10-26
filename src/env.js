@@ -8,7 +8,7 @@ import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCl
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
 import { FslpAbs, FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FspDivide, FsPeekMemoryUsage, FspGensym, FspGt, FspGte, FspLastPair, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspNumberEquals, FspPlus, FspPow, FspRound, FspSetCdr, FspSqrt, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote } from './sexp.js'
 import { FsSymbol } from './symbol.js'
-import { FspVector, FspVectorRef, FspVectorSet } from './vector-operations.js'
+import { FspMakeVector, FspVector, FspVectorRef, FspVectorSet } from './vector-operations.js'
 
 const __FBS__QUASIQUOTE_LEVEL = '__FBS__QUASIQUOTE_LEVEL'
 const FBS_QUASIQUOTE_LEVEL = new FsSymbol(__FBS__QUASIQUOTE_LEVEL)
@@ -224,6 +224,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('list'), FslpList.proc)
   env.set(new FsSymbol('list?'), FsPredicateList.proc)
   env.set(new FsSymbol('load'), FsopLoad.proc)
+  env.set(new FsSymbol('make-vector'), FspMakeVector.proc)
   env.set(new FsSymbol('map'), FslpMap.proc)
   env.set(new FsSymbol('max'), FspMax.proc)
   env.set(new FsSymbol('min'), FspMin.proc)

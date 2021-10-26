@@ -3,6 +3,20 @@ import { FsNumber, FsVector } from './datatypes.js'
 import { FsUndefined } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
 
+export class FspMakeVector extends FsSExp {
+  static proc (list) {
+    const length = list.at(0)
+    if (!(length instanceof FsNumber)) {
+      throw new FsException('a number is required:' + length)
+    }
+    const fill = list.length === 2 ? list.at(1) : FsUndefined.UNDEFINED
+    const buf = []
+    for (let i = 0; i < length.value; i++) {
+      buf[i] = fill
+    }
+    return new FsVector(buf)
+  }
+}
 export class FspVector extends FsSExp {
   static proc (list) {
     return new FsVector(list.value)
