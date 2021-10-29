@@ -15,6 +15,7 @@ export class FsSymbol extends FsAtom {
   static IF = Object.freeze(new FsSymbol('if'))
   static LAMBDA = Object.freeze(new FsSymbol('lambda'))
   static LET = Object.freeze(new FsSymbol('let'))
+  static LET_ASTERISK = Object.freeze(new FsSymbol('let*'))
   static QUASIQUOTE = Object.freeze(new FsSymbol('quasiquote'))
   static QUOTE = Object.freeze(new FsSymbol('quote'))
   static SINGLE_QUOTE = Object.freeze(new FsSymbol('\''))
@@ -47,6 +48,8 @@ export class FsSymbol extends FsAtom {
         return this.LAMBDA
       case 'let':
         return this.LET
+      case 'let*':
+        return this.LET_ASTERISK
       case 'quasiquote':
         return this.QUASIQUOTE
       case 'quote':
