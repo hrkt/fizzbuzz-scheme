@@ -127,6 +127,17 @@ test('✅4.1.6', () => {
 
 test('🚧4.2.2', () => {
   expect(new FBS().eval('(let ((x 2) (y 3)) (* x y))').toString()).toBe('6')
+  const code1 = `(let ((x 2) (y 3))
+    (let ((x 7)
+          (z (+ x y)))
+      (* z x)))`
+  expect(new FBS().eval(code1).toString()).toBe('35')
+
+  const code2 = `(let ((x 2) (y 3))
+  (let* ((x 7)
+         (z (+ x y)))
+    (* z x)))`
+  expect(new FBS().eval(code2).toString()).toBe('70')
 })
 
 // all cleared 😊

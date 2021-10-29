@@ -84,6 +84,42 @@ export class FslsLet extends FsSExp {
       varDefs = list.at(0)
     }
 
+    const varMap = new Map()
+    const vars = []
+    for (let i = 0; i < varDefs.length; i++) {
+      const tmpEnv = new FsEnv(env)
+      varMap.set(varDefs.at(i).at(0), FsEvaluator.eval(varDefs.at(i).at(1), tmpEnv))
+      vars.push(varDefs.at(i).at(0))
+    }
+
+    const innerEnv = new FsEnv(env)
+    for (let i = 0; i < vars.length; i++) {
+      innerEnv.set(vars[i], varMap.get(vars[i]))
+    }
+
+    let ret = null
+    for (let i = 1; i < list.length; i++) {
+      const body = list.at(i)
+      ret = FsEvaluator.eval(body, innerEnv)
+    }
+
+    return ret
+  }
+
+  toString () {
+    return 'FssDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+  }
+}
+
+export class FslsLetAsterisk extends FsSExp {
+  static proc (list, env) {
+    let varDefs = null
+    if (Array.isArray(list) && !(Array.isArray(list.at(0).at(0)))) {
+      throw new FsException('syntax error: bindings should have the form ((k 1) ..')
+    } else {
+      varDefs = list.at(0)
+    }
+
     const innerEnv = new FsEnv(env)
     for (let i = 0; i < varDefs.length; i++) {
       innerEnv.set(varDefs.at(i).at(0), FsEvaluator.eval(varDefs.at(i).at(1), env))
