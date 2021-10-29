@@ -107,6 +107,17 @@ export class FsEnv {
     }
   }
 
+  clearVars () {
+    this.vars = Object.create(null)
+    if (this.outer !== null) {
+      let nextOuter = this.outer
+      while (nextOuter !== null && nextOuter.outer !== null) {
+        nextOuter.vars = Object.create(null)
+        nextOuter = nextOuter.outer
+      }
+    }
+  }
+
   increaseQuasiquoteDepth () {
     const current = this.find(FBS_QUASIQUOTE_LEVEL)
     const next = new FsNumber(current.value + 1)

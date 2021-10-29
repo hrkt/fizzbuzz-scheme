@@ -139,6 +139,35 @@ export class FslsLetAsterisk extends FsSExp {
   }
 }
 
+export class FslsLetRecAsterisk extends FsSExp {
+  static proc (list, env) {
+    let varDefs = null
+    if (Array.isArray(list) && !(Array.isArray(list.at(0).at(0)))) {
+      throw new FsException('syntax error: bindings should have the form ((k 1) ..')
+    } else {
+      varDefs = list.at(0)
+    }
+
+    const emptyEnv = new FsEnv(env)
+    emptyEnv.clearVars()
+    for (let i = 0; i < varDefs.length; i++) {
+      emptyEnv.set(varDefs.at(i).at(0), FsEvaluator.eval(varDefs.at(i).at(1), emptyEnv))
+    }
+
+    let ret = null
+    for (let i = 1; i < list.length; i++) {
+      const body = list.at(i)
+      ret = FsEvaluator.eval(body, emptyEnv)
+    }
+
+    return ret
+  }
+
+  toString () {
+    return 'FssDefinedProcedure - params:' + this.params + ' body:' + this.body + ' defined-in:env' + this.env.id
+  }
+}
+
 // https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6
 export class FssDefine extends FsSExp {
   static proc (list, env) {

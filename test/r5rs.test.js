@@ -125,7 +125,8 @@ test('✅4.1.6', () => {
   expect(fbs.eval('(+ x 1)').toString()).toBe('5')
 })
 
-test('🚧4.2.2', () => {
+// all cleared 😊
+test('✅4.2.2', () => {
   expect(new FBS().eval('(let ((x 2) (y 3)) (* x y))').toString()).toBe('6')
   const code1 = `(let ((x 2) (y 3))
     (let ((x 7)
@@ -138,6 +139,19 @@ test('🚧4.2.2', () => {
          (z (+ x y)))
     (* z x)))`
   expect(new FBS().eval(code2).toString()).toBe('70')
+
+  const code3 = `(letrec ((even?
+    (lambda (n)
+      (if (zero? n)
+          #t
+          (odd? (- n 1)))))
+   (odd?
+    (lambda (n)
+      (if (zero? n)
+          #f
+          (even? (- n 1))))))
+  (even? 88))`
+  expect(new FBS().eval(code3).toString()).toBe('#t')
 })
 
 // all cleared 😊
