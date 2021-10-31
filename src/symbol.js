@@ -7,10 +7,12 @@ export class FsSymbol extends FsAtom {
   static BEGIN = Object.freeze(new FsSymbol('begin'))
   static COMMA = Object.freeze(new FsSymbol(','))
   static COMMA_FOLLOWED_BY_AT = Object.freeze(new FsSymbol(',@'))
+  static COND = Object.freeze(new FsSymbol('cond'))
   static DO = Object.freeze(new FsSymbol('do'))
   static DOT = Object.freeze(new FsSymbol('.'))
   static DEFINE = Object.freeze(new FsSymbol('define'))
   static DEFINE_MACRO = Object.freeze(new FsSymbol('define-macro'))
+  static ELSE = Object.freeze(new FsSymbol('else'))
   static EOF_OBJECT = Object.freeze(new FsSymbol('eof-object'))
   static IF = Object.freeze(new FsSymbol('if'))
   static LAMBDA = Object.freeze(new FsSymbol('lambda'))
@@ -24,6 +26,7 @@ export class FsSymbol extends FsAtom {
   static SET_ = Object.freeze(new FsSymbol('set!'))
   static SET_CDR_ = Object.freeze(new FsSymbol('set-cdr!'))
   static UNQUOTE = Object.freeze(new FsSymbol('unquote'))
+  static TEST_IS_TRUE_THEN = Object.freeze(new FsSymbol('=>'))
   static intern (str) {
     switch (str) {
       case '.':
@@ -36,14 +39,20 @@ export class FsSymbol extends FsAtom {
         return this.SINGLE_QUOTE
       case '`':
         return this.BACK_QUOTE
+      case '=>':
+        return this.TEST_IS_TRUE_THEN
       case 'begin':
         return this.BEGIN
+      case 'cond':
+        return this.COND
       case 'define':
         return this.DEFINE
       case 'define-macro':
         return this.DEFINE_MACRO
       case 'do':
         return this.DO
+      case 'else':
+        return this.ELSE
       case 'if':
         return this.IF
       case 'lambda':

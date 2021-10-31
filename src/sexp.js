@@ -75,13 +75,66 @@ export class FssDefinedProcedure extends FsSExp {
   }
 }
 
+export class FslsCond extends FsSExp {
+  static proc (list, env) {
+    const clauses = list
+    const lastClause = clauses.at(list.length - 1)
+
+    // else-clause
+    const hasElseClause = (lastClause.at(0) === FsSymbol.ELSE)
+
+    const loopLength = hasElseClause ? clauses.length - 1 : clauses.length
+    for (let i = 0; i < loopLength; i++) {
+      const clause = clauses.at(i)
+      const test = clause.at(0)
+      const testResult = FsEvaluator.eval(test, env)
+      if (testResult === FsBoolean.TRUE) {
+        let ret = null
+        for (let j = 1; j < clauses.at(i).length; j++) {
+          if (clauses.at(j) === FsSymbol.TEST_IS_TRUE_THEN) {
+            continue
+          } else {
+            ret = FsEvaluator.eval(clause.at(j), env)
+          }
+        }
+        return ret
+      }
+    }
+
+    if (hasElseClause) {
+      let ret = null
+      for (let j = 1; j < lastClause.length; j++) {
+        ret = FsEvaluator.eval(lastClause.at(j), env)
+      }
+      return ret
+    }
+
+    return FsUndefined.UNDEFINED
+  }
+}
+
+export class FslsNamedLet extends FsSExp {
+  static proc (list, env) {
+    // let varDefs = null
+    // if (!(list.at(0) instanceof FsSymbol && list.at(1) instanceof FsList)) {
+    //   throw new FsException('syntax error: bindings should have the form ((k 1) .., or form (variable ((k 1) ...')
+    // } else {
+    //   varDefs = list.at(1)
+    // }
+    throw new FsError('not implemented yet.')
+  }
+}
+
 export class FslsLet extends FsSExp {
   static proc (list, env) {
     let varDefs = null
-    if (Array.isArray(list) && !(Array.isArray(list.at(0).at(0)))) {
-      throw new FsException('syntax error: bindings should have the form ((k 1) ..')
-    } else {
+    if (list.at(0) instanceof FsList && list.at(0).at(0) instanceof FsList) {
+      // let
       varDefs = list.at(0)
+    } else if (list.at(0) instanceof FsSymbol && list.at(1) instanceof FsList) {
+      return FslsNamedLet.proc(list, env)
+    } else {
+      throw new FsException('syntax error: bindings should have the form ((k 1) .., or form (variable ((k 1) ...')
     }
 
     const varMap = new Map()
