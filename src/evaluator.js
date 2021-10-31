@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsList } from './datatypes.js'
 import { FsEnv } from './env.js'
-import { FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
+import { FslsCond, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Evaluator
@@ -55,6 +55,8 @@ export class FsEvaluator {
           return FssSet.proc(sexp.slice(1), env)
         } else if (FsSymbol.SET_CDR_ === firstSymbol) {
           return FspSetCdr.proc(sexp.slice(1), env)
+        } else if (FsSymbol.COND === firstSymbol) {
+          return FslsCond.proc(sexp.slice(1), env)
         } else if (FsSymbol.BEGIN === firstSymbol) {
           let ret = null
           for (let i = 1; i < sexp.length; i++) {

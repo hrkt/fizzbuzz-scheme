@@ -97,6 +97,9 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('vector?'), FsPredicateVector.proc)
   env.set(new FsSymbol('write'), FslpWrite.proc)
 
+  // used in specific forms
+  env.set(new FsSymbol('=>'), FsSymbol.TEST_IS_TRUE_THEN) // used in (cond
+
   // original
   env.set(new FsSymbol('exit'), (list) => { list !== undefined && list.length > 0 ? process.exit(list.at(0).value) : process.exit(0) })
   env.set(new FsSymbol('fs-set-loglevel'), (list) => { list !== undefined && list.length === 1 ? log.setLevel(list.at(0).value) : process.exit(0) })
