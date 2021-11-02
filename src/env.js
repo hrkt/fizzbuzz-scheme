@@ -108,8 +108,12 @@ export class FsEnv {
     }
   }
 
-  clearVars () {
+  clearSelfVars () {
     this.vars = Object.create(null)
+  }
+
+  clearVars () {
+    this.clearSelfVars()
     if (this.outer !== null) {
       let nextOuter = this.outer
       while (nextOuter !== null && nextOuter.outer !== null) {

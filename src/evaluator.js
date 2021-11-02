@@ -121,16 +121,16 @@ export class FsEvaluator {
                 if (givenParams.length < paramAsList.length) {
                   throw new FsException('this function requires at least ' + (paramAsList.length - 1) + ' argument(s)')
                 } else { // givenParams.length >== paramAsList.length - 1
-                  const evaledMap = new Map()
                   const varNames = []
+                  const results = []
+                  const tmpEnv = new FsEnv(env)
                   for (let i = 0; i < paramAsList.length - 1; i++) {
-                    const tmpEnv = new FsEnv(env)
-                    const varName = paramAsList[i]
-                    varNames.push(varName)
-                    evaledMap.set(varName, FsEvaluator.eval(givenParams.at(i), tmpEnv))
+                    varNames[i] = paramAsList[i]
+                    results[i] = FsEvaluator.eval(givenParams.at(i), tmpEnv)
+                    tmpEnv.clearSelfVars() // reuse
                   }
                   for (let i = 0; i < varNames.length; i++) {
-                    innerEnv.set(varNames[i], evaledMap.get(varNames[i]))
+                    innerEnv.set(varNames[i], results[i])
                   }
                   const rest = givenParams.slice(paramAsList.length - 1)
                   // innerEnv.set(paramAsList[paramAsList.length - 1], FsEvaluator.eval(rest, env))
@@ -141,16 +141,16 @@ export class FsEvaluator {
                 env = innerEnv
               } else if (p.params.type === 'fslist') {
                 // values are evaled in separated env, results are not seen to other procs.
-                const evaledMap = new Map()
                 const varNames = []
+                const results = []
+                const tmpEnv = new FsEnv(env)
                 for (let i = 0; i < p.params.length; i++) {
-                  const tmpEnv = new FsEnv(env)
-                  const varName = p.params.at(i)
-                  evaledMap.set(varName, FsEvaluator.eval(givenParams.at(i), tmpEnv))
-                  varNames.push(varName)
+                  varNames[i] = p.params.at(i)
+                  results[i] = FsEvaluator.eval(givenParams.at(i), tmpEnv)
+                  tmpEnv.clearSelfVars() // reuse
                 }
                 for (let i = 0; i < varNames.length; i++) {
-                  innerEnv.set(varNames[i], evaledMap.get(varNames[i]))
+                  innerEnv.set(varNames[i], results[i])
                 }
 
                 sexp = p.body.at(0) // TODO: multiplue bodies
@@ -162,11 +162,11 @@ export class FsEvaluator {
           } else {
           // evaled.length = sexp.length - 1 // this line slows execution, so we do not do this.
             const evaled = new FsList()
+            const tmpEnv = new FsEnv(env)
             for (let i = 1; i < sexp.length; i++) {
-              const tmpEnv = new FsEnv(env)
               evaled.set(i - 1, FsEvaluator.eval(sexp.at(i), tmpEnv))
+              tmpEnv.clearSelfVars() // reuse
             }
-            log.debug('p:' + p)
             return p(evaled, env) // for testing map
           }
         } // user-defined-proc or pre-defined proc
