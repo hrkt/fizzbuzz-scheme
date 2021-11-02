@@ -60,7 +60,7 @@ export class FssDefinedProcedure extends FsSExp {
     // throw new FsError('do not call me.')
 
     // These lines are used to expand macro in expand().
-    // TODO: try to unifh this and logic in eval()
+    // TODO: try to unify this and logic in eval()
     const newEnv = new FsEnv(this.env)
     newEnv.set(this.params, execParams)
     return FsEvaluator.eval(this.body.at(0), newEnv)
@@ -115,13 +115,30 @@ export class FslsCond extends FsSExp {
 
 export class FslsNamedLet extends FsSExp {
   static proc (list, env) {
-    // let varDefs = null
-    // if (!(list.at(0) instanceof FsSymbol && list.at(1) instanceof FsList)) {
-    //   throw new FsException('syntax error: bindings should have the form ((k 1) .., or form (variable ((k 1) ...')
-    // } else {
-    //   varDefs = list.at(1)
-    // }
-    throw new FsError('not implemented yet.')
+    const procName = list.at(0)
+    const varDefs = list.at(1)
+    const body = list.at(2)
+
+    const varMap = new Map()
+    const vars = []
+    for (let i = 0; i < varDefs.length; i++) {
+      const tmpEnv = new FsEnv(env)
+      varMap.set(varDefs.at(i).at(0), FsEvaluator.eval(varDefs.at(i).at(1), tmpEnv))
+      vars.push(varDefs.at(i).at(0))
+    }
+
+    const innerEnv = new FsEnv(env)
+    for (let i = 0; i < vars.length; i++) {
+      innerEnv.set(vars[i], varMap.get(vars[i]), true)
+    }
+
+    const paramList = []
+    paramList.push(...vars)
+
+    const procedure = new FssDefinedProcedure(new FsList(paramList), new FsList([body]), innerEnv)
+    innerEnv.set(procName, procedure)
+
+    return FsEvaluator.eval(body, innerEnv)
   }
 }
 

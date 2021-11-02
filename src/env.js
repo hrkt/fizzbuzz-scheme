@@ -57,7 +57,7 @@ export class FsEnv {
    * @param {*} value as value of new entry
    * @returns a value of new entry
    */
-  set (symbol, value) {
+  set (symbol, value, override = false) {
     const key = FsEnv.toKey(symbol)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('---------------------------------')
@@ -65,7 +65,7 @@ export class FsEnv {
       log.debug('---------------------------------')
     }
 
-    if (this.outer !== null) {
+    if (!override && this.outer !== null) {
       let nextOuter = this.outer
       while (nextOuter !== null) {
         const currentValue = nextOuter.vars[key]
@@ -102,6 +102,7 @@ export class FsEnv {
         }
         nextOuter = nextOuter.outer
       }
+      throw new FsException('Symbol [' + symbol + '] is not found.')
     } else {
       throw new FsException('Symbol [' + symbol + '] is not found.')
     }
@@ -169,7 +170,8 @@ export class FsEnv {
       return '>>ROOT'
     } else {
       // return '>>id' + this.id + ' [' + Array.from(this.vars.keys()).map(k => k + '=' + this.vars.get(k)) + ']'
-      return JSON.stringify(this.vars)
+      return '>>id' + this.id + ' [' + Array.from(Object.keys(this.vars)).map(k => k + '=' + this.vars[k]) + ']'
+      // return JSON.stringify(this.vars) // throws an error when vars closes the circle
     }
   }
 }

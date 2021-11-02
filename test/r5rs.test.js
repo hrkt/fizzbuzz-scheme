@@ -179,7 +179,8 @@ test('✅4.2.3_2', () => {
   mockStdoutWrite.mockRestore()
 })
 
-test('🚧4.2.4', () => {
+// all cleared 😊
+test('✅4.2.4', () => {
   const code1 = `
   (do ((vec (make-vector 5))
      (i 0 (+ i 1)))
@@ -195,6 +196,21 @@ test('🚧4.2.4', () => {
       ((null? x) sum)))
   `
   expect(new FBS().eval(code2).toString()).toBe('25')
+
+  const code3 = `(let loop ((numbers '(3 -2 1 6 -5))
+  (nonneg '())
+  (neg '()))
+  (cond ((null? numbers) (list nonneg neg))
+  ((>= (car numbers) 0)
+  (loop (cdr numbers)
+      (cons (car numbers) nonneg)
+      neg))
+  ((< (car numbers) 0)
+  (loop (cdr numbers)
+      nonneg
+      (cons (car numbers) neg)))))`
+
+  expect(new FBS().eval(code3).toString()).toBe('((6 1 3) (-5 -2))')
 })
 
 // all cleared 😊
