@@ -91,7 +91,8 @@ export class FslsCond extends FsSExp {
       if (testResult === FsBoolean.TRUE) {
         let ret = null
         for (let j = 1; j < clauses.at(i).length; j++) {
-          if (clauses.at(j) === FsSymbol.TEST_IS_TRUE_THEN) {
+          if (clauses.at(j) && clauses.at(j).value === FsSymbol.TEST_IS_TRUE_THEN.value) {
+            // bypass =>
             continue
           } else {
             ret = FsEvaluator.eval(clause.at(j), env)
