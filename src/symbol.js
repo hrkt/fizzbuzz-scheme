@@ -39,8 +39,8 @@ export class FsSymbol extends FsAtom {
         return this.SINGLE_QUOTE
       case '`':
         return this.BACK_QUOTE
-      case '=>':
-        return this.TEST_IS_TRUE_THEN
+      // case '=>':
+      //   return this.TEST_IS_TRUE_THEN
       case 'begin':
         return this.BEGIN
       case 'cond':

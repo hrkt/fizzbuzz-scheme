@@ -58,11 +58,10 @@ export class FsEvaluator {
         } else if (FsSymbol.COND === firstSymbol) {
           return FslsCond.proc(sexp.slice(1), env)
         } else if (FsSymbol.BEGIN === firstSymbol) {
-          let ret = null
-          for (let i = 1; i < sexp.length; i++) {
-            ret = FsEvaluator.eval(sexp.at(i), env)
+          for (let i = 1; i < sexp.length - 1; i++) {
+            FsEvaluator.eval(sexp.at(i), env)
           }
-          sexp = ret
+          sexp = sexp.at(sexp.length - 1)
         } else if (FsSymbol.LAMBDA === firstSymbol) {
           return FssLambda.proc(sexp.slice(1), env)
         } else if (FsSymbol.LET === firstSymbol) {

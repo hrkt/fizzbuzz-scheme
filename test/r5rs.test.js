@@ -9,6 +9,7 @@ import { FizzBuzzScheme as FBS } from '../src/index.js'
 import { FssDefinedProcedure } from '../src/sexp.js'
 
 // 1. Overview of scheme
+// all cleared 😊
 
 // all cleared 😊
 test('✅1.3.4', () => {
@@ -17,6 +18,7 @@ test('✅1.3.4', () => {
 })
 
 // 2. Lexical conventions
+// all cleared 😊
 
 // all cleared 😊
 test('✅2.2', () => {
@@ -37,6 +39,7 @@ test('✅2.2', () => {
 // will be covered with tests in chapters hereafter
 
 // 3. Basic concepts
+// no example 😊
 
 // 4. Expressions
 
@@ -118,6 +121,14 @@ test('✅4.1.5', () => {
 
 // all cleared 😊
 test('✅4.1.6', () => {
+  const fbs = new FBS()
+  fbs.eval('(define x 2)')
+  expect(fbs.eval('(+ x 1)').toString()).toBe('3')
+  fbs.eval('(set! x 4)') // unspecified
+  expect(fbs.eval('(+ x 1)').toString()).toBe('5')
+})
+
+test('🚧4.2.1', () => {
   const fbs = new FBS()
   fbs.eval('(define x 2)')
   expect(fbs.eval('(+ x 1)').toString()).toBe('3')
@@ -234,6 +245,16 @@ test('✅4.2.6', () => {
   expect(new FBS().eval('(quasiquote (list (unquote (+ 1 2)) 4))').toString()).toBe('(list 3 4)')
   // expect(new FBS().eval('(quasiquote (list (unquote (+ 1 2)) 4))').toString()).toBe('`(list ,(+ 1 2) 4)') //  may vary between implementations.
   expect(new FBS().eval('\'(quasiquote (list (unquote (+ 1 2)) 4))').toString()).toBe('(quasiquote (list (unquote (+ 1 2)) 4))')
+})
+
+test('🚧4.3.2', () => {
+  const code1 = `(let ((=> #f))
+  (cond (#t => 'ok)))`
+  expect(new FBS().eval(code1).toString()).toBe('ok')
+
+  const code2 = `(let ((=> #f))
+  (if #t (begin => 'ok)))`
+  expect(new FBS().eval(code2).toString()).toBe('ok')
 })
 
 // 5. Program structure
