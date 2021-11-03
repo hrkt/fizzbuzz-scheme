@@ -126,7 +126,11 @@ export class FsList extends FsSExp {
         buf += '('
         for (let i = 0; i < this.value.length; i++) {
           if (!Array.isArray(this.value[i])) {
-            buf += this.value[i].toString()
+            if (this.value[i]) {
+              buf += this.value[i].toString()
+            } else {
+              buf += '**UNDEFINED**' // for debug purpose
+            }
             log.debug(buf)
             buf += ' '
           } else {
