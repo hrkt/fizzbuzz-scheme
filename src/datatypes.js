@@ -2,9 +2,9 @@
 import log from 'loglevel'
 
 import { FsException } from './common.js'
-import { FsAtom, FsSExp } from './sexpbase.js'
+import { FsSExp } from './sexpbase.js'
 
-export class FsBoolean extends FsAtom {
+export class FsBoolean extends FsSExp {
     static TRUE_ = Object.freeze(new FsBoolean(true))
     static FALSE_ = Object.freeze(new FsBoolean(false))
 
@@ -31,7 +31,7 @@ export class FsBoolean extends FsAtom {
     }
 }
 
-export class FsNumber extends FsAtom {
+export class FsNumber extends FsSExp {
   toString () {
     return '' + this.value
   }
@@ -45,7 +45,7 @@ export class FsNumber extends FsAtom {
   }
 }
 
-export class FsChar extends FsAtom {
+export class FsChar extends FsSExp {
   static isFsChar (s) {
     return (s.charAt(0) === '#' && s.charAt(1) === '\\' && s.length === 3)
   }
@@ -64,7 +64,7 @@ export class FsChar extends FsAtom {
   }
 }
 
-export class FsString extends FsAtom {
+export class FsString extends FsSExp {
   toString () {
     return '"' + this.value + '"'
   }

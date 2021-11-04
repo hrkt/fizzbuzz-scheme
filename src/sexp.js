@@ -7,7 +7,7 @@ import { FsError, FsException } from './common.js'
 import { FsBoolean, FsList, FsNumber, FsPair, FsString, FsVector, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
 import { FsEvaluator } from './evaluator.js'
-import { FsAtom, FsSExp } from './sexpbase.js'
+import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
 
@@ -298,7 +298,7 @@ export class FssBegin extends FsSExp {
   }
 }
 
-export class FsUndefined extends FsAtom {
+export class FsUndefined extends FsSExp {
   static UNDEFINED_ = new FsUndefined()
 
   static get UNDEFINED () { return FsUndefined.UNDEFINED_ }
