@@ -1,8 +1,8 @@
 'use strict'
 
-import { FsAtom } from './sexpbase.js'
+import { FsSExp } from './sexpbase.js'
 
-export class FsSymbol extends FsAtom {
+export class FsSymbol extends FsSExp {
   static BACK_QUOTE = Object.freeze(new FsSymbol('`'))
   static BEGIN = Object.freeze(new FsSymbol('begin'))
   static COMMA = Object.freeze(new FsSymbol(','))
