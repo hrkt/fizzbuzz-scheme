@@ -4,12 +4,13 @@
 
 import log from 'loglevel'
 
+import { FsException } from './common.js'
 import { FsNumber } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
 import { FslpAbs, FspDivide, FspGt, FspGte, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspNumberEquals, FspPlus, FspPow, FspRound, FspSqrt } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote } from './sexp.js'
+import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 import { FspMakeVector, FspVector, FspVectorRef, FspVectorSet } from './vector-operations.js'
 
@@ -101,8 +102,16 @@ export function getGlobalEnv () {
   // env.set(new FsSymbol('=>'), FsSymbol.TEST_IS_TRUE_THEN) // used in (cond
 
   // original
-  env.set(new FsSymbol('exit'), (list) => { list !== undefined && list.length > 0 ? process.exit(list.at(0).value) : process.exit(0) })
-  env.set(new FsSymbol('fs-set-loglevel'), (list) => { list !== undefined && list.length === 1 ? log.setLevel(list.at(0).value) : process.exit(0) })
+  env.set(new FsSymbol('exit'), (list) => {
+    list !== undefined && list.length > 0 ? process.exit(list.at(0).value) : process.exit(0)
+  })
+  env.set(new FsSymbol('fs-set-loglevel'), (list) => {
+    if (list === undefined || list.length !== 1) {
+      throw new FsException('Syntax error : ' + list)
+    }
+    log.setLevel(list.at(0).value)
+    return FsUndefined.UNDEFINED
+  })
   env.set(new FsSymbol('peek-memory-usage'), FsPeekMemoryUsage.proc)
 
   env.set(FBS_QUASIQUOTE_LEVEL, new FsNumber(0))
