@@ -1,5 +1,5 @@
 import { FsException } from './common.js'
-import { FsInteger, FsNumber, FsVector } from './datatypes.js'
+import { FsInteger, FsVector } from './datatypes.js'
 import { FsUndefined } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
 
