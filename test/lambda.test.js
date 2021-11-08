@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsNumber } from '../src/datatypes.js'
+import { FsInteger } from '../src/datatypes.js'
 import { FizzBuzzScheme } from '../src/index.js'
 
 test('evaluating (define p (lambda (x) (+ x x)))', () => {
@@ -19,5 +19,5 @@ test('evaluating (define p (lambda (x) (+ x x))), then (p 1)', () => {
   expect(ret1).not.toBeNull()
   const ret2 = fbs.eval('(p 1)')
   expect(ret2).not.toBeNull()
-  expect(ret2).toStrictEqual(new FsNumber(2))
+  expect(ret2).toStrictEqual(new FsInteger(2))
 })

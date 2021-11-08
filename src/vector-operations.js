@@ -1,12 +1,12 @@
 import { FsException } from './common.js'
-import { FsNumber, FsVector } from './datatypes.js'
+import { FsInteger, FsNumber, FsVector } from './datatypes.js'
 import { FsUndefined } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
 
 export class FspMakeVector extends FsSExp {
   static proc (list) {
     const length = list.at(0)
-    if (!(length instanceof FsNumber)) {
+    if (!(length instanceof FsInteger)) {
       throw new FsException('a number is required:' + length)
     }
     const fill = list.length === 2 ? list.at(1) : FsUndefined.UNDEFINED
@@ -44,7 +44,7 @@ export class FspVectorSet extends FsSExp {
       throw new FsException('a vector constant is immutable' + list.at(0))
     }
     const index = list.at(1)
-    if (!(index instanceof FsNumber)) {
+    if (!(index instanceof FsInteger)) {
       throw new FsException('a number is required while arg is ' + list.at(1))
     }
     const obj = list.at(2)

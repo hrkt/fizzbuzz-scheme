@@ -4,7 +4,7 @@
 import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
-import { FsBoolean, FsList, FsNumber, FsPair, FsString, FsVector, isProperList } from './datatypes.js'
+import { FsBoolean, FsInteger, FsList, FsNumber, FsPair, FsString, FsVector, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
 import { FsEvaluator } from './evaluator.js'
 import { FsSExp } from './sexpbase.js'
@@ -316,7 +316,9 @@ export class FsEquals extends FsSExp {
     ensureListContainsTwo(list)
     const lhs = list.at(0)
     const rhs = list.at(1)
-    if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
+    if (lhs instanceof FsInteger && rhs instanceof FsInteger) {
+      return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
       return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
     } else {
       // prerequisites: only ascii characters are permitted
@@ -424,9 +426,9 @@ export class FslpLength extends FsSExp {
       throw new FsException('arg must be proper list but got ' + list)
     }
     if (list.at(0) instanceof FsPair) {
-      return new FsNumber(list.at(0).length)
+      return new FsInteger(list.at(0).length)
     } else if (list instanceof FsList && list.at(0) instanceof FsList) {
-      return new FsNumber(list.at(0).value.length)
+      return new FsInteger(list.at(0).value.length)
     } else {
       throw new Error('not implemented')
     }

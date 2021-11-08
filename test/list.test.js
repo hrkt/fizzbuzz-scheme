@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsBoolean, FsList, FsNumber } from '../src/datatypes.js'
+import { FsBoolean, FsInteger, FsList } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating slicing list', () => {
@@ -10,7 +10,7 @@ test('evaluating slicing list', () => {
 
 test('evaluating (list 1 2) yields (1 2)', () => {
   const code = '(list 1 2)'
-  expect(new FBS().eval(code)).toStrictEqual(new FsList([new FsNumber(1), new FsNumber(2)]))
+  expect(new FBS().eval(code)).toStrictEqual(new FsList([new FsInteger(1), new FsInteger(2)]))
 })
 
 test('evaluating (list? ()) yields #t', () => {
