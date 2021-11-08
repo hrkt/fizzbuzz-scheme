@@ -31,13 +31,22 @@ export class FsBoolean extends FsSExp {
     }
 }
 
-export class FsNumber extends FsSExp {
+export class FsNumber {
+  #value
+  constructor (v) {
+    this.#value = v
+  }
+
   toString () {
     return '' + this.value
   }
 
   equals (target) {
     return this.value === target.value
+  }
+
+  get value () {
+    return this.#value
   }
 
   get type () {
@@ -236,5 +245,63 @@ export function isProperList (arg) {
     return true
   } else {
     return false
+  }
+}
+
+// numeric
+
+export class FsComplex {
+  static #regex = /^[+-]?\d(\.\d+)?[+-]?\d?(\.\d+)?i?$/
+  static isStringRep (str) {
+    if (!str || str.match(FsComplex.#regex) === null) {
+      return false
+    }
+    return str.match(FsComplex.#regex) !== null
+  }
+}
+
+export class FsReal {
+  static #regex = /^[+-]?\d(\.\d+)?$/
+  static isStringRep (str) {
+    return str && str.match(FsReal.#regex) !== null
+  }
+}
+
+export class FsRational {
+  static #regex = /^[+-]?\d+\/\d+$/
+  static isStringRep (str) {
+    return str && str.match(FsRational.#regex) !== null
+  }
+}
+
+export class FsInteger {
+  static #regex = /^[+-]?\d+$/
+  #value
+
+  constructor (v) {
+    this.#value = parseInt(v)
+  }
+
+  get value () {
+    return this.#value
+  }
+
+  static isStringRep (str) {
+    return str.match(FsInteger.#regex) !== null
+  }
+
+  equals (target) {
+    return this.value === target.value
+  }
+
+  toString () {
+    return '' + this.#value
+  }
+}
+
+export class FsPredicateInteger {
+  static proc (list) {
+    const t = list.at(0)
+    return t instanceof FsInteger ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }

@@ -13,11 +13,9 @@ test('evaluating (= 1 2) yields false', () => {
 })
 
 test('evaluating (= 1 \'a) throws FsException', () => {
-  const fbs = new FBS()
-  expect(() => { fbs.eval('(= 1 \'a)') }).toThrow(FsException)
+  expect(() => { new FBS().eval('(= 1 \'a)') }).toThrow(FsException)
 })
 
 test('evaluating (= \'a 1) throws FsException', () => {
-  const fbs = new FBS()
-  expect(() => { fbs.eval('(= \'a 1)') }).toThrow(FsException)
+  expect(() => { new FBS().eval('(= \'a 1)') }).toThrow(FsException)
 })

@@ -2,7 +2,7 @@
 
 // test sample expressions from http://norvig.com/lispy.html
 
-import { FsNumber } from '../src/datatypes.js'
+import { FsInteger, FsNumber } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating circle-area', () => {
@@ -16,22 +16,22 @@ test('evaluating fact', () => {
   const code = ' (define fact (lambda (n) (if (<= n 1) 1 (* n (fact (- n 1))))))'
   const fbs = new FBS()
   fbs.eval(code)
-  expect(fbs.eval('(fact 10)')).toStrictEqual(new FsNumber(3628800), fbs)
+  expect(fbs.eval('(fact 10)')).toStrictEqual(new FsInteger(3628800), fbs)
 })
 
 test('evaluating repeat', () => {
   const fbs = new FBS()
   fbs.eval('(define twice (lambda (x) (* 2 x)))')
-  expect(fbs.eval('(twice 5)')).toStrictEqual(new FsNumber(10), fbs)
+  expect(fbs.eval('(twice 5)')).toStrictEqual(new FsInteger(10), fbs)
   fbs.eval('(define repeat (lambda (f) (lambda (x) (f (f x)))))')
-  expect(fbs.eval('((repeat twice) 10)')).toStrictEqual(new FsNumber(40), fbs)
-  expect(fbs.eval('((repeat (repeat (repeat twice))) 10)')).toStrictEqual(new FsNumber(2560), fbs)
-  expect(fbs.eval('((repeat (repeat (repeat twice))) 10)')).toStrictEqual(new FsNumber(2560), fbs)
-  expect(fbs.eval('((repeat (repeat (repeat (repeat twice)))) 10)')).toStrictEqual(new FsNumber(655360), fbs)
+  expect(fbs.eval('((repeat twice) 10)')).toStrictEqual(new FsInteger(40), fbs)
+  expect(fbs.eval('((repeat (repeat (repeat twice))) 10)')).toStrictEqual(new FsInteger(2560), fbs)
+  expect(fbs.eval('((repeat (repeat (repeat twice))) 10)')).toStrictEqual(new FsInteger(2560), fbs)
+  expect(fbs.eval('((repeat (repeat (repeat (repeat twice)))) 10)')).toStrictEqual(new FsInteger(655360), fbs)
 })
 
 test('evaluating pow', () => {
-  expect(new FBS().eval('(pow 2 16)')).toStrictEqual(new FsNumber(65536))
+  expect(new FBS().eval('(pow 2 16)')).toStrictEqual(new FsInteger(65536))
 })
 
 test('evaluating range', () => {
@@ -53,7 +53,7 @@ test('try tail-recursion', () => {
   `
   fbs.eval(code)
   // without lispy2-like eval style, "RangeError: Maximum call stack size exceeded" occurs
-  expect(fbs.eval('(sum2 10000 0)')).toStrictEqual(new FsNumber(50005000))
+  expect(fbs.eval('(sum2 10000 0)')).toStrictEqual(new FsInteger(50005000))
 })
 
 // this does not work either on fbs or on gauche

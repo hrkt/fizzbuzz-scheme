@@ -3,15 +3,21 @@
 import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
-import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
+import { FsBoolean, FsChar, FsInteger, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
 import { FsSymbol } from './symbol.js'
 
 export class SExpFactory {
+  static isJsNumber (s) {
+    return !isNaN(parseFloat(s)) && !isNaN(s - 0)
+  }
+
   static build (s) {
     if (s === undefined) {
       throw new FsError('passed undefined.') // isNaN(undefined) ==> true
     }
-    if (!isNaN(parseFloat(s)) && !isNaN(s - 0)) {
+    if (FsInteger.isStringRep(s)) {
+      return new FsInteger(s)
+    } else if (SExpFactory.isJsNumber(s)) {
       return new FsNumber(+s)
     } else if (FsBoolean.isFsBooleanString(s)) {
       return FsBoolean.fromString(s)

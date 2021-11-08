@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsBoolean, FsChar, FsList, FsNumber, FsPair, FsVector } from './datatypes.js'
+import { FsBoolean, FsChar, FsInteger, FsList, FsNumber, FsPair, FsVector } from './datatypes.js'
 import { FssDefinedProcedure } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsTwo } from './sexputils.js'
@@ -26,7 +26,7 @@ export class FsPredicateList extends FsSExp {
 
 export class FsPredicateNumber extends FsSExp {
   static proc (list) {
-    return list.at(0) instanceof FsNumber ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0) instanceof FsNumber || list.at(0) instanceof FsInteger ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
@@ -66,7 +66,9 @@ export class FsPredicateEq extends FsSExp {
     ensureListContainsTwo(list)
     const lhs = list.at(0)
     const rhs = list.at(1)
-    if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
+    if (lhs instanceof FsInteger && rhs instanceof FsInteger) {
+      return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else if (lhs instanceof FsNumber && rhs instanceof FsNumber) {
       return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE
     } else if (lhs instanceof FsChar && rhs instanceof FsChar) {
       return lhs.equals(rhs) ? FsBoolean.TRUE : FsBoolean.FALSE

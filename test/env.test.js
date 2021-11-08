@@ -1,7 +1,7 @@
 'use strict'
 
 import { FsError } from '../src/common.js'
-import { FsNumber } from '../src/datatypes.js'
+import { FsInteger } from '../src/datatypes.js'
 import { FsEnv } from '../src/env'
 import { getGlobalEnv } from '../src/global-env.js'
 import { FsSymbol } from '../src/symbol'
@@ -14,15 +14,15 @@ test('define env success', () => {
 
 test('get a symbol from the env success', () => {
   const env = new FsEnv(null)
-  env.set(new FsSymbol('A'), new FsNumber(1))
-  expect(env.find(new FsSymbol('A'))).toStrictEqual(new FsNumber(1))
+  env.set(new FsSymbol('A'), new FsInteger(1))
+  expect(env.find(new FsSymbol('A'))).toStrictEqual(new FsInteger(1))
 })
 
 test('define env success with outer env success', () => {
   const outerEnv = new FsEnv(null)
-  outerEnv.set(new FsSymbol('A'), new FsNumber(1))
+  outerEnv.set(new FsSymbol('A'), new FsInteger(1))
   const env = new FsEnv(outerEnv)
-  expect(env.find(new FsSymbol('A'))).toStrictEqual(new FsNumber(1))
+  expect(env.find(new FsSymbol('A'))).toStrictEqual(new FsInteger(1))
 })
 
 test('getDefaultEnv success', () => {
@@ -34,18 +34,18 @@ test('getDefaultEnv success', () => {
 // test('define env multiple times and get increased id success', () => {
 //   const env1 = new FsEnv(null)
 //   env1.set(new FsSymbol('A'), new FsNumber(1))
-//   expect(env1.find(new FsSymbol('A'))).toStrictEqual(new FsNumber(1))
+//   expect(env1.find(new FsSymbol('A'))).toStrictEqual(new FsInteger(1))
 
 //   const env2 = new FsEnv(env1)
 //   env2.set(new FsSymbol('A'), new FsNumber(2))
-//   expect(env1.find(new FsSymbol('A'))).toStrictEqual(new FsNumber(1))
-//   expect(env2.find(new FsSymbol('A'))).toStrictEqual(new FsNumber(2))
+//   expect(env1.find(new FsSymbol('A'))).toStrictEqual(new FsInteger(1))
+//   expect(env2.find(new FsSymbol('A'))).toStrictEqual(new FsInteger(2))
 
 //   const env3 = new FsEnv(env2)
 //   env3.set(new FsSymbol('A'), new FsNumber(3))
-//   expect(env1.find(new FsSymbol('A'))).toStrictEqual(new FsNumber(1))
-//   expect(env2.find(new FsSymbol('A'))).toStrictEqual(new FsNumber(2))
-//   expect(env3.find(new FsSymbol('A'))).toStrictEqual(new FsNumber(3))
+//   expect(env1.find(new FsSymbol('A'))).toStrictEqual(new FsInteger(1))
+//   expect(env2.find(new FsSymbol('A'))).toStrictEqual(new FsInteger(2))
+//   expect(env3.find(new FsSymbol('A'))).toStrictEqual(new FsInteger(3))
 
 //   expect(env1.id === env2.id).not.toBe(true)
 //   expect(env1.id === env3.id).not.toBe(true)

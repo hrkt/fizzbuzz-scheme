@@ -1,7 +1,7 @@
 'use strict'
 
 import { FsException } from '../src/common.js'
-import { FsNumber } from '../src/datatypes.js'
+import { FsInteger } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating  (vector-ref \'a 0) throws FsException', () => {
@@ -11,5 +11,5 @@ test('evaluating  (vector-ref \'a 0) throws FsException', () => {
 
 test('evaluating (vector-ref \'#(1 2 3) 2) yields 3', () => {
   const code = ' (vector-ref \'#(1 2 3) 2)'
-  expect(new FBS().eval(code)).toStrictEqual(new FsNumber(3))
+  expect(new FBS().eval(code)).toStrictEqual(new FsInteger(3))
 })
