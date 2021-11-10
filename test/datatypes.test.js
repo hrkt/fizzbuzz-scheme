@@ -58,3 +58,48 @@ test('FsComplex.isStrRep ', () => {
 test('evaluating (integer? 123) yields #t', () => {
   expect(new FBS().eval('(integer? 123)')).toStrictEqual(FsBoolean.TRUE)
 })
+
+// Rational
+
+test('rational number equality', () => {
+  expect(new FsRational(1, 3).equals(new FsRational(3, 9))).toBe(true)
+})
+
+test('rational number less than', () => {
+  expect(new FsRational(1, 3).lessThan(new FsRational(2, 3))).toBe(true)
+})
+
+test('rational number greater than', () => {
+  expect(new FsRational(2, 3).greaterThan(new FsRational(1, 3))).toBe(true)
+})
+
+test('rational number add', () => {
+  expect(new FsRational(1, 3).add(new FsRational(1, 3))).toStrictEqual(new FsRational(2, 3))
+})
+
+test('rational number subtract', () => {
+  expect(new FsRational(2, 3).subtract(new FsRational(1, 3))).toStrictEqual(new FsRational(1, 3))
+})
+
+test('rational number multiply', () => {
+  expect(new FsRational(2, 3).subtract(new FsRational(1, 3))).toStrictEqual(new FsRational(2, 9))
+})
+
+test('rational number additiveInverse', () => {
+  expect(new FsRational(1, 3).additiveInverse()).toStrictEqual(new FsRational(-1, 3))
+})
+
+test('rational number multiplicativeInverse', () => {
+  expect(new FsRational(2, 3).additiveInverse()).toStrictEqual(new FsRational(3, 2))
+})
+
+test('rational number devide', () => {
+  expect(new FsRational(1, 3).devide(new FsRational(1, 2))).toStrictEqual(new FsRational(3, 2))
+})
+
+test('rational number power', () => {
+  console.dir(new FsRational(1, 3).integerPower(3))
+  expect(new FsRational(1, 3).integerPower(3)).toStrictEqual(new FsRational(1, 27))
+  expect(new FsRational(1, 3).integerPower(0)).toStrictEqual(new FsInteger(1))
+  expect(new FsRational(1, 3).integerPower(-3)).toStrictEqual(new FsInteger(27))
+})
