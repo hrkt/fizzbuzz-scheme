@@ -267,8 +267,129 @@ export class FsReal {
   }
 }
 
+function gcd (a, b) {
+  a = Math.abs(a)
+  b = Math.abs(b)
+  if (b > a) {
+    [a, b] = [b, a] // ES6 destructure
+  }
+  while (true) {
+    if (b === 0) {
+      return a
+    }
+    a %= b
+    if (a === 0) {
+      return b
+    }
+    b %= a
+  }
+}
 export class FsRational {
   static #regex = /^[+-]?\d+\/\d+$/
+  #numerator
+  #denominator
+
+  /**
+   * Rational number p/q
+   * p ... numerator
+   * q ... denominator
+   *
+   * @param {*} numerator
+   * @param {*} denominator
+   */
+  constructor (numerator, denominator) {
+    this.#numerator = parseInt(numerator)
+    this.#denominator = parseInt(denominator)
+  }
+
+  get numerator () {
+    return this.#numerator
+  }
+
+  get denominator () {
+    return this.#denominator
+  }
+
+  equals (that) {
+    return this.numerator * that.denominator === this.denominator * that.numerator
+  }
+
+  canonicalForm () {
+    const g = gcd(this.numerator, this.denominator)
+    let newN = this.#numerator
+    let newD = this.#denominator
+    if (newD < 0) {
+      newD = newD * -1
+      newN = newN * -1
+    }
+    newN = newN / g
+    newD = newD / g
+    if (newD === 1) {
+      return new FsInteger(newN)
+    } else {
+      return new FsRational(newN, newD)
+    }
+  }
+
+  lessThan (that) {
+    return this.numerator * that.denominator < this.denominator * that.numerator
+  }
+
+  greaterThan (that) {
+    return this.numerator * that.denominator > this.denominator * that.numerator
+  }
+
+  add (that) {
+    return new FsRational(
+      this.numerator * that.denominator + this.denominator * that.numerator,
+      this.denominator * that.denominator).canonicalForm()
+  }
+
+  subtract (that) {
+    return new FsRational(
+      this.numerator * that.denominator - this.denominator * that.numerator,
+      this.denominator * that.denominator).canonicalForm()
+  }
+
+  multiply (that) {
+    return new FsRational(
+      this.numerator * that.numerator,
+      this.denominator * that.denominator).canonicalForm()
+  }
+
+  devide (that) {
+    return new FsRational(
+      this.numerator * that.denominator,
+      this.denominator * that.numerator).canonicalForm()
+  }
+
+  additiveInverse (that) {
+    return new FsRational(
+      -1 * this.numerator,
+      this.denominator).canonicalForm()
+  }
+
+  multiplicativeInverse (that) {
+    return new FsRational(
+      this.denominator,
+      this.numerator).canonicalForm()
+  }
+
+  integerPower (n) {
+    n = parseInt(n)
+    if (n === 0) {
+      return new FsInteger(1)
+    } else if (n > 0) {
+      return new FsRational(
+        Math.pow(this.numerator, n),
+        Math.pow(this.denominator, n)).canonicalForm()
+    } else {
+      return new FsRational(
+        Math.pow(this.denominator, n),
+        Math.pow(this.numerator, n)).canonicalForm()
+    }
+  }
+
   static isStringRep (str) {
     return str && str.match(FsRational.#regex) !== null
   }
