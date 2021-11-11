@@ -98,8 +98,12 @@ test('rational number devide', () => {
 })
 
 test('rational number power', () => {
-  console.dir(new FsRational(1, 3).integerPower(3))
   expect(new FsRational(1, 3).integerPower(3)).toStrictEqual(new FsRational(1, 27))
   expect(new FsRational(1, 3).integerPower(0)).toStrictEqual(new FsInteger(1))
   expect(new FsRational(1, 3).integerPower(-3)).toStrictEqual(new FsInteger(27))
+})
+
+test('rational number asReal', () => {
+  expect(new FsRational(1, 2).asReal()).toStrictEqual(new FsReal(0.5))
+  expect(new FsRational(1, 3).asReal()).toStrictEqual(new FsReal(0.3333333333333333))
 })
