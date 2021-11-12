@@ -1,5 +1,5 @@
 import { FsException } from './common.js'
-import { FsBoolean, FsInteger, FsNumber } from './datatypes.js'
+import { FsBoolean, FsInteger, FsNumber, FsReal, gcd, lcm } from './datatypes.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsTwo } from './sexputils.js'
 
@@ -37,6 +37,42 @@ export class FspDivide extends FsSExp {
         throw new FsException('divide by 0')
       }
     }
+  }
+}
+
+function integerOrRealParameterOperation (func, a, b) {
+  if (a instanceof FsInteger && b instanceof FsInteger) {
+    return new FsInteger(func(a.value, b.value))
+  } else {
+    // TODO: remove FsNumber after adding datatype oeprations.
+    if (!(a instanceof FsReal || a instanceof FsInteger || a instanceof FsNumber)) {
+      throw new FsException('arg must be an integer but got ' + a)
+    }
+    // TODO: remove FsNumber after adding datatype oeprations.
+    if (!(b instanceof FsReal || b instanceof FsInteger || b instanceof FsNumber)) {
+      throw new FsException('arg must be an integer but got ' + b)
+    }
+    return new FsReal(func(a.value, b.value))
+  }
+}
+
+export class FspGcd extends FsSExp {
+  static proc (list) {
+    if (list.length === 0) {
+      return new FsInteger(0)
+    }
+    ensureListContainsTwo(list)
+    return integerOrRealParameterOperation(gcd, list.at(0), list.at(1))
+  }
+}
+
+export class FspLcm extends FsSExp {
+  static proc (list) {
+    if (list.length === 0) {
+      return new FsInteger(1)
+    }
+    ensureListContainsTwo(list)
+    return integerOrRealParameterOperation(lcm, list.at(0), list.at(1))
   }
 }
 

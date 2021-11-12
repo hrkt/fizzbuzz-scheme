@@ -258,16 +258,47 @@ export class FsComplex {
     }
     return str.match(FsComplex.#regex) !== null
   }
-}
 
-export class FsReal {
-  static #regex = /^[+-]?\d(\.\d+)?$/
-  static isStringRep (str) {
-    return str && str.match(FsReal.#regex) !== null
+  get isExact () {
+    return false
   }
 }
 
-function gcd (a, b) {
+/**
+ * Real number class
+ *
+ * based on JavaScript Number
+ */
+export class FsReal {
+  static #regex = /^[+-]?\d(\.\d+)?$/
+  #value
+
+  constructor (v) {
+    this.#value = parseFloat(v)
+  }
+
+  static isStringRep (str) {
+    return str && str.match(FsReal.#regex) !== null
+  }
+
+  isExact () {
+    return false
+  }
+
+  isInteger () {
+    return Number.isInteger(this.#value)
+  }
+
+  get value () {
+    return this.#value
+  }
+
+  toString () {
+    return this.isInteger() ? '' + this.#value.toFixed(1) : this.#value
+  }
+}
+
+export function gcd (a, b) {
   a = Math.abs(a)
   b = Math.abs(b)
   if (b > a) {
@@ -284,10 +315,19 @@ function gcd (a, b) {
     b %= a
   }
 }
+
+export function lcm (a, b) {
+  if (a > b) {
+    return Math.abs(a / gcd(a, b) * b)
+  } else {
+    return Math.abs(b / gcd(a, b) * a)
+  }
+}
 export class FsRational {
   static #regex = /^[+-]?\d+\/\d+$/
   #numerator
   #denominator
+  #exact
 
   /**
    * Rational number p/q
@@ -300,6 +340,10 @@ export class FsRational {
   constructor (numerator, denominator) {
     this.#numerator = parseInt(numerator)
     this.#denominator = parseInt(denominator)
+    this.#exact = Number.MIN_SAFE_INTEGER <= numerator &&
+      numerator <= Number.MAX_SAFE_INTEGER &&
+      Number.MIN_SAFE_INTEGER <= denominator &&
+      denominator <= Number.MAX_SAFE_INTEGER
   }
 
   get numerator () {
@@ -308,6 +352,10 @@ export class FsRational {
 
   get denominator () {
     return this.#denominator
+  }
+
+  isExact () {
+    return this.#exact
   }
 
   equals (that) {
@@ -402,13 +450,19 @@ export class FsRational {
 export class FsInteger {
   static #regex = /^[+-]?\d+$/
   #value
+  #exact
 
   constructor (v) {
     this.#value = parseInt(v)
+    this.#exact = Number.MIN_SAFE_INTEGER <= v && v <= Number.MAX_SAFE_INTEGER
   }
 
   get value () {
     return this.#value
+  }
+
+  isExact () {
+    return this.#exact
   }
 
   static isStringRep (str) {
