@@ -3,7 +3,7 @@
 import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
-import { FsBoolean, FsChar, FsInteger, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
+import { FsBoolean, FsChar, FsInteger, FsList, FsNumber, FsPair, FsRational, FsString, FsVector } from './datatypes.js'
 import { FsSymbol } from './symbol.js'
 
 export class SExpFactory {
@@ -17,6 +17,8 @@ export class SExpFactory {
     }
     if (FsInteger.isStringRep(s)) {
       return new FsInteger(s)
+    } else if (FsRational.isStringRep(s)) {
+      return FsRational.fromString(s)
     } else if (SExpFactory.isJsNumber(s)) {
       return new FsNumber(+s)
     } else if (FsBoolean.isFsBooleanString(s)) {

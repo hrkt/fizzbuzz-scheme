@@ -346,6 +346,11 @@ export class FsRational {
       denominator <= Number.MAX_SAFE_INTEGER
   }
 
+  static fromString (str) {
+    const [a, b] = str.split('/')
+    return new FsRational(a, b)
+  }
+
   get numerator () {
     return this.#numerator
   }
@@ -445,6 +450,10 @@ export class FsRational {
   static isStringRep (str) {
     return str && str.match(FsRational.#regex) !== null
   }
+
+  toString () {
+    return this.#numerator + '/' + this.#denominator
+  }
 }
 
 export class FsInteger {
@@ -478,9 +487,17 @@ export class FsInteger {
   }
 }
 
+// predicates
 export class FsPredicateInteger {
   static proc (list) {
     const t = list.at(0)
     return t instanceof FsInteger ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateRational {
+  static proc (list) {
+    const t = list.at(0)
+    return (t instanceof FsRational || t instanceof FsInteger) ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
