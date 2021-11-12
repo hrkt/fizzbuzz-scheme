@@ -323,6 +323,12 @@ test('🚧6.2.5', () => {
   expect(new FBS().eval('(+)').toString()).toBe('0')
   expect(new FBS().eval('(* 4)').toString()).toBe('4')
   expect(new FBS().eval('(*)').toString()).toBe('1')
+
+  expect(new FBS().eval('(gcd 32 -36)').toString()).toBe('4')
+  expect(new FBS().eval('(gcd)').toString()).toBe('0')
+  expect(new FBS().eval('(lcm 32 -36)').toString()).toBe('288')
+  expect(new FBS().eval('(lcm 32.0 -36)').toString()).toBe('288.0')
+  expect(new FBS().eval('(lcm)').toString()).toBe('1')
 })
 
 // all cleared 😊
