@@ -318,7 +318,20 @@ test('🚧6.1_3', () => {
 //   expect(new FBS().eval('').toString()).toBe('')
 // })
 
-test('🚧6.2.5', () => {
+test('🚧6.2.5_1', () => {
+  // expect(new FBS().eval('(complex? 3+4i)').toString()).toBe('#t')
+  // expect(new FBS().eval('(complex? 3)').toString()).toBe('#t')
+  // expect(new FBS().eval('(real? 3)').toString()).toBe('#t')
+  // expect(new FBS().eval('(real? -2.5+0.0i)').toString()).toBe('#t')
+  // expect(new FBS().eval('(real? #e1e10)').toString()).toBe('#t')
+  expect(new FBS().eval('(rational? 6/10)').toString()).toBe('#t')
+  expect(new FBS().eval('(rational? 6/3)').toString()).toBe('#t')
+  // expect(new FBS().eval('(integer? 3+0i)').toString()).toBe('#t')
+  // expect(new FBS().eval('(integer? 3.0)').toString()).toBe('#t')
+  // expect(new FBS().eval('(integer? 8/4)').toString()).toBe('#t')
+})
+
+test('🚧6.2.5_2', () => {
   expect(new FBS().eval('(+ 3 4)').toString()).toBe('7')
   expect(new FBS().eval('(+)').toString()).toBe('0')
   expect(new FBS().eval('(* 4)').toString()).toBe('4')

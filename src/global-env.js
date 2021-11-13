@@ -5,7 +5,7 @@
 import log from 'loglevel'
 
 import { FsException } from './common.js'
-import { FsNumber, FsPredicateInteger } from './datatypes.js'
+import { FsNumber, FsPredicateInteger, FsPredicateRational } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
 import { FslpAbs, FspDivide, FspGcd, FspGt, FspGte, FspLcm, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspNumberEquals, FspPlus, FspPow, FspRound, FspSqrt } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
@@ -87,6 +87,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
   // env.set(new FsSymbol('quasiquote'), FssQuasiQuote.proc)
+  env.set(new FsSymbol('rational?'), FsPredicateRational.proc)
   env.set(new FsSymbol('read-char'), FspReadChar.proc)
   env.set(new FsSymbol('round'), FspRound.proc)
   env.set(new FsSymbol('sqrt'), FspSqrt.proc)
