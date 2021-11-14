@@ -3,7 +3,7 @@
 import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
-import { FsBoolean, FsChar, FsInteger, FsList, FsNumber, FsPair, FsRational, FsString, FsVector } from './datatypes.js'
+import { FsBoolean, FsChar, FsComplex, FsInteger, FsList, FsNumber, FsPair, FsRational, FsReal, FsString, FsVector } from './datatypes.js'
 import { FsSymbol } from './symbol.js'
 
 export class SExpFactory {
@@ -16,9 +16,13 @@ export class SExpFactory {
       throw new FsError('passed undefined.') // isNaN(undefined) ==> true
     }
     if (FsInteger.isStringRep(s)) {
-      return new FsInteger(s)
+      return FsInteger.fromString(s)
     } else if (FsRational.isStringRep(s)) {
       return FsRational.fromString(s)
+    } else if (FsReal.isStringRep(s)) {
+      return FsReal.fromString(s)
+    } else if (FsComplex.isStringRep(s)) {
+      return FsComplex.fromString(s)
     } else if (SExpFactory.isJsNumber(s)) {
       return new FsNumber(+s)
     } else if (FsBoolean.isFsBooleanString(s)) {
@@ -36,6 +40,9 @@ export class SExpFactory {
 
 // Parser
 export class FsParser {
+  static numberChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'e', '.', '+', '-']
+  static numberRadixChars = ['b', 'o', 'd', 'x']
+  static numberPrefixChars = ['e', 'i', ...FsParser.numberRadixChars]
   static tokenize (code) {
     const tokenList = []
     let buf = ''
@@ -70,7 +77,7 @@ export class FsParser {
         continue
       }
 
-      // vector or boolean letheral
+      // vector, boolean letheral or number
       if (c === '#') {
         if (i + 1 >= code.length) {
           throw new FsException('Syntax Error: at ' + (i + 1))
@@ -101,6 +108,52 @@ export class FsParser {
         if (code.charAt(i + 1) === '(') {
           tokenList.push(c)
           i++
+          continue
+        }
+        // number in various format
+        if (FsParser.numberPrefixChars.includes(code.charAt(i + 1))) {
+          i++
+          const prefix = code.charAt(i)
+          // exactness
+          // e.g.) e1e10
+          if (prefix === 'e') {
+            // exact
+            buf += '#'
+            buf += prefix
+            i++
+          } else if (prefix === 'i') {
+            // inexact
+            buf += '#'
+            buf += prefix
+            i++
+          } else if (FsParser.numberRadixChars.includes(prefix)) {
+            buf += '#'
+            buf += prefix
+            i++
+          }
+
+          if (i + 1 < code.length && code.charAt(i) === '#' && FsParser.numberRadixChars.includes(code.charAt(i + 1))) {
+            buf += '#'
+            buf += code.charAt(i + 1)
+            i++ // #
+            i++ // b, o, d, x
+          }
+
+          // 1e10
+          // read eager
+
+          let loopFlg = true
+          while (i < code.length && loopFlg) {
+            const nextChar = code.charAt(i)
+            if (FsParser.numberChars.includes(nextChar)) {
+              buf += nextChar
+              i++
+            } else {
+              loopFlg = false
+            }
+          }
+          tokenList.push(buf)
+          buf = ''
           continue
         }
         throw new FsException('Syntax Error: at ' + i)

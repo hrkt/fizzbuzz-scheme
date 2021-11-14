@@ -251,7 +251,7 @@ export function isProperList (arg) {
 // numeric
 
 export class FsComplex {
-  static #regex = /^[+-]?\d(\.\d+)?[+-]?\d?(\.\d+)?i?$/
+  static #regex = /^[+-]?\d+(\.\d+)?[+-]?\d?(\.\d+)?i?$/
   static isStringRep (str) {
     if (!str || str.match(FsComplex.#regex) === null) {
       return false
@@ -262,6 +262,15 @@ export class FsComplex {
   get isExact () {
     return false
   }
+
+  static fromString (str) {
+    const [a, b] = str.split('+')
+    if (parseFloat(b) === 0) {
+      return new FsReal(a)
+    } else {
+      return new FsComplex(a, b)
+    }
+  }
 }
 
 /**
@@ -270,11 +279,15 @@ export class FsComplex {
  * based on JavaScript Number
  */
 export class FsReal {
-  static #regex = /^[+-]?\d(\.\d+)?$/
+  static #regex = /^[+-]?\d+(\.\d+)?$/
   #value
 
   constructor (v) {
     this.#value = parseFloat(v)
+  }
+
+  static fromString (str) {
+    return new FsReal(parseFloat(str))
   }
 
   static isStringRep (str) {
@@ -451,19 +464,25 @@ export class FsRational {
     return str && str.match(FsRational.#regex) !== null
   }
 
+  isInteger () {
+    return this.#numerator % this.#denominator === 0
+  }
+
   toString () {
     return this.#numerator + '/' + this.#denominator
   }
 }
 
 export class FsInteger {
-  static #regex = /^[+-]?\d+$/
+  static #regex = /^(#[ei])?(#[bode])?[+-]?(\d+|\d+e\d+)$/
   #value
   #exact
 
-  constructor (v) {
-    this.#value = parseInt(v)
-    this.#exact = Number.MIN_SAFE_INTEGER <= v && v <= Number.MAX_SAFE_INTEGER
+  constructor (v, exact = true) {
+    this.#value = parseInt(parseFloat(v)) // to parse number with exp() expression
+    if (Number.MIN_SAFE_INTEGER <= v && v <= Number.MAX_SAFE_INTEGER) {
+      this.#exact = false
+    }
   }
 
   get value () {
@@ -482,16 +501,69 @@ export class FsInteger {
     return this.value === target.value
   }
 
+  static fromString (str) {
+    if (str.startsWith('#e')) {
+      if (str.startsWith('#e#b')) {
+        return new FsInteger(parseInt(str.substr(4), 2))
+      } else if (str.startsWith('#e#o')) {
+        return new FsInteger(parseInt(str.substr(4), 8))
+      } else if (str.startsWith('#e#d')) {
+        return new FsInteger(parseInt(str.substr(4), 10))
+      } else if (str.startsWith('#e#x')) {
+        return new FsInteger(parseInt(str.substr(4), 16))
+      } else {
+        return new FsInteger(str.substr(2))
+      }
+    } else if (str.startsWith('#i')) {
+      if (str.startsWith('#i#b')) {
+        return FsReal.fromString(parseInt(str.substr(4), 2))
+      } else if (str.startsWith('#i#o')) {
+        return FsReal.fromString(parseInt(str.substr(4), 8))
+      } else if (str.startsWith('#i#d')) {
+        return FsReal.fromString(parseInt(str.substr(4), 10))
+      } else if (str.startsWith('#i#x')) {
+        return FsReal.fromString(parseInt(str.substr(4), 16))
+      } else {
+        return FsReal.fromString(str.substr(2))
+      }
+    } else {
+      return new FsInteger(str)
+    }
+  }
+
   toString () {
     return '' + this.#value
   }
 }
 
 // predicates
+export class FsPredicateComplex {
+  static proc (list) {
+    const t = list.at(0)
+    return (t instanceof FsComplex || t instanceof FsReal ||
+      t instanceof FsRational || t instanceof FsInteger)
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
+  }
+}
 export class FsPredicateInteger {
   static proc (list) {
     const t = list.at(0)
-    return t instanceof FsInteger ? FsBoolean.TRUE : FsBoolean.FALSE
+    return t instanceof FsInteger ||
+    (t instanceof FsReal && t.isInteger()) ||
+    (t instanceof FsRational && t.isInteger())
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateReal {
+  static proc (list) {
+    const t = list.at(0)
+    return (t instanceof FsReal || t instanceof FsRational ||
+      t instanceof FsInteger)
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
   }
 }
 

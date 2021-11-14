@@ -122,6 +122,22 @@ export class FspMod extends FsSExp {
   }
 }
 
+export class FspModulo extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const n1 = list.at(0)
+    checkArgRepresentsAnInteger(n1)
+    const n2 = list.at(1)
+    checkArgRepresentsAnInteger(n2)
+    const v = ((n1.value % n2.value) + n2.value) % n2.value
+    if (n1 instanceof FsInteger && n2 instanceof FsInteger) {
+      return new FsInteger(v)
+    } else {
+      return new FsReal(v)
+    }
+  }
+}
+
 export class FspMultiply extends FsSExp {
   static proc (list) {
     if (list.length === 0) {
@@ -207,6 +223,43 @@ export class FspPow extends FsSExp {
   }
 }
 
+function checkArgRepresentsAnInteger (n) {
+  if (!(n instanceof FsInteger || (n instanceof FsReal && n.isInteger()))) {
+    throw new FsException('arg must be an integer ' + n)
+  }
+}
+export class FspQuotient extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const n1 = list.at(0)
+    checkArgRepresentsAnInteger(n1)
+    const n2 = list.at(1)
+    checkArgRepresentsAnInteger(n2)
+    const v = parseInt(n1.value / n2.value)
+    if (n1 instanceof FsInteger && n2 instanceof FsInteger) {
+      return new FsInteger(v)
+    } else {
+      return new FsReal(v)
+    }
+  }
+}
+
+export class FspReminder extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const n1 = list.at(0)
+    checkArgRepresentsAnInteger(n1)
+    const n2 = list.at(1)
+    checkArgRepresentsAnInteger(n2)
+    const v = n1.value - parseInt(n1.value / n2.value) * n2.value
+    if (n1 instanceof FsInteger && n2 instanceof FsInteger) {
+      return new FsInteger(v)
+    } else {
+      return new FsReal(v)
+    }
+  }
+}
+
 export class FspRound extends FsSExp {
   static proc (list) {
     return new FsInteger(Math.round(list.at(0).value))
@@ -253,7 +306,7 @@ export class FspMax extends FsSExp {
     if (list.length === list.value.filter(l => { return l instanceof FsInteger }).length) {
       return new FsInteger(Math.max(...target))
     } else {
-      return new FsNumber(Math.max(...target))
+      return new FsReal(Math.max(...target))
     }
   }
 }
@@ -264,7 +317,7 @@ export class FspMin extends FsSExp {
     if (list.length === list.value.filter(l => { return l instanceof FsInteger }).length) {
       return new FsInteger(Math.min(...target))
     } else {
-      return new FsNumber(Math.min(...target))
+      return new FsReal(Math.min(...target))
     }
   }
 }

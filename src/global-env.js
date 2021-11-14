@@ -5,9 +5,9 @@
 import log from 'loglevel'
 
 import { FsException } from './common.js'
-import { FsNumber, FsPredicateInteger, FsPredicateRational } from './datatypes.js'
+import { FsNumber, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
-import { FslpAbs, FspDivide, FspGcd, FspGt, FspGte, FspLcm, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspMultiply, FspNumberEquals, FspPlus, FspPow, FspRound, FspSqrt } from './math-operations.js'
+import { FslpAbs, FspDivide, FspGcd, FspGt, FspGte, FspLcm, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspPlus, FspPow, FspQuotient, FspReminder, FspRound, FspSqrt } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
 import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
@@ -57,6 +57,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('cdr'), FspCdr.proc)
   env.set(new FsSymbol('close-input-port'), FspCloseInputPort.proc)
   env.set(new FsSymbol('close-output-port'), FspCloseOutputPort.proc)
+  env.set(new FsSymbol('complex?'), FsPredicateComplex.proc)
   env.set(new FsSymbol('cons'), FspCons.proc)
   env.set(new FsSymbol('current-input-port'), FspCurrentInputPort.proc)
   env.set(new FsSymbol('current-output-port'), FspCurrentOutputPort.proc)
@@ -78,6 +79,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('map'), FslpMap.proc)
   env.set(new FsSymbol('max'), FspMax.proc)
   env.set(new FsSymbol('min'), FspMin.proc)
+  env.set(new FsSymbol('modulo'), FspModulo.proc)
   env.set(new FsSymbol('newline'), FslpNewline.proc)
   env.set(new FsSymbol('not'), FslpNot.proc)
   env.set(new FsSymbol('null?'), FsPredicateNull.proc)
@@ -87,8 +89,11 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
   // env.set(new FsSymbol('quasiquote'), FssQuasiQuote.proc)
+  env.set(new FsSymbol('quotient'), FspQuotient.proc)
   env.set(new FsSymbol('rational?'), FsPredicateRational.proc)
   env.set(new FsSymbol('read-char'), FspReadChar.proc)
+  env.set(new FsSymbol('real?'), FsPredicateReal.proc)
+  env.set(new FsSymbol('remainder'), FspReminder.proc)
   env.set(new FsSymbol('round'), FspRound.proc)
   env.set(new FsSymbol('sqrt'), FspSqrt.proc)
   env.set(new FsSymbol('standard-input-port'), FspStandardInputPort.proc)

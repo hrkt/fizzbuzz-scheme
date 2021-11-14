@@ -49,7 +49,7 @@ test('FsReal.isStrRep ', () => {
 })
 
 test('FsComplex.isStrRep ', () => {
-  const intReps = ['1+2i', '-3-4i', '0']
+  const intReps = ['1+2i', '-3-4i', '0+0i']
   intReps.forEach(r => {
     expect(FsComplex.isStringRep(r)).toBe(true)
   })
