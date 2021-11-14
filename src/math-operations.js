@@ -3,6 +3,35 @@ import { FsBoolean, FsInteger, FsNumber, FsRational, FsReal, gcd, lcm } from './
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 
+// functions
+
+// find rational number representation by "Stern-Brocot Tree"
+export function findRationalReps (realValue, epsilon = 0.0001) {
+  let a = 0
+  let b = 1
+  let c = 1
+  let d = 0
+  let bestError = realValue
+  let numerator = 0
+  let denominator = 1
+  while (bestError > epsilon) {
+    const mid = (a + c) / (b + d)
+
+    if (bestError > Math.abs(realValue - mid)) {
+      bestError = Math.abs(realValue - mid)
+      numerator = a + c
+      denominator = b + d
+    }
+
+    if (realValue < mid) {
+      [c, d] = [a + c, b + d]
+    } else {
+      [a, b] = [a + c, b + d]
+    }
+  }
+  return new FsRational(numerator, denominator)
+}
+
 // operators
 
 export class FslpAbs extends FsSExp {
@@ -21,9 +50,10 @@ export class FspDenominator extends FsSExp {
     ensureListContainsOne(list)
     const n1 = list.at(0)
     if (n1 instanceof FsRational) {
-      return n1.denominator
+      return new FsInteger(n1.denominator)
     } else {
-      return n1.value
+      // return n1.value
+      return new FsReal(findRationalReps(n1).denominator)
     }
   }
 }
@@ -34,7 +64,7 @@ export class FspDivide extends FsSExp {
       // TODO: support rational number
       if (list.at(0).value !== 0) {
         if (list.at(0) instanceof FsInteger) {
-          return list.at(0).value === 1 ? new FsInteger(1) : new FsRational(1, list.at(0).value)
+          return list.at(0).value === 1 ? new FsInteger(1) : new FsRational(1, list.at(0).value).canonicalForm()
         } else {
           return new FsReal(1.0 / list.at(0).value)
         }
@@ -49,7 +79,7 @@ export class FspDivide extends FsSExp {
           if (list.at(0).value % divisor.value === 0) {
             return new FsInteger(list.at(0) % divisor.value === 0)
           } else {
-            return new FsRational(list.at(0).value, divisor.value)
+            return new FsRational(list.at(0).value, divisor.value).canonicalForm()
           }
         } else {
           return new FsReal(list.at(0).value / divisor.value)
@@ -74,6 +104,22 @@ function integerOrRealParameterOperation (func, a, b) {
       throw new FsException('arg must be an integer but got ' + b)
     }
     return new FsReal(func(a.value, b.value))
+  }
+}
+
+export class FspExactToInexact extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const t = list.at(0)
+    if (t instanceof FsInteger) {
+      return new FsReal(t)
+    } else if (t instanceof FsReal) {
+      return new FsReal(t)
+    } else if (t instanceof FsRational) {
+      return t.asReal()
+    } else {
+      throw new FsException('not supported yet.')
+    }
   }
 }
 

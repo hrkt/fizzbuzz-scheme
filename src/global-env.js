@@ -7,7 +7,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsNumber, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
-import { FslpAbs, FspDenominator, FspDivide, FspGcd, FspGt, FspGte, FspLcm, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumerator, FspPlus, FspPow, FspQuotient, FspReminder, FspRound, FspSqrt } from './math-operations.js'
+import { FslpAbs, FspDenominator, FspDivide, FspExactToInexact, FspGcd, FspGt, FspGte, FspLcm, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumerator, FspPlus, FspPow, FspQuotient, FspReminder, FspRound, FspSqrt } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
 import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
@@ -67,6 +67,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('eq?'), FsPredicateEq.proc)
   env.set(new FsSymbol('eqv?'), FsPredicateEqv.proc)
   env.set(new FsSymbol('equal?'), FsPredicateEqual.proc)
+  env.set(new FsSymbol('exact->inexact'), FspExactToInexact.proc)
   env.set(new FsSymbol('gcd'), FspGcd.proc)
   env.set(new FsSymbol('gensym'), FspGensym.proc)
   env.set(new FsSymbol('integer?'), FsPredicateInteger.proc)

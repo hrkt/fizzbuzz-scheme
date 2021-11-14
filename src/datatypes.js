@@ -361,7 +361,7 @@ export class FsRational {
 
   static fromString (str) {
     const [a, b] = str.split('/')
-    return new FsRational(a, b)
+    return new FsRational(a, b).canonicalForm()
   }
 
   get numerator () {

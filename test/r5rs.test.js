@@ -366,6 +366,10 @@ test('🚧6.2.5_3', () => {
   expect(new FBS().eval('(lcm 32 -36)').toString()).toBe('288')
   expect(new FBS().eval('(lcm 32.0 -36)').toString()).toBe('288.0')
   expect(new FBS().eval('(lcm)').toString()).toBe('1')
+
+  expect(new FBS().eval('(numerator (/ 6 4))').toString()).toBe('3')
+  expect(new FBS().eval('(denominator (/ 6 4)) ').toString()).toBe('2')
+  expect(new FBS().eval('(denominator (exact->inexact (/ 6 4)))').toString()).toBe('2.0')
 })
 
 // all cleared 😊
