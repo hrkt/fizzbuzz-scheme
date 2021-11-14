@@ -1,12 +1,12 @@
 'use strict'
 
 import { FsException } from '../src/common.js'
-import { FsInteger, FsNumber } from '../src/datatypes.js'
+import { FsInteger } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating (/ 1) yields 1', () => {
   const code = '(/ 1)'
-  expect(new FBS().eval(code)).toStrictEqual(new FsNumber(1))
+  expect(new FBS().eval(code)).toStrictEqual(new FsInteger(1))
 })
 
 test('evaluating (/ 3 1) yields 3', () => {

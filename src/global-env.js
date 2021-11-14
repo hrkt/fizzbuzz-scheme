@@ -7,7 +7,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsNumber, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
-import { FslpAbs, FspDivide, FspGcd, FspGt, FspGte, FspLcm, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspPlus, FspPow, FspQuotient, FspReminder, FspRound, FspSqrt } from './math-operations.js'
+import { FslpAbs, FspDenominator, FspDivide, FspGcd, FspGt, FspGte, FspLcm, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumerator, FspPlus, FspPow, FspQuotient, FspReminder, FspRound, FspSqrt } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
 import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
@@ -61,6 +61,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('cons'), FspCons.proc)
   env.set(new FsSymbol('current-input-port'), FspCurrentInputPort.proc)
   env.set(new FsSymbol('current-output-port'), FspCurrentOutputPort.proc)
+  env.set(new FsSymbol('denominator'), FspDenominator.proc)
   env.set(new FsSymbol('display'), FslpDisplay.proc)
   env.set(new FsSymbol('do'), FslsDo.proc)
   env.set(new FsSymbol('eq?'), FsPredicateEq.proc)
@@ -84,6 +85,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('not'), FslpNot.proc)
   env.set(new FsSymbol('null?'), FsPredicateNull.proc)
   env.set(new FsSymbol('number?'), FsPredicateNumber.proc)
+  env.set(new FsSymbol('numerator'), FspNumerator.proc)
   env.set(new FsSymbol('open-input-file'), FspOpenInputFile.proc)
   env.set(new FsSymbol('open-output-file'), FspOpenOutputFile.proc)
   env.set(new FsSymbol('pair?'), FsPredicatePair.proc)
