@@ -1,7 +1,7 @@
 import { FsException } from './common.js'
-import { FsBoolean, FsInteger, FsNumber, FsReal, gcd, lcm } from './datatypes.js'
+import { FsBoolean, FsInteger, FsNumber, FsRational, FsReal, gcd, lcm } from './datatypes.js'
 import { FsSExp } from './sexpbase.js'
-import { ensureListContainsTwo } from './sexputils.js'
+import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 
 // operators
 
@@ -16,22 +16,43 @@ export class FslpAbs extends FsSExp {
   }
 }
 
+export class FspDenominator extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const n1 = list.at(0)
+    if (n1 instanceof FsRational) {
+      return n1.denominator
+    } else {
+      return n1.value
+    }
+  }
+}
+
 export class FspDivide extends FsSExp {
   static proc (list) {
     if (list.length === 1) {
       // TODO: support rational number
       if (list.at(0).value !== 0) {
-        return new FsNumber(list.at(0).value)
+        if (list.at(0) instanceof FsInteger) {
+          return list.at(0).value === 1 ? new FsInteger(1) : new FsRational(1, list.at(0).value)
+        } else {
+          return new FsReal(1.0 / list.at(0).value)
+        }
       } else {
         throw new FsException('divide by 0')
       }
     } else {
       const divisor = FspMultiply.proc(list.slice(1))
+
       if (divisor.value !== 0) {
-        if (list.at(0) instanceof FsInteger && divisor instanceof FsInteger && list.at(0).value % divisor.value === 0) {
-          return new FsInteger(list.at(0).value / divisor.value)
+        if (list.at(0) instanceof FsInteger && divisor instanceof FsInteger) {
+          if (list.at(0).value % divisor.value === 0) {
+            return new FsInteger(list.at(0) % divisor.value === 0)
+          } else {
+            return new FsRational(list.at(0).value, divisor.value)
+          }
         } else {
-          return new FsNumber(list.at(0).value / divisor.value)
+          return new FsReal(list.at(0).value / divisor.value)
         }
       } else {
         throw new FsException('divide by 0')
@@ -141,7 +162,7 @@ export class FspModulo extends FsSExp {
 export class FspMultiply extends FsSExp {
   static proc (list) {
     if (list.length === 0) {
-      return new FsNumber(1)
+      return new FsInteger(1)
     }
     // return new FsNumber(list.map(n => n.value).reduce((a, b) => a * b, 1))
     let onlyIntegers = list.at(0) instanceof FsInteger
@@ -179,6 +200,17 @@ export class FspNumberEquals extends FsSExp {
   }
 }
 
+export class FspNumerator extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const n1 = list.at(0)
+    if (n1 instanceof FsRational) {
+      return n1.numerator
+    } else {
+      return n1.value
+    }
+  }
+}
 export class FspPlus extends FsSExp {
   static proc (list) {
     // for the readability, use this line
