@@ -40,6 +40,7 @@ function checkArgRepresentsAnInteger (n) {
   }
 }
 
+// used by ceil, floor, truncate, round
 function realParamWithIntReturnUnaryOperation (func, a) {
   if (a instanceof FsInteger || a instanceof FsRational) {
     return new FsInteger(func(a.value))
