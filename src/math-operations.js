@@ -40,6 +40,13 @@ function checkArgRepresentsAnInteger (n) {
   }
 }
 
+/**
+ * an util function that takes 1 parameter and applyes a given function
+ *
+ * @param {*} JavaScript function
+ * @param {*} a FsInteger, FsRational or FsReal
+ * @returns {any} FsInteger or FsReal
+ */
 // used by ceil, floor, truncate, round
 function realParamWithIntReturnUnaryOperation (func, a) {
   if (a instanceof FsInteger || a instanceof FsRational) {
