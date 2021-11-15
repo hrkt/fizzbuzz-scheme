@@ -45,8 +45,7 @@ function realParamWithIntReturnUnaryOperation (func, a) {
   if (a instanceof FsInteger || a instanceof FsRational) {
     return new FsInteger(func(a.value))
   } else {
-    // TODO: remove FsNumber after adding datatype oeprations.
-    if (!(a instanceof FsReal || a instanceof FsNumber)) {
+    if (!(a instanceof FsReal)) {
       throw new FsException('arg must be a real or integer value but got ' + a)
     }
     return new FsReal(func(a.value))

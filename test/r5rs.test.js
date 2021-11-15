@@ -383,9 +383,6 @@ test('🚧6.2.5_4', () => {
   expect(new FBS().eval('(round 3.5)').toString()).toBe('4.0')
   expect(new FBS().eval('(round 7/2)').toString()).toBe('4')
   expect(new FBS().eval('(round 7)').toString()).toBe('7')
-  // expect(new FBS().eval('').toString()).toBe('')
-  // expect(new FBS().eval('').toString()).toBe('')
-  // expect(new FBS().eval('').toString()).toBe('')
 })
 
 // all cleared 😊
