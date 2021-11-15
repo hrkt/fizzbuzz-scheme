@@ -6,7 +6,7 @@ import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 // functions of various math-algorithms
 
 // find rational number representation by "Stern-Brocot Tree"
-export function findRationalReps (realValue, epsilon = 0.0001) {
+export function findRationalReps (realValue, epsilon = 0.0001, exact = true) {
   let a = 0
   let b = 1
   let c = 1
@@ -29,7 +29,7 @@ export function findRationalReps (realValue, epsilon = 0.0001) {
       [a, b] = [a + c, b + d]
     }
   }
-  return new FsRational(numerator, denominator)
+  return new FsRational(numerator, denominator, exact)
 }
 
 // internal functions
@@ -82,7 +82,7 @@ export class FslpAbs extends FsSExp {
     if (list.at(0) instanceof FsInteger) {
       return new FsInteger(Math.abs(list.at(0).value))
     } else if (list.at(0) instanceof FsNumber) {
-      return new FsNumber(Math.abs(list.at(0).value))
+      return new FsReal(Math.abs(list.at(0).value))
     }
     throw new FsException('arg must be number')
   }
@@ -147,9 +147,9 @@ export class FspExactToInexact extends FsSExp {
     ensureListContainsOne(list)
     const t = list.at(0)
     if (t instanceof FsInteger) {
-      return new FsReal(t)
+      return new FsReal(t.value)
     } else if (t instanceof FsReal) {
-      return new FsReal(t)
+      return new FsReal(t.value)
     } else if (t instanceof FsRational) {
       return t.asReal()
     } else {
@@ -175,6 +175,22 @@ export class FspGcd extends FsSExp {
   }
 }
 
+export class FspInexactToExact extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const t = list.at(0)
+    if (t instanceof FsInteger) {
+      return new FsInteger(t.value)
+    } else if (t instanceof FsReal) {
+      return new FsReal(t.value, true)
+    } else if (t instanceof FsRational) {
+      return new FsRational(t.numerator, t.denominator, true)
+    } else {
+      throw new FsException('not supported yet.')
+    }
+  }
+}
+
 export class FspLcm extends FsSExp {
   static proc (list) {
     if (list.length === 0) {
@@ -191,13 +207,13 @@ export class FspMinus extends FsSExp {
       if (list.at(0) instanceof FsInteger && list.at(1) instanceof FsInteger) {
         return new FsInteger(list.at(0).value - list.at(1).value)
       } else {
-        return new FsNumber(list.at(0).value - list.at(1).value)
+        return new FsReal(list.at(0).value - list.at(1).value)
       }
     } else if (list.length === 1) {
       if (list.at(0) instanceof FsInteger) {
         return new FsInteger(-1 * (list.at(0).value))
       } else {
-        return new FsNumber(-1 * (list.at(0).value))
+        return new FsReal(-1 * (list.at(0).value))
       }
     } else {
       // for the readability, use this line
@@ -216,7 +232,7 @@ export class FspMinus extends FsSExp {
       if (onlyIntegers) {
         return new FsInteger(buf)
       } else {
-        return new FsNumber(buf)
+        return new FsReal(buf)
       }
     }
   }
@@ -265,7 +281,7 @@ export class FspMultiply extends FsSExp {
     if (onlyIntegers) {
       return new FsInteger(buf)
     } else {
-      return new FsNumber(buf)
+      return new FsReal(buf)
     }
   }
 }
@@ -310,10 +326,10 @@ export class FspPlus extends FsSExp {
       if (list.at(0) instanceof FsInteger && list.at(1) instanceof FsInteger) {
         return new FsInteger(list.at(0).value + list.at(1).value)
       } else {
-        return new FsNumber(list.at(0).value + list.at(1).value)
+        return new FsReal(list.at(0).value + list.at(1).value)
       }
     } else if (list.length === 1) {
-      return new FsNumber(list.at(0).value)
+      return new FsReal(list.at(0).value)
     } else {
       let onlyIntegers = true
       let buf = 0
@@ -326,7 +342,7 @@ export class FspPlus extends FsSExp {
       if (onlyIntegers) {
         return new FsInteger(buf)
       } else {
-        return new FsNumber(buf)
+        return new FsReal(buf)
       }
     }
   }
@@ -338,7 +354,7 @@ export class FspPow extends FsSExp {
     if (list.at(0) instanceof FsInteger && list.at(1) instanceof FsInteger) {
       return new FsInteger(Math.pow(list.at(0).value, list.at(1).value))
     } else {
-      return new FsNumber(Math.pow(list.at(0).value, list.at(1).value))
+      return new FsReal(Math.pow(list.at(0).value, list.at(1).value))
     }
   }
 }
@@ -372,6 +388,15 @@ export class FspReminder extends FsSExp {
     } else {
       return new FsReal(v)
     }
+  }
+}
+
+export class FspRationalize extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const t = list.at(0)
+    const epsilon = list.at(1)
+    return findRationalReps(t.value, epsilon.value, t.isExact())
   }
 }
 

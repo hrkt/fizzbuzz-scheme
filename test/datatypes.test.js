@@ -42,8 +42,8 @@ test('FsRational.isStrRep ', () => {
 })
 
 test('FsReal.isStrRep ', () => {
-  const intReps = ['0.1', '-1.2', '1', '0']
-  intReps.forEach(r => {
+  const realReps = ['0.1', '-1.2', '1', '0']
+  realReps.forEach(r => {
     expect(FsReal.isStringRep(r)).toBe(true)
   })
 })

@@ -279,15 +279,23 @@ export class FsComplex {
  * based on JavaScript Number
  */
 export class FsReal {
-  static #regex = /^[+-]?\d+(\.\d+)?$/
+  static #regex = /^(#[ei])?[+-]?(([0-9]+)?\.[0-9]+|[0-9]+)+$/
   #value
+  #exact
 
-  constructor (v) {
+  constructor (v, exact = false) {
     this.#value = parseFloat(v)
+    this.#exact = exact
   }
 
   static fromString (str) {
-    return new FsReal(parseFloat(str))
+    if (str.startsWith('#e')) {
+      return new FsReal(parseFloat(str.substr(2)), true)
+    } else if (str.startsWith('#i')) {
+      return new FsReal(parseFloat(str.substr(2)), false)
+    } else {
+      return new FsReal(parseFloat(str), false)
+    }
   }
 
   static isStringRep (str) {
@@ -295,7 +303,7 @@ export class FsReal {
   }
 
   isExact () {
-    return false
+    return this.#exact
   }
 
   isInteger () {
@@ -337,7 +345,7 @@ export function lcm (a, b) {
   }
 }
 export class FsRational {
-  static #regex = /^[+-]?\d+\/\d+$/
+  static #regex = /^[+-]?[0-9]+\/[0-9]+$/
   #numerator
   #denominator
   #exact
@@ -350,13 +358,15 @@ export class FsRational {
    * @param {*} numerator
    * @param {*} denominator
    */
-  constructor (numerator, denominator) {
+  constructor (numerator, denominator, exact = true) {
     this.#numerator = parseInt(numerator)
     this.#denominator = parseInt(denominator)
-    this.#exact = Number.MIN_SAFE_INTEGER <= numerator &&
+    if (exact) {
+      this.#exact = Number.MIN_SAFE_INTEGER <= numerator &&
       numerator <= Number.MAX_SAFE_INTEGER &&
       Number.MIN_SAFE_INTEGER <= denominator &&
       denominator <= Number.MAX_SAFE_INTEGER
+    }
   }
 
   static fromString (str) {
@@ -473,12 +483,13 @@ export class FsRational {
   }
 
   toString () {
-    return this.#numerator + '/' + this.#denominator
+    const s = this.#numerator + '/' + this.#denominator
+    return this.#exact ? s : '#i' + s
   }
 }
 
 export class FsInteger {
-  static #regex = /^(#[ei])?(#[bode])?[+-]?(\d+|\d+e\d+)$/
+  static #regex = /^(#[ei])?(#[bode])?[+-]?([0-9]+|[0-9]+e[0-9]+)$/
   #value
   #exact
 

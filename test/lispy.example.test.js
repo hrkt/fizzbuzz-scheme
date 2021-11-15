@@ -2,14 +2,14 @@
 
 // test sample expressions from http://norvig.com/lispy.html
 
-import { FsInteger, FsNumber } from '../src/datatypes.js'
+import { FsInteger, FsReal } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 test('evaluating circle-area', () => {
   const code = '(define circle-area (lambda (r) (* 3.141592653 (* r r))))'
   const fbs = new FBS()
   fbs.eval(code)
-  expect(fbs.eval('(circle-area 3)')).toStrictEqual(new FsNumber(28.274333877), fbs)
+  expect(fbs.eval('(circle-area 3)')).toStrictEqual(new FsReal(28.274333877), fbs)
 })
 
 test('evaluating fact', () => {

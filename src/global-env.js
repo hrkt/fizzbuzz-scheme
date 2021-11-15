@@ -7,7 +7,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsNumber, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
-import { FslpAbs, FspCeiling, FspDenominator, FspDivide, FspExactToInexact, FspFloor, FspGcd, FspGt, FspGte, FspLcm, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumerator, FspPlus, FspPow, FspQuotient, FspReminder, FspRound, FspSqrt, FspTruncate } from './math-operations.js'
+import { FslpAbs, FspCeiling, FspDenominator, FspDivide, FspExactToInexact, FspFloor, FspGcd, FspGt, FspGte, FspInexactToExact, FspLcm, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspReminder, FspRound, FspSqrt, FspTruncate } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
 import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
@@ -72,6 +72,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('floor'), FspFloor.proc)
   env.set(new FsSymbol('gcd'), FspGcd.proc)
   env.set(new FsSymbol('gensym'), FspGensym.proc)
+  env.set(new FsSymbol('inexact->exact'), FspInexactToExact.proc)
   env.set(new FsSymbol('integer?'), FsPredicateInteger.proc)
   env.set(new FsSymbol('last-pair'), FspLastPair.proc)
   env.set(new FsSymbol('lcm'), FspLcm.proc)
@@ -95,6 +96,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('procedure?'), FsPredicateProcedure.proc)
   // env.set(new FsSymbol('quasiquote'), FssQuasiQuote.proc)
   env.set(new FsSymbol('quotient'), FspQuotient.proc)
+  env.set(new FsSymbol('rationalize'), FspRationalize.proc)
   env.set(new FsSymbol('rational?'), FsPredicateRational.proc)
   env.set(new FsSymbol('read-char'), FspReadChar.proc)
   env.set(new FsSymbol('real?'), FsPredicateReal.proc)
