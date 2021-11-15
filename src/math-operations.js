@@ -3,7 +3,7 @@ import { FsBoolean, FsInteger, FsNumber, FsRational, FsReal, gcd, lcm } from './
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 
-// functions
+// functions of various math-algorithms
 
 // find rational number representation by "Stern-Brocot Tree"
 export function findRationalReps (realValue, epsilon = 0.0001) {
@@ -32,7 +32,43 @@ export function findRationalReps (realValue, epsilon = 0.0001) {
   return new FsRational(numerator, denominator)
 }
 
-// operators
+// internal functions
+
+function checkArgRepresentsAnInteger (n) {
+  if (!(n instanceof FsInteger || (n instanceof FsReal && n.isInteger()))) {
+    throw new FsException('arg must be an integer ' + n)
+  }
+}
+
+function realParamWithIntReturnUnaryOperation (func, a) {
+  if (a instanceof FsInteger || a instanceof FsRational) {
+    return new FsInteger(func(a.value))
+  } else {
+    // TODO: remove FsNumber after adding datatype oeprations.
+    if (!(a instanceof FsReal || a instanceof FsNumber)) {
+      throw new FsException('arg must be a real or integer value but got ' + a)
+    }
+    return new FsReal(func(a.value))
+  }
+}
+
+function realParameterBinaryOperation (func, a, b) {
+  if (a instanceof FsInteger && b instanceof FsInteger) {
+    return new FsInteger(func(a.value, b.value))
+  } else {
+    // TODO: remove FsNumber after adding datatype oeprations.
+    if (!(a instanceof FsReal || a instanceof FsInteger || a instanceof FsNumber)) {
+      throw new FsException('arg must be an integer but got ' + a)
+    }
+    // TODO: remove FsNumber after adding datatype oeprations.
+    if (!(b instanceof FsReal || b instanceof FsInteger || b instanceof FsNumber)) {
+      throw new FsException('arg must be an integer but got ' + b)
+    }
+    return new FsReal(func(a.value, b.value))
+  }
+}
+
+// exported operators
 
 export class FslpAbs extends FsSExp {
   static proc (list) {
@@ -42,6 +78,14 @@ export class FslpAbs extends FsSExp {
       return new FsNumber(Math.abs(list.at(0).value))
     }
     throw new FsException('arg must be number')
+  }
+}
+
+export class FspCeiling extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const t = list.at(0)
+    return realParamWithIntReturnUnaryOperation(Math.ceil, t)
   }
 }
 
@@ -91,22 +135,6 @@ export class FspDivide extends FsSExp {
   }
 }
 
-function integerOrRealParameterOperation (func, a, b) {
-  if (a instanceof FsInteger && b instanceof FsInteger) {
-    return new FsInteger(func(a.value, b.value))
-  } else {
-    // TODO: remove FsNumber after adding datatype oeprations.
-    if (!(a instanceof FsReal || a instanceof FsInteger || a instanceof FsNumber)) {
-      throw new FsException('arg must be an integer but got ' + a)
-    }
-    // TODO: remove FsNumber after adding datatype oeprations.
-    if (!(b instanceof FsReal || b instanceof FsInteger || b instanceof FsNumber)) {
-      throw new FsException('arg must be an integer but got ' + b)
-    }
-    return new FsReal(func(a.value, b.value))
-  }
-}
-
 export class FspExactToInexact extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
@@ -123,13 +151,20 @@ export class FspExactToInexact extends FsSExp {
   }
 }
 
+export class FspFloor extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const t = list.at(0)
+    return realParamWithIntReturnUnaryOperation(Math.floor, t)
+  }
+}
 export class FspGcd extends FsSExp {
   static proc (list) {
     if (list.length === 0) {
       return new FsInteger(0)
     }
     ensureListContainsTwo(list)
-    return integerOrRealParameterOperation(gcd, list.at(0), list.at(1))
+    return realParameterBinaryOperation(gcd, list.at(0), list.at(1))
   }
 }
 
@@ -139,7 +174,7 @@ export class FspLcm extends FsSExp {
       return new FsInteger(1)
     }
     ensureListContainsTwo(list)
-    return integerOrRealParameterOperation(lcm, list.at(0), list.at(1))
+    return realParameterBinaryOperation(lcm, list.at(0), list.at(1))
   }
 }
 
@@ -301,11 +336,6 @@ export class FspPow extends FsSExp {
   }
 }
 
-function checkArgRepresentsAnInteger (n) {
-  if (!(n instanceof FsInteger || (n instanceof FsReal && n.isInteger()))) {
-    throw new FsException('arg must be an integer ' + n)
-  }
-}
 export class FspQuotient extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
@@ -340,13 +370,22 @@ export class FspReminder extends FsSExp {
 
 export class FspRound extends FsSExp {
   static proc (list) {
-    return new FsInteger(Math.round(list.at(0).value))
+    ensureListContainsOne(list)
+    const t = list.at(0)
+    return realParamWithIntReturnUnaryOperation(Math.round, t)
   }
 }
-
 export class FspSqrt extends FsSExp {
   static proc (list) {
     return Math.sqrt(list.value)
+  }
+}
+
+export class FspTruncate extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const t = list.at(0)
+    return realParamWithIntReturnUnaryOperation(Math.trunc, t)
   }
 }
 

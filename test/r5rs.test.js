@@ -372,6 +372,22 @@ test('🚧6.2.5_3', () => {
   expect(new FBS().eval('(denominator (exact->inexact (/ 6 4)))').toString()).toBe('2.0')
 })
 
+test('🚧6.2.5_4', () => {
+  expect(new FBS().eval('(floor -4.3)').toString()).toBe('-5.0')
+  expect(new FBS().eval('(ceiling -4.3) ').toString()).toBe('-4.0')
+  expect(new FBS().eval('(truncate -4.3) ').toString()).toBe('-4.0')
+  expect(new FBS().eval('(round -4.3)').toString()).toBe('-4.0')
+  expect(new FBS().eval('(floor 3.5)').toString()).toBe('3.0')
+  expect(new FBS().eval('(ceiling 3.5)').toString()).toBe('4.0')
+  expect(new FBS().eval('(truncate 3.5)').toString()).toBe('3.0')
+  expect(new FBS().eval('(round 3.5)').toString()).toBe('4.0')
+  expect(new FBS().eval('(round 7/2)').toString()).toBe('4')
+  expect(new FBS().eval('(round 7)').toString()).toBe('7')
+  // expect(new FBS().eval('').toString()).toBe('')
+  // expect(new FBS().eval('').toString()).toBe('')
+  // expect(new FBS().eval('').toString()).toBe('')
+})
+
 // all cleared 😊
 test('✅6.3.1', () => {
   expect(new FBS().eval('#t').toString()).toBe('#t')

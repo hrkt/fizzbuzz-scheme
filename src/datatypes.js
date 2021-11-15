@@ -460,6 +460,10 @@ export class FsRational {
     return new FsReal(this.numerator / this.denominator)
   }
 
+  get value () {
+    return this.numerator / this.denominator
+  }
+
   static isStringRep (str) {
     return str && str.match(FsRational.#regex) !== null
   }
