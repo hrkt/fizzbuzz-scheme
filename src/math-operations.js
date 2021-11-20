@@ -81,10 +81,15 @@ export class FslpAbs extends FsSExp {
   static proc (list) {
     if (list.at(0) instanceof FsInteger) {
       return new FsInteger(Math.abs(list.at(0).value))
-    } else if (list.at(0) instanceof FsNumber) {
+    } else if (list.at(0) instanceof FsRational) {
+      return new FsRational(Math.abs(list.at(0).numerator), Math.abs(list.at(0).denominator))
+    } else if (list.at(0) instanceof FsReal) {
       return new FsReal(Math.abs(list.at(0).value))
+    } else if (list.at(0) instanceof FsComplex) {
+      return new FsReal(list.at(0).abs())
+    } else {
+      throw new FsException('arg must be number')
     }
-    throw new FsException('arg must be number')
   }
 }
 
