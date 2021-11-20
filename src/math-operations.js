@@ -1,5 +1,5 @@
 import { FsException } from './common.js'
-import { FsBoolean, FsInteger, FsNumber, FsRational, FsReal, gcd, lcm } from './datatypes.js'
+import { FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, gcd, lcm } from './datatypes.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 
@@ -154,6 +154,22 @@ export class FspExactToInexact extends FsSExp {
       return t.asReal()
     } else {
       throw new FsException('not supported yet.')
+    }
+  }
+}
+
+export class FspExp extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const p = list.at(0)
+    if (p instanceof FsInteger || p instanceof FsRational || p instanceof FsReal) {
+      return new FsReal(Math.exp(p.value))
+    } else if (p instanceof FsComplex) {
+      // e ^ (a+bi) = e^a * (cos(b) + sin(b)i)
+      const e1 = Math.exp(p.real)
+      return new FsComplex(e1 * Math.cos(p.imaginary), e1 * Math.sin(p.imaginary))
+    } else {
+      throw new FsException('a number required but got ' + p)
     }
   }
 }

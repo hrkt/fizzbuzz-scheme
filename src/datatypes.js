@@ -252,11 +252,27 @@ export function isProperList (arg) {
 
 export class FsComplex {
   static #regex = /^[+-]?\d+(\.\d+)?[+-]?\d?(\.\d+)?i?$/
+  #real
+  #imaginary
+
+  constructor (real, imaginary) {
+    this.#real = real
+    this.#imaginary = imaginary
+  }
+
   static isStringRep (str) {
     if (!str || str.match(FsComplex.#regex) === null) {
       return false
     }
     return str.match(FsComplex.#regex) !== null
+  }
+
+  get real () {
+    return this.#real
+  }
+
+  get imaginary () {
+    return this.#imaginary
   }
 
   get isExact () {
@@ -268,7 +284,19 @@ export class FsComplex {
     if (parseFloat(b) === 0) {
       return new FsReal(a)
     } else {
-      return new FsComplex(a, b)
+      return new FsComplex(a, b.replace('i', ''))
+    }
+  }
+
+  toString () {
+    if (this.#imaginary === 0) {
+      if (Math.abs(this.#real) === Math.abs(Math.floor(this.#real))) {
+        return '' + this.#real.toFixed(1)
+      } else {
+        return '' + this.#real
+      }
+    } else {
+      return '' + this.#real + '+' + this.#imaginary + 'i'
     }
   }
 }
