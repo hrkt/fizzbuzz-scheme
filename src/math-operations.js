@@ -1,5 +1,5 @@
 import { FsException } from './common.js'
-import { FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, gcd, lcm } from './datatypes.js'
+import { FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, FsString, gcd, lcm } from './datatypes.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 
@@ -322,6 +322,21 @@ export class FspNumberEquals extends FsSExp {
       throw new FsException('parameter for "=" must be a number.')
     }
     return lhs.value === rhs.value ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FspNumberToString extends FsSExp {
+  static proc (list) {
+    const radix = list.length === 2 ? list.at(1).value : 10
+    const t = list.at(0)
+    if (!(t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal || t instanceof FsComplex)) {
+      throw new FsException('parameter must be a number but got ' + list.at(0))
+    }
+    if (radix === 10) {
+      return new FsString(list.at(0).toString())
+    } else {
+      throw new Error('not implemented yet.')
+    }
   }
 }
 
