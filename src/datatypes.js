@@ -284,8 +284,12 @@ export class FsComplex {
     if (parseFloat(b) === 0) {
       return new FsReal(a)
     } else {
-      return new FsComplex(a, b.replace('i', ''))
+      return new FsComplex(parseFloat(a), parseFloat(b.replace('i', '')))
     }
+  }
+
+  abs () {
+    return Math.sqrt(this.#real * this.#real + this.#imaginary * this.#imaginary)
   }
 
   toString () {

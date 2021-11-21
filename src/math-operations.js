@@ -1,5 +1,5 @@
 import { FsException } from './common.js'
-import { FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, gcd, lcm } from './datatypes.js'
+import { FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, FsString, gcd, lcm } from './datatypes.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 
@@ -81,10 +81,15 @@ export class FslpAbs extends FsSExp {
   static proc (list) {
     if (list.at(0) instanceof FsInteger) {
       return new FsInteger(Math.abs(list.at(0).value))
-    } else if (list.at(0) instanceof FsNumber) {
+    } else if (list.at(0) instanceof FsRational) {
+      return new FsRational(Math.abs(list.at(0).numerator), Math.abs(list.at(0).denominator))
+    } else if (list.at(0) instanceof FsReal) {
       return new FsReal(Math.abs(list.at(0).value))
+    } else if (list.at(0) instanceof FsComplex) {
+      return new FsReal(list.at(0).abs())
+    } else {
+      throw new FsException('arg must be number')
     }
-    throw new FsException('arg must be number')
   }
 }
 
@@ -317,6 +322,21 @@ export class FspNumberEquals extends FsSExp {
       throw new FsException('parameter for "=" must be a number.')
     }
     return lhs.value === rhs.value ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FspNumberToString extends FsSExp {
+  static proc (list) {
+    const radix = list.length === 2 ? list.at(1).value : 10
+    const t = list.at(0)
+    if (!(t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal || t instanceof FsComplex)) {
+      throw new FsException('parameter must be a number but got ' + list.at(0))
+    }
+    if (radix === 10) {
+      return new FsString(list.at(0).toString())
+    } else {
+      throw new Error('not implemented yet.')
+    }
   }
 }
 
