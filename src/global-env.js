@@ -7,7 +7,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsNumber, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
-import { FslpAbs, FspCeiling, FspDenominator, FspDivide, FspExactToInexact, FspExp, FspFloor, FspGcd, FspGt, FspGte, FspInexactToExact, FspLcm, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumberToString, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspReminder, FspRound, FspSqrt, FspTruncate } from './math-operations.js'
+import { FslpAbs, FspCeiling, FspDenominator, FspDivide, FspExactToInexact, FspExp, FspFloor, FspGcd, FspGt, FspGte, FspInexactToExact, FspLcm, FspLog, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumberToString, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspReminder, FspRound, FspSqrt, FspTruncate } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
 import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
@@ -81,6 +81,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('list'), FslpList.proc)
   env.set(new FsSymbol('list?'), FsPredicateList.proc)
   env.set(new FsSymbol('load'), FsopLoad.proc)
+  env.set(new FsSymbol('log'), FspLog.proc)
   env.set(new FsSymbol('make-vector'), FspMakeVector.proc)
   env.set(new FsSymbol('map'), FslpMap.proc)
   env.set(new FsSymbol('max'), FspMax.proc)

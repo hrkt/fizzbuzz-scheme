@@ -40,6 +40,10 @@ function checkArgRepresentsAnInteger (n) {
   }
 }
 
+function canBeTreatedAsReal (t) {
+  return t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal
+}
+
 /**
  * an util function that takes 1 parameter and applyes a given function
  *
@@ -57,6 +61,14 @@ function realParamWithIntReturnUnaryOperation (func, a) {
     }
     return new FsReal(func(a.value))
   }
+}
+
+function realParameterUnaryOperation (func, a) {
+  // TODO: remove FsNumber after adding datatype oeprations.
+  if (!canBeTreatedAsReal(a)) {
+    throw new FsException('arg must be a real but got ' + a)
+  }
+  return new FsReal(func(a.value))
 }
 
 function realParameterBinaryOperation (func, a, b) {
@@ -219,6 +231,22 @@ export class FspLcm extends FsSExp {
     }
     ensureListContainsTwo(list)
     return realParameterBinaryOperation(lcm, list.at(0), list.at(1))
+  }
+}
+
+export class FspLog extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    if (canBeTreatedAsReal(list.at(0))) {
+      return realParameterUnaryOperation(Math.log, list.at(0))
+    } else if (list.at(0) instanceof FsComplex) {
+      const pz = list.at(0)
+      const pr = pz.real
+      const pi = pz.imaginary
+      return new FsComplex(Math.log(pz.abs()), Math.atan(pi / pr))
+    } else {
+      throw new FsException('parameter must be a number but got ' + list.at(0))
+    }
   }
 }
 
