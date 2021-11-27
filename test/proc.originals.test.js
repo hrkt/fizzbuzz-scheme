@@ -8,7 +8,8 @@ import { FsUndefined } from '../src/sexp.js'
 
 test('evaluating (fs-set-loglevel success', () => {
   const prev = log.getLevel()
-  const logLevels = ['trace', 'debug', 'info', 'warn', 'error']
+  // const logLevels = ['trace', 'debug', 'info', 'warn', 'error']
+  const logLevels = ['info', 'warn', 'error']
   logLevels.forEach(l => {
     expect(new FBS().eval('(fs-set-loglevel "' + l + '")')).toStrictEqual(FsUndefined.UNDEFINED)
   })
