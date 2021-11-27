@@ -131,8 +131,8 @@ export class FspDivide extends FsSExp {
     } else {
       // for the readability, use this line
       // return new FsNumber(list.at(0).value - FspPlus.proc(list.slice(1)))
-      const sumRest = FspMultiply.proc(list.slice(1))
-      return list.at(0).multiply(sumRest.multiplicativeInverse())
+      const mutipliedRest = FspMultiply.proc(list.slice(1))
+      return list.at(0).multiply(mutipliedRest.multiplicativeInverse())
     }
   }
 }
