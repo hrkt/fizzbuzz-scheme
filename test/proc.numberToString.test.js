@@ -16,5 +16,5 @@ test('evaluating (number->string 3/2) yields "3/2"', () => {
 })
 
 test('evaluating (number->string 1+2i) yields "1+2i"', () => {
-  expect(new FBS().eval('(number->string 1+2i)')).toStrictEqual(new FsString('1+2i'))
+  expect(new FBS().eval('(number->string 1+2i)')).toStrictEqual(new FsString('1.0+2.0i'))
 })

@@ -311,16 +311,28 @@ export class FsComplex {
     return Math.sqrt(this.#real * this.#real + this.#imaginary * this.#imaginary)
   }
 
-  additiveInverse () {
-    return new FsReal(-1.0 * this.#real, this.#imaginary)
-  }
-
   add (c) {
     if (canBeTreatedAsReal(c)) {
       return new FsComplex(this.#real + c.value, this.#imaginary)
-    } else if (c instanceof FsRational) {
+    } else if (c instanceof FsComplex) {
       return new FsComplex(this.#real + c.real, this.#imaginary + c.imaginary)
     }
+  }
+
+  multiply (c) {
+    if (canBeTreatedAsReal(c)) {
+      return new FsComplex(this.#real * c.value, this.#imaginary * c.value)
+    } else if (c instanceof FsComplex) {
+      // (a + bi) x (c + di)
+      // = (a * c - b * d) + (a * d + b * c)i
+      return new FsComplex(
+        this.#real * c.real - this.imaginary * c.imaginary,
+        this.#real * c.imaginary + this.imaginary * c.real)
+    }
+  }
+
+  additiveInverse () {
+    return new FsReal(-1.0 * this.#real, this.#imaginary)
   }
 
   toString () {
@@ -331,7 +343,10 @@ export class FsComplex {
         return '' + this.#real
       }
     } else {
-      return '' + this.#real + '+' + this.#imaginary + 'i'
+      const r = Math.abs(this.#real) === Math.abs(Math.floor(this.#real)) ? '' + this.#real.toFixed(1) : '' + this.#real
+      const i = Math.abs(this.#imaginary) === Math.abs(Math.floor(this.#imaginary)) ? '' + this.#imaginary.toFixed(1) : '' + this.#imaginary
+
+      return '' + r + '+' + i + 'i'
     }
   }
 }
@@ -388,6 +403,16 @@ export class FsReal {
       return new FsReal(this.value + n.value, this.isExact() && n.isExact())
     } else if (n instanceof FsComplex) {
       return n.add(this)
+    } else {
+      throw new FsNotANumberException(n)
+    }
+  }
+
+  multiply (n) {
+    if (canBeTreatedAsReal(n)) {
+      return new FsReal(this.value * n.value, this.isExact() && n.isExact())
+    } else if (n instanceof FsComplex) {
+      return n.multiply(this)
     } else {
       throw new FsNotANumberException(n)
     }
@@ -537,9 +562,19 @@ export class FsRational {
   }
 
   multiply (that) {
-    return new FsRational(
-      this.numerator * that.numerator,
-      this.denominator * that.denominator).canonicalForm()
+    if (that instanceof FsInteger) {
+      return new FsRational(
+        this.numerator * that.value,
+        this.denominator).canonicalForm()
+    } else if (that instanceof FsRational) {
+      return new FsRational(
+        this.numerator * that.denominator + this.denominator * that.numerator,
+        this.denominator * that.denominator).canonicalForm()
+    } else if (that instanceof FsReal || that instanceof FsComplex) {
+      return that.add(this)
+    } else {
+      throw new FsNotANumberException(that)
+    }
   }
 
   devide (that) {
@@ -676,6 +711,16 @@ export class FsInteger {
       throw new FsNotANumberException(n)
     }
     return this.add(n.addtiveInverse())
+  }
+
+  multiply (n) {
+    if (n instanceof FsInteger) {
+      return new FsInteger(this.#value * n.#value, this.isExact() && n.isExact())
+    } else if (canBeTreatedAsComplex(n)) {
+      return n.multiply(this)
+    } else {
+      throw new FsNotANumberException(n)
+    }
   }
 
   additiveInverse () {

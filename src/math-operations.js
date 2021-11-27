@@ -294,23 +294,10 @@ export class FspModulo extends FsSExp {
 
 export class FspMultiply extends FsSExp {
   static proc (list) {
-    if (list.length === 0) {
-      return new FsInteger(1)
-    }
-    // return new FsNumber(list.map(n => n.value).reduce((a, b) => a * b, 1))
-    let onlyIntegers = list.at(0) instanceof FsInteger
-    let buf = list.at(0).value
-
-    for (let i = 1; i < list.length; i++) {
-      buf *= list.at(i).value
-      if (!(list.at(i) instanceof FsInteger)) {
-        onlyIntegers = false
-      }
-    }
-    if (onlyIntegers) {
-      return new FsInteger(buf)
+    if (list.length === 1) {
+      return list.at(0).clone()
     } else {
-      return new FsReal(buf)
+      return list.value.reduce((a, b) => a.multiply(b), new FsInteger(1))
     }
   }
 }
