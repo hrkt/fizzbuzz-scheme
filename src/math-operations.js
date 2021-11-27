@@ -134,35 +134,6 @@ export class FspDivide extends FsSExp {
       const sumRest = FspMultiply.proc(list.slice(1))
       return list.at(0).multiply(sumRest.multiplicativeInverse())
     }
-
-    if (list.length === 1) {
-      // TODO: support rational number
-      if (list.at(0).value !== 0) {
-        if (list.at(0) instanceof FsInteger) {
-          return list.at(0).value === 1 ? new FsInteger(1) : new FsRational(1, list.at(0).value).canonicalForm()
-        } else {
-          return new FsReal(1.0 / list.at(0).value)
-        }
-      } else {
-        throw new FsException('divide by 0')
-      }
-    } else {
-      const divisor = FspMultiply.proc(list.slice(1))
-
-      if (divisor.value !== 0) {
-        if (list.at(0) instanceof FsInteger && divisor instanceof FsInteger) {
-          if (list.at(0).value % divisor.value === 0) {
-            return new FsInteger(list.at(0) % divisor.value === 0)
-          } else {
-            return new FsRational(list.at(0).value, divisor.value).canonicalForm()
-          }
-        } else {
-          return new FsReal(list.at(0).value / divisor.value)
-        }
-      } else {
-        throw new FsException('divide by 0')
-      }
-    }
   }
 }
 
