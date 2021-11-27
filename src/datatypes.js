@@ -4,6 +4,19 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsSExp } from './sexpbase.js'
 
+export function canBeTreatedAsComplex (t) {
+  return t !== null && (t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal || t instanceof FsComplex)
+}
+
+export function canBeTreatedAsReal (t) {
+  return t !== null && (t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal)
+}
+
+export class FsNotANumberException extends FsException {
+  constructor (n) {
+    super('number is expected but got ' + n)
+  }
+}
 export class FsBoolean extends FsSExp {
     static TRUE_ = Object.freeze(new FsBoolean(true))
     static FALSE_ = Object.freeze(new FsBoolean(false))
@@ -260,6 +273,10 @@ export class FsComplex {
     this.#imaginary = imaginary
   }
 
+  clone () {
+    return new FsComplex(this.#real, this.#imaginary)
+  }
+
   static isStringRep (str) {
     if (!str || str.match(FsComplex.#regex) === null) {
       return false
@@ -281,7 +298,7 @@ export class FsComplex {
 
   static fromString (str) {
     const [a, b] = str.split('+')
-    if (parseFloat(b) === 0) {
+    if (b === undefined || parseFloat(b) === 0) {
       return new FsReal(a)
     } else {
       return new FsComplex(parseFloat(a), parseFloat(b.replace('i', '')))
@@ -290,6 +307,14 @@ export class FsComplex {
 
   abs () {
     return Math.sqrt(this.#real * this.#real + this.#imaginary * this.#imaginary)
+  }
+
+  add (c) {
+    if (canBeTreatedAsReal(c)) {
+      return new FsComplex(this.#real + c.value, this.#imaginary)
+    } else if (c instanceof FsRational) {
+      return new FsComplex(this.#real + c.real, this.#imaginary + c.imaginary)
+    }
   }
 
   toString () {
@@ -320,6 +345,10 @@ export class FsReal {
     this.#exact = exact
   }
 
+  clone () {
+    return new FsReal(this.#value)
+  }
+
   static fromString (str) {
     if (str.startsWith('#e')) {
       return new FsReal(parseFloat(str.substr(2)), true)
@@ -344,6 +373,16 @@ export class FsReal {
 
   get value () {
     return this.#value
+  }
+
+  add (n) {
+    if (canBeTreatedAsReal(n)) {
+      return new FsReal(this.value + n.value, this.isExact() && n.isExact())
+    } else if (n instanceof FsComplex) {
+      return n.add(this)
+    } else {
+      throw new FsNotANumberException(n)
+    }
   }
 
   toString () {
@@ -401,6 +440,10 @@ export class FsRational {
     }
   }
 
+  clone () {
+    return new FsRational(this.#numerator, this.#denominator)
+  }
+
   static fromString (str) {
     const [a, b] = str.split('/')
     return new FsRational(a, b).canonicalForm()
@@ -448,9 +491,21 @@ export class FsRational {
   }
 
   add (that) {
-    return new FsRational(
-      this.numerator * that.denominator + this.denominator * that.numerator,
-      this.denominator * that.denominator).canonicalForm()
+    if (that instanceof FsInteger) {
+      return new FsRational(
+        this.numerator + this.denominator * that.value,
+        this.denominator).canonicalForm()
+    } else if (that instanceof FsRational) {
+      return new FsRational(
+        this.numerator * that.denominator + this.denominator * that.numerator,
+        this.denominator * that.denominator).canonicalForm()
+    } else if (that instanceof FsReal) {
+      return that.add(this)
+    } else if (that instanceof FsComplex) {
+      return that.add(this)
+    } else {
+      throw new FsNotANumberException(that)
+    }
   }
 
   subtract (that) {
@@ -532,6 +587,10 @@ export class FsInteger {
     }
   }
 
+  clone () {
+    return new FsInteger(this.#value)
+  }
+
   get value () {
     return this.#value
   }
@@ -575,6 +634,16 @@ export class FsInteger {
       }
     } else {
       return new FsInteger(str)
+    }
+  }
+
+  add (n) {
+    if (n instanceof FsInteger) {
+      return new FsInteger(this.#value + n.#value, this.isExact() && n.isExact())
+    } else if (canBeTreatedAsComplex(n)) {
+      return n.add(this)
+    } else {
+      throw new FsNotANumberException(n)
     }
   }
 

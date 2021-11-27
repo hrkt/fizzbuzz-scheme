@@ -1,5 +1,5 @@
 import { FsException } from './common.js'
-import { FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, FsString, gcd, lcm } from './datatypes.js'
+import { canBeTreatedAsReal, FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, FsString, gcd, lcm } from './datatypes.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 
@@ -38,10 +38,6 @@ function checkArgRepresentsAnInteger (n) {
   if (!(n instanceof FsInteger || (n instanceof FsReal && n.isInteger()))) {
     throw new FsException('arg must be an integer ' + n)
   }
-}
-
-function canBeTreatedAsReal (t) {
-  return t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal
 }
 
 /**
@@ -388,26 +384,19 @@ export class FspPlus extends FsSExp {
     //
     if (list.length === 2) {
       if (list.at(0) instanceof FsInteger && list.at(1) instanceof FsInteger) {
-        return new FsInteger(list.at(0).value + list.at(1).value)
+        // return list.at(0).add(list.at(1))
+        return new FsInteger(list.at(0).value + list.at(1).value) // special case for fibonacci
+      } else if (canBeTreatedAsReal(list.at(0)) && canBeTreatedAsReal(list.at(1))) {
+        return list.at(0).add(list.at(1))
       } else {
-        return new FsReal(list.at(0).value + list.at(1).value)
+        const c1 = FsComplex.fromString(list.at(0).toString())
+        const c2 = FsComplex.fromString(list.at(1).toString())
+        return c1.add(c2)
       }
     } else if (list.length === 1) {
-      return new FsReal(list.at(0).value)
+      return list.at(0).clone()
     } else {
-      let onlyIntegers = true
-      let buf = 0
-      for (let i = 0; i < list.length; i++) {
-        buf += list.at(i).value
-        if (!(list.at(i) instanceof FsInteger)) {
-          onlyIntegers = false
-        }
-      }
-      if (onlyIntegers) {
-        return new FsInteger(buf)
-      } else {
-        return new FsReal(buf)
-      }
+      return list.value.reduce((a, b) => a.add(b), new FsInteger(0))
     }
   }
 }
@@ -471,6 +460,24 @@ export class FspRound extends FsSExp {
     return realParamWithIntReturnUnaryOperation(Math.round, t)
   }
 }
+export class FspSin extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    if (canBeTreatedAsReal(list.at(0))) {
+      return realParameterUnaryOperation(Math.sin, list.at(0))
+    // } else if (list.at(0) instanceof FsComplex) {
+    //   const pz = list.at(0)
+    //   const pr = pz.real
+    //   const pi = pz.imaginary
+    //   const c_iz = new FsComplex(, )
+    //   const eiz = Math.exp()
+    //   return new FsComplex(Math.log(pz.abs()), Math.atan(pi / pr))
+    } else {
+      throw new FsException('parameter must be a number but got ' + list.at(0))
+    }
+  }
+}
+
 export class FspSqrt extends FsSExp {
   static proc (list) {
     return Math.sqrt(list.value)
