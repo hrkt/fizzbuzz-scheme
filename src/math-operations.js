@@ -1,5 +1,5 @@
 import { FsException } from './common.js'
-import { FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, FsString, gcd, lcm } from './datatypes.js'
+import { canBeTreatedAsComplex, canBeTreatedAsReal, FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, FsString, gcd, lcm } from './datatypes.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 
@@ -38,10 +38,6 @@ function checkArgRepresentsAnInteger (n) {
   if (!(n instanceof FsInteger || (n instanceof FsReal && n.isInteger()))) {
     throw new FsException('arg must be an integer ' + n)
   }
-}
-
-function canBeTreatedAsReal (t) {
-  return t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal
 }
 
 /**
@@ -129,32 +125,14 @@ export class FspDenominator extends FsSExp {
 export class FspDivide extends FsSExp {
   static proc (list) {
     if (list.length === 1) {
-      // TODO: support rational number
-      if (list.at(0).value !== 0) {
-        if (list.at(0) instanceof FsInteger) {
-          return list.at(0).value === 1 ? new FsInteger(1) : new FsRational(1, list.at(0).value).canonicalForm()
-        } else {
-          return new FsReal(1.0 / list.at(0).value)
-        }
-      } else {
-        throw new FsException('divide by 0')
+      if (canBeTreatedAsComplex(list.at(0))) {
+        return list.at(0).multiplicativeInverse()
       }
     } else {
-      const divisor = FspMultiply.proc(list.slice(1))
-
-      if (divisor.value !== 0) {
-        if (list.at(0) instanceof FsInteger && divisor instanceof FsInteger) {
-          if (list.at(0).value % divisor.value === 0) {
-            return new FsInteger(list.at(0) % divisor.value === 0)
-          } else {
-            return new FsRational(list.at(0).value, divisor.value).canonicalForm()
-          }
-        } else {
-          return new FsReal(list.at(0).value / divisor.value)
-        }
-      } else {
-        throw new FsException('divide by 0')
-      }
+      // for the readability, use this line
+      // return new FsNumber(list.at(0).value - FspPlus.proc(list.slice(1)))
+      const sumRest = FspMultiply.proc(list.slice(1))
+      return list.at(0).multiply(sumRest.multiplicativeInverse())
     }
   }
 }
@@ -254,35 +232,19 @@ export class FspMinus extends FsSExp {
   static proc (list) {
     if (list.length === 2) {
       if (list.at(0) instanceof FsInteger && list.at(1) instanceof FsInteger) {
-        return new FsInteger(list.at(0).value - list.at(1).value)
+        return new FsInteger(list.at(0).value - list.at(1).value) // for performance
       } else {
-        return new FsReal(list.at(0).value - list.at(1).value)
+        return list.at(0).add(list.at(1).additiveInverse())
       }
     } else if (list.length === 1) {
-      if (list.at(0) instanceof FsInteger) {
-        return new FsInteger(-1 * (list.at(0).value))
-      } else {
-        return new FsReal(-1 * (list.at(0).value))
+      if (canBeTreatedAsComplex(list.at(0))) {
+        return list.at(0).additiveInverse()
       }
     } else {
       // for the readability, use this line
       // return new FsNumber(list.at(0).value - FspPlus.proc(list.slice(1)))
-
-      // for the performance, use lines below. it may be bit faster.
-      //
-      let onlyIntegers = true
-      let buf = list.at(0).value
-      for (let i = 1; i < list.length; i++) {
-        buf -= list.at(i)
-        if (!(list.at(i) instanceof FsInteger)) {
-          onlyIntegers = false
-        }
-      }
-      if (onlyIntegers) {
-        return new FsInteger(buf)
-      } else {
-        return new FsReal(buf)
-      }
+      const sumRest = FspPlus.proc(list.slice(1))
+      return list.at(0).add(sumRest.additiveInverse())
     }
   }
 }
@@ -314,23 +276,10 @@ export class FspModulo extends FsSExp {
 
 export class FspMultiply extends FsSExp {
   static proc (list) {
-    if (list.length === 0) {
-      return new FsInteger(1)
-    }
-    // return new FsNumber(list.map(n => n.value).reduce((a, b) => a * b, 1))
-    let onlyIntegers = list.at(0) instanceof FsInteger
-    let buf = list.at(0).value
-
-    for (let i = 1; i < list.length; i++) {
-      buf *= list.at(i).value
-      if (!(list.at(i) instanceof FsInteger)) {
-        onlyIntegers = false
-      }
-    }
-    if (onlyIntegers) {
-      return new FsInteger(buf)
+    if (list.length === 1) {
+      return list.at(0).clone()
     } else {
-      return new FsReal(buf)
+      return list.value.reduce((a, b) => a.multiply(b), new FsInteger(1))
     }
   }
 }
@@ -388,26 +337,19 @@ export class FspPlus extends FsSExp {
     //
     if (list.length === 2) {
       if (list.at(0) instanceof FsInteger && list.at(1) instanceof FsInteger) {
-        return new FsInteger(list.at(0).value + list.at(1).value)
+        // return list.at(0).add(list.at(1))
+        return new FsInteger(list.at(0).value + list.at(1).value) // special case for fibonacci
+      } else if (canBeTreatedAsReal(list.at(0)) && canBeTreatedAsReal(list.at(1))) {
+        return list.at(0).add(list.at(1))
       } else {
-        return new FsReal(list.at(0).value + list.at(1).value)
+        const c1 = FsComplex.fromString(list.at(0).toString())
+        const c2 = FsComplex.fromString(list.at(1).toString())
+        return c1.add(c2)
       }
     } else if (list.length === 1) {
-      return new FsReal(list.at(0).value)
+      return list.at(0).clone()
     } else {
-      let onlyIntegers = true
-      let buf = 0
-      for (let i = 0; i < list.length; i++) {
-        buf += list.at(i).value
-        if (!(list.at(i) instanceof FsInteger)) {
-          onlyIntegers = false
-        }
-      }
-      if (onlyIntegers) {
-        return new FsInteger(buf)
-      } else {
-        return new FsReal(buf)
-      }
+      return list.value.reduce((a, b) => a.add(b), new FsInteger(0))
     }
   }
 }
@@ -471,6 +413,24 @@ export class FspRound extends FsSExp {
     return realParamWithIntReturnUnaryOperation(Math.round, t)
   }
 }
+export class FspSin extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    if (canBeTreatedAsReal(list.at(0))) {
+      return realParameterUnaryOperation(Math.sin, list.at(0))
+    // } else if (list.at(0) instanceof FsComplex) {
+    //   const pz = list.at(0)
+    //   const pr = pz.real
+    //   const pi = pz.imaginary
+    //   const c_iz = new FsComplex(, )
+    //   const eiz = Math.exp()
+    //   return new FsComplex(Math.log(pz.abs()), Math.atan(pi / pr))
+    } else {
+      throw new FsException('parameter must be a number but got ' + list.at(0))
+    }
+  }
+}
+
 export class FspSqrt extends FsSExp {
   static proc (list) {
     return Math.sqrt(list.value)
