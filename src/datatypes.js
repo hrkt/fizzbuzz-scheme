@@ -305,8 +305,14 @@ export class FsComplex {
     }
   }
 
+  // math +-*/
+
   abs () {
     return Math.sqrt(this.#real * this.#real + this.#imaginary * this.#imaginary)
+  }
+
+  additiveInverse () {
+    return new FsReal(-1.0 * this.#real, this.#imaginary)
   }
 
   add (c) {
@@ -375,6 +381,8 @@ export class FsReal {
     return this.#value
   }
 
+  // math +-*/
+
   add (n) {
     if (canBeTreatedAsReal(n)) {
       return new FsReal(this.value + n.value, this.isExact() && n.isExact())
@@ -383,6 +391,10 @@ export class FsReal {
     } else {
       throw new FsNotANumberException(n)
     }
+  }
+
+  additiveInverse () {
+    return new FsReal(-1.0 * this.#value, this.#exact)
   }
 
   toString () {
@@ -490,6 +502,8 @@ export class FsRational {
     return this.numerator * that.denominator > this.denominator * that.numerator
   }
 
+  // math +-*/
+
   add (that) {
     if (that instanceof FsInteger) {
       return new FsRational(
@@ -499,9 +513,7 @@ export class FsRational {
       return new FsRational(
         this.numerator * that.denominator + this.denominator * that.numerator,
         this.denominator * that.denominator).canonicalForm()
-    } else if (that instanceof FsReal) {
-      return that.add(this)
-    } else if (that instanceof FsComplex) {
+    } else if (that instanceof FsReal || that instanceof FsComplex) {
       return that.add(this)
     } else {
       throw new FsNotANumberException(that)
@@ -509,9 +521,19 @@ export class FsRational {
   }
 
   subtract (that) {
-    return new FsRational(
-      this.numerator * that.denominator - this.denominator * that.numerator,
-      this.denominator * that.denominator).canonicalForm()
+    if (that instanceof FsInteger) {
+      return new FsRational(
+        this.numerator - this.denominator * that.value,
+        this.denominator).canonicalForm()
+    } else if (that instanceof FsRational) {
+      return new FsRational(
+        this.numerator * that.denominator - this.denominator * that.numerator,
+        this.denominator * that.denominator).canonicalForm()
+    } else if (that instanceof FsReal || that instanceof FsComplex) {
+      return that.subtract(this)
+    } else {
+      throw new FsNotANumberException(that)
+    }
   }
 
   multiply (that) {
@@ -637,6 +659,8 @@ export class FsInteger {
     }
   }
 
+  // math +-*/
+
   add (n) {
     if (n instanceof FsInteger) {
       return new FsInteger(this.#value + n.#value, this.isExact() && n.isExact())
@@ -645,6 +669,17 @@ export class FsInteger {
     } else {
       throw new FsNotANumberException(n)
     }
+  }
+
+  subtract (n) {
+    if (!canBeTreatedAsComplex(n)) {
+      throw new FsNotANumberException(n)
+    }
+    return this.add(n.addtiveInverse())
+  }
+
+  additiveInverse () {
+    return new FsInteger(-1 * this.#value, this.#exact)
   }
 
   toString () {

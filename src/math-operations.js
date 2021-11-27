@@ -1,5 +1,5 @@
 import { FsException } from './common.js'
-import { canBeTreatedAsReal, FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, FsString, gcd, lcm } from './datatypes.js'
+import { canBeTreatedAsComplex, canBeTreatedAsReal, FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, FsString, gcd, lcm } from './datatypes.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 
@@ -250,35 +250,19 @@ export class FspMinus extends FsSExp {
   static proc (list) {
     if (list.length === 2) {
       if (list.at(0) instanceof FsInteger && list.at(1) instanceof FsInteger) {
-        return new FsInteger(list.at(0).value - list.at(1).value)
+        return new FsInteger(list.at(0).value - list.at(1).value) // for performance
       } else {
-        return new FsReal(list.at(0).value - list.at(1).value)
+        return list.at(0).add(list.at(1).additiveInverse())
       }
     } else if (list.length === 1) {
-      if (list.at(0) instanceof FsInteger) {
-        return new FsInteger(-1 * (list.at(0).value))
-      } else {
-        return new FsReal(-1 * (list.at(0).value))
+      if (canBeTreatedAsComplex(list.at(0))) {
+        return list.at(0).additiveInverse()
       }
     } else {
       // for the readability, use this line
       // return new FsNumber(list.at(0).value - FspPlus.proc(list.slice(1)))
-
-      // for the performance, use lines below. it may be bit faster.
-      //
-      let onlyIntegers = true
-      let buf = list.at(0).value
-      for (let i = 1; i < list.length; i++) {
-        buf -= list.at(i)
-        if (!(list.at(i) instanceof FsInteger)) {
-          onlyIntegers = false
-        }
-      }
-      if (onlyIntegers) {
-        return new FsInteger(buf)
-      } else {
-        return new FsReal(buf)
-      }
+      const sumRest = FspPlus.proc(list.slice(1))
+      return list.at(0).add(sumRest.additiveInverse())
     }
   }
 }

@@ -59,3 +59,11 @@ test('evaluating (+ 1 1+1i) yields 2+1i', () => {
 test('evaluating (+ 1 2.0 3) yields 6.0', () => {
   expect(new FBS().eval('(+ 1 2.0 3)')).toStrictEqual(new FsReal(6.0))
 })
+
+test('evaluating (+ 1 2.5 3/2) yields 5.0', () => {
+  expect(new FBS().eval('(+ 1 2.0 3/2)')).toStrictEqual(new FsReal(5.0))
+})
+
+test('evaluating (+ 1 2.5 3/2 1+1i) yields 6.0+1.0i', () => {
+  expect(new FBS().eval('(+ 1 2.5 3/2 1+1i)')).toStrictEqual(new FsComplex(6.0, 1.0))
+})
