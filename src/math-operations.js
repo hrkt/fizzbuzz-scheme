@@ -125,6 +125,17 @@ export class FspDenominator extends FsSExp {
 export class FspDivide extends FsSExp {
   static proc (list) {
     if (list.length === 1) {
+      if (canBeTreatedAsComplex(list.at(0))) {
+        return list.at(0).multiplicativeInverse()
+      }
+    } else {
+      // for the readability, use this line
+      // return new FsNumber(list.at(0).value - FspPlus.proc(list.slice(1)))
+      const sumRest = FspMultiply.proc(list.slice(1))
+      return list.at(0).multiply(sumRest.multiplicativeInverse())
+    }
+
+    if (list.length === 1) {
       // TODO: support rational number
       if (list.at(0).value !== 0) {
         if (list.at(0) instanceof FsInteger) {

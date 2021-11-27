@@ -332,7 +332,12 @@ export class FsComplex {
   }
 
   additiveInverse () {
-    return new FsReal(-1.0 * this.#real, this.#imaginary)
+    return new FsComplex(-1.0 * this.#real, this.#imaginary)
+  }
+
+  multiplicativeInverse () {
+    const zz = this.#real * this.#real + this.#imaginary + this.#imaginary
+    return new FsComplex(this.#real / zz, -1.0 * this.#imaginary / zz, false)
   }
 
   toString () {
@@ -420,6 +425,10 @@ export class FsReal {
 
   additiveInverse () {
     return new FsReal(-1.0 * this.#value, this.#exact)
+  }
+
+  multiplicativeInverse () {
+    return new FsReal(1.0 / this.#value, false)
   }
 
   toString () {
@@ -723,8 +732,28 @@ export class FsInteger {
     }
   }
 
+  devide (n) {
+    if (n === 0) {
+      throw new FsException('devide by 0')
+    }
+    if (n instanceof FsInteger) {
+      return new FsRational(this.#value, n.#value, this.isExact() && n.isExact())
+    } else if (canBeTreatedAsComplex(n)) {
+      return this.multiply(n.multiplicativeInverse())
+    }
+  }
+
   additiveInverse () {
     return new FsInteger(-1 * this.#value, this.#exact)
+  }
+
+  multiplicativeInverse () {
+    if (this.#value === 0) {
+      throw new FsException('devide by 0')
+    } else if (this.#value === 1) {
+      return new FsInteger(1)
+    }
+    return new FsRational(1, this.value, this.#exact)
   }
 
   toString () {
