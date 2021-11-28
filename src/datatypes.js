@@ -297,11 +297,14 @@ export class FsComplex {
   }
 
   static fromString (str) {
-    const [a, b] = str.split('+')
+    const hasPositiveImaginaryPart = str.indexOf('+') > 0
+    const [a, b] = hasPositiveImaginaryPart ? str.split('+') : str.split('-')
     if (b === undefined || parseFloat(b) === 0) {
       return new FsReal(a)
     } else {
-      return new FsComplex(parseFloat(a), parseFloat(b.replace('i', '')))
+      const r = parseFloat(a)
+      const im = parseFloat(b.replace('i', ''))
+      return hasPositiveImaginaryPart ? new FsComplex(r, im) : new FsComplex(r, -1.0 * im)
     }
   }
 
@@ -350,8 +353,8 @@ export class FsComplex {
     } else {
       const r = Math.abs(this.#real) === Math.abs(Math.floor(this.#real)) ? '' + this.#real.toFixed(1) : '' + this.#real
       const i = Math.abs(this.#imaginary) === Math.abs(Math.floor(this.#imaginary)) ? '' + this.#imaginary.toFixed(1) : '' + this.#imaginary
-
-      return '' + r + '+' + i + 'i'
+      const sign = i >= 0 ? '+' : ''
+      return '' + r + sign + i + 'i'
     }
   }
 }

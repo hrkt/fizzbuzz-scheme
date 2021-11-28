@@ -1,5 +1,18 @@
 import { FsException } from './common.js'
-import { canBeTreatedAsComplex, canBeTreatedAsReal, FsBoolean, FsComplex, FsInteger, FsNumber, FsRational, FsReal, FsString, gcd, lcm } from './datatypes.js'
+import {
+  canBeTreatedAsComplex,
+  canBeTreatedAsReal,
+  FsBoolean,
+  FsComplex,
+  FsInteger,
+  FsNotANumberException,
+  FsNumber,
+  FsRational,
+  FsReal,
+  FsString,
+  gcd,
+  lcm
+} from './datatypes.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
 
@@ -72,12 +85,16 @@ function realParameterBinaryOperation (func, a, b) {
     return new FsInteger(func(a.value, b.value))
   } else {
     // TODO: remove FsNumber after adding datatype oeprations.
-    if (!(a instanceof FsReal || a instanceof FsInteger || a instanceof FsNumber)) {
-      throw new FsException('arg must be an integer but got ' + a)
+    if (
+      !(a instanceof FsReal || a instanceof FsInteger || a instanceof FsNumber)
+    ) {
+      throw new FsNotANumberException(a)
     }
     // TODO: remove FsNumber after adding datatype oeprations.
-    if (!(b instanceof FsReal || b instanceof FsInteger || b instanceof FsNumber)) {
-      throw new FsException('arg must be an integer but got ' + b)
+    if (
+      !(b instanceof FsReal || b instanceof FsInteger || b instanceof FsNumber)
+    ) {
+      throw new FsNotANumberException(b)
     }
     return new FsReal(func(a.value, b.value))
   }
@@ -90,22 +107,58 @@ export class FslpAbs extends FsSExp {
     if (list.at(0) instanceof FsInteger) {
       return new FsInteger(Math.abs(list.at(0).value))
     } else if (list.at(0) instanceof FsRational) {
-      return new FsRational(Math.abs(list.at(0).numerator), Math.abs(list.at(0).denominator))
+      return new FsRational(
+        Math.abs(list.at(0).numerator),
+        Math.abs(list.at(0).denominator)
+      )
     } else if (list.at(0) instanceof FsReal) {
       return new FsReal(Math.abs(list.at(0).value))
     } else if (list.at(0) instanceof FsComplex) {
       return new FsReal(list.at(0).abs())
     } else {
-      throw new FsException('arg must be number')
+      throw new FsNotANumberException(list.at(0))
     }
   }
 }
 
+export class FspAtan extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const p = list.at(0)
+    if (canBeTreatedAsReal(p)) {
+      return new FsReal(Math.atan(p.value))
+      // } else if (p instanceof FsComplex) {
+
+      //   return new FsComplex(e1 * Math.cos(p.imaginary), e1 * Math.sin(p.imaginary))
+    } else {
+      throw new FsNotANumberException(p)
+    }
+  }
+}
 export class FspCeiling extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
     const t = list.at(0)
     return realParamWithIntReturnUnaryOperation(Math.ceil, t)
+  }
+}
+
+export class FspCos extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    if (canBeTreatedAsReal(list.at(0))) {
+      return realParameterUnaryOperation(Math.cos, list.at(0))
+    } else if (list.at(0) instanceof FsComplex) {
+      const pz = list.at(0)
+      const pr = pz.real
+      const pi = pz.imaginary
+      return new FsComplex(
+        Math.cos(pr) * Math.cosh(pr),
+        -1 * Math.sin(pi) * Math.sinh(pi)
+      )
+    } else {
+      throw new FsNotANumberException(list.at(0))
+    }
   }
 }
 
@@ -131,8 +184,8 @@ export class FspDivide extends FsSExp {
     } else {
       // for the readability, use this line
       // return new FsNumber(list.at(0).value - FspPlus.proc(list.slice(1)))
-      const sumRest = FspMultiply.proc(list.slice(1))
-      return list.at(0).multiply(sumRest.multiplicativeInverse())
+      const mutipliedRest = FspMultiply.proc(list.slice(1))
+      return list.at(0).multiply(mutipliedRest.multiplicativeInverse())
     }
   }
 }
@@ -157,14 +210,21 @@ export class FspExp extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
     const p = list.at(0)
-    if (p instanceof FsInteger || p instanceof FsRational || p instanceof FsReal) {
+    if (
+      p instanceof FsInteger ||
+      p instanceof FsRational ||
+      p instanceof FsReal
+    ) {
       return new FsReal(Math.exp(p.value))
     } else if (p instanceof FsComplex) {
       // e ^ (a+bi) = e^a * (cos(b) + sin(b)i)
       const e1 = Math.exp(p.real)
-      return new FsComplex(e1 * Math.cos(p.imaginary), e1 * Math.sin(p.imaginary))
+      return new FsComplex(
+        e1 * Math.cos(p.imaginary),
+        e1 * Math.sin(p.imaginary)
+      )
     } else {
-      throw new FsException('a number required but got ' + p)
+      throw new FsNotANumberException(p)
     }
   }
 }
@@ -223,7 +283,7 @@ export class FspLog extends FsSExp {
       const pi = pz.imaginary
       return new FsComplex(Math.log(pz.abs()), Math.atan(pi / pr))
     } else {
-      throw new FsException('parameter must be a number but got ' + list.at(0))
+      throw new FsNotANumberException(list.at(0))
     }
   }
 }
@@ -306,7 +366,14 @@ export class FspNumberToString extends FsSExp {
   static proc (list) {
     const radix = list.length === 2 ? list.at(1).value : 10
     const t = list.at(0)
-    if (!(t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal || t instanceof FsComplex)) {
+    if (
+      !(
+        t instanceof FsInteger ||
+        t instanceof FsRational ||
+        t instanceof FsReal ||
+        t instanceof FsComplex
+      )
+    ) {
       throw new FsException('parameter must be a number but got ' + list.at(0))
     }
     if (radix === 10) {
@@ -339,7 +406,10 @@ export class FspPlus extends FsSExp {
       if (list.at(0) instanceof FsInteger && list.at(1) instanceof FsInteger) {
         // return list.at(0).add(list.at(1))
         return new FsInteger(list.at(0).value + list.at(1).value) // special case for fibonacci
-      } else if (canBeTreatedAsReal(list.at(0)) && canBeTreatedAsReal(list.at(1))) {
+      } else if (
+        canBeTreatedAsReal(list.at(0)) &&
+        canBeTreatedAsReal(list.at(1))
+      ) {
         return list.at(0).add(list.at(1))
       } else {
         const c1 = FsComplex.fromString(list.at(0).toString())
@@ -418,25 +488,66 @@ export class FspSin extends FsSExp {
     ensureListContainsOne(list)
     if (canBeTreatedAsReal(list.at(0))) {
       return realParameterUnaryOperation(Math.sin, list.at(0))
-    // } else if (list.at(0) instanceof FsComplex) {
-    //   const pz = list.at(0)
-    //   const pr = pz.real
-    //   const pi = pz.imaginary
-    //   const c_iz = new FsComplex(, )
-    //   const eiz = Math.exp()
-    //   return new FsComplex(Math.log(pz.abs()), Math.atan(pi / pr))
+    } else if (list.at(0) instanceof FsComplex) {
+      const pz = list.at(0)
+      const pr = pz.real
+      const pi = pz.imaginary
+      return new FsComplex(
+        Math.sin(pr) * Math.cosh(pi),
+        Math.cos(pr) * Math.sinh(pi)
+      )
     } else {
       throw new FsException('parameter must be a number but got ' + list.at(0))
     }
   }
 }
 
+// returns the positive part of Square Root
 export class FspSqrt extends FsSExp {
   static proc (list) {
-    return Math.sqrt(list.value)
+    ensureListContainsOne(list)
+    const p = list.at(0)
+    if (p instanceof FsInteger) {
+      const r = Math.sqrt(p.value)
+      if (r * r === p.value) {
+        return new FsInteger(r)
+      } else {
+        return new FsReal(r)
+      }
+    } else if (canBeTreatedAsReal(p)) {
+      return new FsReal(Math.sqrt(p.value))
+    } else if (p instanceof FsComplex) {
+      const a = p.real
+      const b = p.imaginary
+      const r = Math.sqrt((a + Math.sqrt((a * a + b * b))) / 2)
+      const im = Math.sqrt((-1.0 * a + Math.sqrt((a * a + b * b))) / 2)
+      if (b >= 0) {
+        return new FsComplex(r, im)
+      } else {
+        return new FsComplex(r, -1.0 * im)
+      }
+    } else {
+      throw new FsNotANumberException(p)
+    }
   }
 }
 
+export class FspTan extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    if (canBeTreatedAsReal(list.at(0))) {
+      return realParameterUnaryOperation(Math.tan, list.at(0))
+    } else if (list.at(0) instanceof FsComplex) {
+      const pz = list.at(0)
+      const pr = pz.real
+      const pi = pz.imaginary
+      const div = Math.cos(2 * pr) + Math.cosh(2 * pi)
+      return new FsComplex(Math.sin(2.0 * pr) / div, Math.sinh(2.0 * pi) / div)
+    } else {
+      throw new FsNotANumberException(list.at(0))
+    }
+  }
+}
 export class FspTruncate extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
@@ -449,25 +560,33 @@ export class FspTruncate extends FsSExp {
 
 export class FspLt extends FsSExp {
   static proc (list) {
-    return list.at(0).value < list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0).value < list.at(1).value
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
   }
 }
 
 export class FspLte extends FsSExp {
   static proc (list) {
-    return list.at(0).value <= list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0).value <= list.at(1).value
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
   }
 }
 
 export class FspGt extends FsSExp {
   static proc (list) {
-    return list.at(0).value > list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0).value > list.at(1).value
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
   }
 }
 
 export class FspGte extends FsSExp {
   static proc (list) {
-    return list.at(0).value >= list.at(1).value ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0).value >= list.at(1).value
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
   }
 }
 
@@ -475,8 +594,13 @@ export class FspGte extends FsSExp {
 
 export class FspMax extends FsSExp {
   static proc (list) {
-    const target = list.value.map(fsn => fsn.value)
-    if (list.length === list.value.filter(l => { return l instanceof FsInteger }).length) {
+    const target = list.value.map((fsn) => fsn.value)
+    if (
+      list.length ===
+      list.value.filter((l) => {
+        return l instanceof FsInteger
+      }).length
+    ) {
       return new FsInteger(Math.max(...target))
     } else {
       return new FsReal(Math.max(...target))
@@ -486,8 +610,13 @@ export class FspMax extends FsSExp {
 
 export class FspMin extends FsSExp {
   static proc (list) {
-    const target = list.value.map(fsn => fsn.value)
-    if (list.length === list.value.filter(l => { return l instanceof FsInteger }).length) {
+    const target = list.value.map((fsn) => fsn.value)
+    if (
+      list.length ===
+      list.value.filter((l) => {
+        return l instanceof FsInteger
+      }).length
+    ) {
       return new FsInteger(Math.min(...target))
     } else {
       return new FsReal(Math.min(...target))
