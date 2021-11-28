@@ -506,20 +506,13 @@ export class FspNumberToString extends FsSExp {
   static proc (list) {
     const radix = list.length === 2 ? list.at(1).value : 10
     const t = list.at(0)
-    if (
-      !(
-        t instanceof FsInteger ||
-        t instanceof FsRational ||
-        t instanceof FsReal ||
-        t instanceof FsComplex
-      )
-    ) {
-      throw new FsException('parameter must be a number but got ' + list.at(0))
+    if (!canBeTreatedAsComplex(t)) {
+      throw new FsNotANumberException(t)
     }
-    if (radix === 10) {
-      return new FsString(list.at(0).toString())
+    if (radix !== 10 && t instanceof FsInteger) {
+      return new FsString(list.at(0).toStringWithRadix(radix))
     } else {
-      throw new Error('not implemented yet.')
+      return new FsString(list.at(0).toString())
     }
   }
 }
@@ -673,6 +666,31 @@ export class FspSqrt extends FsSExp {
       return p.sqrt()
     } else {
       throw new FsNotANumberException(p)
+    }
+  }
+}
+
+export class FspStringToNumber extends FsSExp {
+  static proc (list) {
+    const radix = list.length === 2 ? list.at(1).value : 10
+    const t = list.at(0)
+    if (canBeTreatedAsComplex(t)) {
+      throw new FsNotANumberException(t)
+    }
+    if (radix === 10) {
+      if (FsInteger.isStringRep(t.value)) {
+        return FsInteger.fromString(t.value)
+      } else if (FsRational.isStringRep(t.value)) {
+        return FsRational.fromString(t.value)
+      } else if (FsReal.isStringRep(t.value)) {
+        return FsReal.fromString(t.value)
+      } else {
+        return FsComplex.fromString(t.value)
+      }
+    } else if (FsInteger.isStringRep(t.value)) {
+      return new FsInteger(parseInt(t.value, radix))
+    } else {
+      return FsBoolean.FALSE
     }
   }
 }

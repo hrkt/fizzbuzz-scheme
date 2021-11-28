@@ -35,24 +35,21 @@ test('FsInteger.isStrRep ', () => {
 })
 
 test('FsRational.isStrRep ', () => {
-  const intReps = ['1/2', '-3/4']
-  intReps.forEach(r => {
-    expect(FsRational.isStringRep(r)).toBe(true)
-  })
+  expect(FsRational.isStringRep('1/2')).toBe(true)
+  expect(FsRational.isStringRep('-3/4')).toBe(true)
 })
 
 test('FsReal.isStrRep ', () => {
-  const realReps = ['0.1', '-1.2', '1', '0']
-  realReps.forEach(r => {
-    expect(FsReal.isStringRep(r)).toBe(true)
-  })
+  expect(FsReal.isStringRep('0.1')).toBe(true)
+  expect(FsReal.isStringRep('-1.2')).toBe(true)
+  expect(FsReal.isStringRep('1')).toBe(true)
+  expect(FsReal.isStringRep('0')).toBe(true)
 })
 
 test('FsComplex.isStrRep ', () => {
-  const intReps = ['1+2i', '-3-4i', '0+0i']
-  intReps.forEach(r => {
-    expect(FsComplex.isStringRep(r)).toBe(true)
-  })
+  expect(FsComplex.isStringRep('1+2i')).toBe(true)
+  expect(FsComplex.isStringRep('-3-4i')).toBe(true)
+  expect(FsComplex.isStringRep('0+0i')).toBe(true)
 })
 
 test('evaluating (integer? 123) yields #t', () => {

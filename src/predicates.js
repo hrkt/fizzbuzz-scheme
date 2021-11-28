@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsBoolean, FsChar, FsInteger, FsList, FsNumber, FsPair, FsVector } from './datatypes.js'
+import { canBeTreatedAsComplex, FsBoolean, FsChar, FsInteger, FsList, FsNumber, FsPair, FsVector } from './datatypes.js'
 import { FssDefinedProcedure } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsTwo } from './sexputils.js'
@@ -107,6 +107,9 @@ export class FsPredicateEqv extends FsSExp {
       return FsBoolean.TRUE
     } else if (lhs instanceof FsSymbol && rhs instanceof FsSymbol &&
       lhs.value === rhs.value) {
+      return FsBoolean.TRUE
+    } else if (canBeTreatedAsComplex(lhs) && canBeTreatedAsComplex(rhs) &&
+      lhs.equals(rhs)) {
       return FsBoolean.TRUE
     } else {
       return FsBoolean.FALSE

@@ -318,6 +318,8 @@ test('🚧6.1_3', () => {
 //   expect(new FBS().eval('').toString()).toBe('')
 // })
 
+// 6.2.5
+// all cleared 😊
 test('✅6.2.5_1', () => {
   expect(new FBS().eval('(complex? 3+4i)').toString()).toBe('#t')
   expect(new FBS().eval('(complex? 3)').toString()).toBe('#t')
@@ -385,9 +387,24 @@ test('✅6.2.5_4', () => {
   expect(new FBS().eval('(round 7)').toString()).toBe('7')
 })
 
-test('🚧6.2.5_5', () => {
+test('✅6.2.5_5', () => {
   expect(new FBS().eval('(rationalize (inexact->exact .3) 1/10)').toString()).toBe('1/3')
   expect(new FBS().eval('(rationalize .3 1/10) ').toString()).toBe('#i1/3')
+})
+
+test('✅6.2.6', () => {
+  const code = `(let ((number 100)
+  (radix 16))
+  (eqv? number
+  (string->number (number->string 100
+  16)
+  16)))`
+  expect(new FBS().eval(code).toString()).toBe('#t')
+
+  expect(new FBS().eval('(string->number "100")').toString()).toBe('100')
+  expect(new FBS().eval('(string->number "100" 16)').toString()).toBe('256')
+  expect(new FBS().eval('(string->number "1e2")').toString()).toBe('100.0')
+  expect(new FBS().eval('(string->number "15##")').toString()).toBe('1500')
 })
 
 // all cleared 😊
