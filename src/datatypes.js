@@ -12,6 +12,10 @@ export function canBeTreatedAsReal (t) {
   return t !== null && (t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal)
 }
 
+export function canBeTreatedAsRational (t) {
+  return t !== null && (t instanceof FsInteger || t instanceof FsRational)
+}
+
 export class FsNotANumberException extends FsException {
   constructor (n) {
     super('number is expected but got ' + n)
@@ -311,7 +315,7 @@ export class FsComplex {
   // math +-*/
 
   abs () {
-    return Math.sqrt(this.#real * this.#real + this.#imaginary * this.#imaginary)
+    return new FsReal(Math.sqrt(this.#real * this.#real + this.#imaginary * this.#imaginary))
   }
 
   add (c) {
@@ -351,10 +355,32 @@ export class FsComplex {
     return new FsComplex(this.#real / zz, -1.0 * this.#imaginary / zz, false)
   }
 
+  // https://en.wikipedia.org/wiki/Argument_(complex_analysis)
+  arg () {
+    if (this.#real === 0 && this.#imaginary === 0) {
+      // indeterminate
+      return new FsReal(0)
+    } else if (this.#real === 0) {
+      if (this.#imaginary > 0) {
+        return new FsReal(Math.PI / 2)
+      } else {
+        return new FsReal(-Math.PI / 2)
+      }
+    } else if (this.#real > 0) {
+      return new FsReal(Math.atan(this.#imaginary / this.#real))
+    } else {
+      if (this.#imaginary >= 0) {
+        return new FsReal(Math.atan(this.#imaginary / this.#real) + Math.PI)
+      } else {
+        return new FsReal(Math.atan(this.#imaginary / this.#real) - Math.PI)
+      }
+    }
+  }
+
   log () {
     const pr = this.#real
     const pi = this.#imaginary
-    return new FsComplex(Math.log(this.abs()), Math.atan(pi / pr))
+    return new FsComplex(Math.log(this.abs().value), Math.atan(pi / pr))
   }
 
   sqrt () {
@@ -367,6 +393,11 @@ export class FsComplex {
     } else {
       return new FsComplex(r, -1.0 * im)
     }
+  }
+
+  equals (t) {
+    return t !== null && t instanceof FsComplex &&
+    t.real === this.#real && t.imaginary === this.#imaginary
   }
 
   toString () {
@@ -391,7 +422,8 @@ export class FsComplex {
  * based on JavaScript Number
  */
 export class FsReal {
-  static #regex = /^(#[ei])?[+-]?(([0-9]+)?\.[0-9]+|[0-9]+)+$/
+  // TODO: Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service.
+  static #regex = /^(#[ei])?[+-]?(([0-9]+)?\.[0-9]+|[0-9][0-9#]*)(e[0-9]+)?$/
   #value
   #exact
 
@@ -410,7 +442,9 @@ export class FsReal {
     } else if (str.startsWith('#i')) {
       return new FsReal(parseFloat(str.substr(2)), false)
     } else {
-      return new FsReal(parseFloat(str), false)
+      // replace # with 0, in inexact context.
+      // https://stackoverflow.com/questions/10935110/meaning-of-in-scheme-number-literals
+      return new FsReal(parseFloat(str.replace(/#/g, '0')), false)
     }
   }
 
@@ -462,12 +496,20 @@ export class FsReal {
     }
   }
 
+  abs () {
+    return new FsReal(Math.abs(this.#value))
+  }
+
   additiveInverse () {
     return new FsReal(-1.0 * this.#value, this.#exact)
   }
 
   multiplicativeInverse () {
     return new FsReal(1.0 / this.#value, false)
+  }
+
+  equals (t) {
+    return t !== null && t instanceof FsReal && t.value === this.#value
   }
 
   toString () {
@@ -544,10 +586,6 @@ export class FsRational {
 
   isExact () {
     return this.#exact
-  }
-
-  equals (that) {
-    return this.numerator * that.denominator === this.denominator * that.numerator
   }
 
   canonicalForm () {
@@ -631,6 +669,10 @@ export class FsRational {
       this.denominator * that.numerator).canonicalForm()
   }
 
+  abs () {
+    return new FsRational(Math.abs(this.#numerator), this.#denominator, this.#exact)
+  }
+
   additiveInverse (that) {
     return new FsRational(
       -1 * this.numerator,
@@ -674,6 +716,16 @@ export class FsRational {
     return this.#numerator % this.#denominator === 0
   }
 
+  equals (t) {
+    if (t === null || !(t instanceof FsRational)) {
+      return false
+    }
+    const canonicalT = t.canonicalForm()
+    const canonicalSelf = this.canonicalForm()
+    return canonicalT.numerator === canonicalSelf.#numerator &&
+    canonicalT.denominator === canonicalSelf.#denominator
+  }
+
   toString () {
     const s = this.#numerator + '/' + this.#denominator
     return this.#exact ? s : '#i' + s
@@ -681,7 +733,7 @@ export class FsRational {
 }
 
 export class FsInteger {
-  static #regex = /^(#[ei])?(#[bode])?[+-]?([0-9]+|[0-9]+e[0-9]+)$/
+  static #regex = /^(#[ei])?(#[bode])?[+-]?([0-9][0-9#]*)(e[0-9]+)?$/
   #value
   #exact
 
@@ -708,37 +760,37 @@ export class FsInteger {
     return str.match(FsInteger.#regex) !== null
   }
 
-  equals (target) {
-    return this.value === target.value
-  }
-
   static fromString (str) {
     if (str.startsWith('#e')) {
       if (str.startsWith('#e#b')) {
-        return new FsInteger(parseInt(str.substr(4), 2))
+        return new FsInteger(parseInt(str.substr(4).replace(/#/g, '0'), 2))
       } else if (str.startsWith('#e#o')) {
-        return new FsInteger(parseInt(str.substr(4), 8))
+        return new FsInteger(parseInt(str.substr(4).replace(/#/g, '0'), 8))
       } else if (str.startsWith('#e#d')) {
-        return new FsInteger(parseInt(str.substr(4), 10))
+        return new FsInteger(parseInt(str.substr(4).replace(/#/g, '0'), 10))
       } else if (str.startsWith('#e#x')) {
-        return new FsInteger(parseInt(str.substr(4), 16))
+        return new FsInteger(parseInt(str.substr(4).replace(/#/g, '0'), 16))
       } else {
         return new FsInteger(str.substr(2))
       }
     } else if (str.startsWith('#i')) {
       if (str.startsWith('#i#b')) {
-        return FsReal.fromString(parseInt(str.substr(4), 2))
+        return FsReal.fromString(parseInt(str.substr(4).replace(/#/g, '0'), 2))
       } else if (str.startsWith('#i#o')) {
-        return FsReal.fromString(parseInt(str.substr(4), 8))
+        return FsReal.fromString(parseInt(str.substr(4).replace(/#/g, '0'), 8))
       } else if (str.startsWith('#i#d')) {
-        return FsReal.fromString(parseInt(str.substr(4), 10))
+        return FsReal.fromString(parseInt(str.substr(4).replace(/#/g, '0'), 10))
       } else if (str.startsWith('#i#x')) {
-        return FsReal.fromString(parseInt(str.substr(4), 16))
+        return FsReal.fromString(parseInt(str.substr(4).replace(/#/g, '0'), 16))
       } else {
-        return FsReal.fromString(str.substr(2))
+        return FsReal.fromString(str.substr(2).replace(/#/g, '0'))
       }
     } else {
-      return new FsInteger(str)
+      if (str.match(/e[0-9]+$/)) {
+        return new FsReal(str.replace(/#/g, '0'))
+      } else {
+        return new FsInteger(str.replace(/#/g, '0'))
+      }
     }
   }
 
@@ -782,6 +834,10 @@ export class FsInteger {
     }
   }
 
+  abs () {
+    return new FsInteger(Math.abs(this.#value))
+  }
+
   additiveInverse () {
     return new FsInteger(-1 * this.#value, this.#exact)
   }
@@ -795,8 +851,16 @@ export class FsInteger {
     return new FsRational(1, this.value, this.#exact)
   }
 
+  equals (t) {
+    return t !== null && t instanceof FsInteger && t.value === this.#value
+  }
+
   toString () {
     return '' + this.#value
+  }
+
+  toStringWithRadix (radix) {
+    return this.#value.toString(radix)
   }
 }
 
