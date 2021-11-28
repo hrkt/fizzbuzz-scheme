@@ -5,6 +5,7 @@ import {
   FsBoolean,
   FsComplex,
   FsInteger,
+  FsList,
   FsNotANumberException,
   FsNumber,
   FsRational,
@@ -252,11 +253,7 @@ export class FspExp extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
     const p = list.at(0)
-    if (
-      p instanceof FsInteger ||
-      p instanceof FsRational ||
-      p instanceof FsReal
-    ) {
+    if (canBeTreatedAsReal(p)) {
       return new FsReal(Math.exp(p.value))
     } else if (p instanceof FsComplex) {
       // e ^ (a+bi) = e^a * (cos(b) + sin(b)i)
@@ -267,6 +264,23 @@ export class FspExp extends FsSExp {
       )
     } else {
       throw new FsNotANumberException(p)
+    }
+  }
+}
+
+export class FspExpt extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    const p1 = list.at(0)
+    const p2 = list.at(1)
+    if (p1 instanceof FsInteger && p2 instanceof FsInteger) {
+      return new FsInteger(Math.pow(p1.value, p2.value))
+    } else if (canBeTreatedAsReal(p1) && canBeTreatedAsReal(p2)) {
+      return new FsReal(Math.pow(p1.value, p2.value))
+    } else if (canBeTreatedAsComplex(p1) && canBeTreatedAsComplex(p2)) {
+      return FspExp.proc(new FsList([p2.multiply(p1.log())]))
+    } else {
+      throw new FsNotANumberException(p1 + ' or ' + p2)
     }
   }
 }

@@ -391,6 +391,7 @@ export class FsComplex {
  * based on JavaScript Number
  */
 export class FsReal {
+  // TODO: Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service.
   static #regex = /^(#[ei])?[+-]?(([0-9]+)?\.[0-9]+|[0-9]+)+$/
   #value
   #exact
