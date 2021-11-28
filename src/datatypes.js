@@ -322,6 +322,14 @@ export class FsComplex {
     }
   }
 
+  subtract (c) {
+    if (canBeTreatedAsReal(c)) {
+      return new FsComplex(this.#real - c.value, this.#imaginary)
+    } else if (c instanceof FsComplex) {
+      return new FsComplex(this.#real - c.real, this.#imaginary - c.imaginary)
+    }
+  }
+
   multiply (c) {
     if (canBeTreatedAsReal(c)) {
       return new FsComplex(this.#real * c.value, this.#imaginary * c.value)
@@ -341,6 +349,24 @@ export class FsComplex {
   multiplicativeInverse () {
     const zz = this.#real * this.#real + this.#imaginary + this.#imaginary
     return new FsComplex(this.#real / zz, -1.0 * this.#imaginary / zz, false)
+  }
+
+  log () {
+    const pr = this.#real
+    const pi = this.#imaginary
+    return new FsComplex(Math.log(this.abs()), Math.atan(pi / pr))
+  }
+
+  sqrt () {
+    const a = this.#real
+    const b = this.#imaginary
+    const r = Math.sqrt((a + Math.sqrt((a * a + b * b))) / 2)
+    const im = Math.sqrt((-1.0 * a + Math.sqrt((a * a + b * b))) / 2)
+    if (b >= 0) {
+      return new FsComplex(r, im)
+    } else {
+      return new FsComplex(r, -1.0 * im)
+    }
   }
 
   toString () {
@@ -421,6 +447,16 @@ export class FsReal {
       return new FsReal(this.value * n.value, this.isExact() && n.isExact())
     } else if (n instanceof FsComplex) {
       return n.multiply(this)
+    } else {
+      throw new FsNotANumberException(n)
+    }
+  }
+
+  devide (n) {
+    if (canBeTreatedAsReal(n)) {
+      return new FsReal(this.value * n.value, this.isExact() && n.isExact())
+    } else if (n instanceof FsComplex) {
+      return n.multiplicativeInverse().multiply(this)
     } else {
       throw new FsNotANumberException(n)
     }

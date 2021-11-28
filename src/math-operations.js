@@ -121,17 +121,59 @@ export class FslpAbs extends FsSExp {
   }
 }
 
-export class FspAtan extends FsSExp {
+export class FspAcos extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
     const p = list.at(0)
     if (canBeTreatedAsReal(p)) {
-      return new FsReal(Math.atan(p.value))
-      // } else if (p instanceof FsComplex) {
-
-      //   return new FsComplex(e1 * Math.cos(p.imaginary), e1 * Math.sin(p.imaginary))
+      return new FsReal(Math.acos(p.value))
+    } else if (p instanceof FsComplex) {
+      const insideSqrt = new FsComplex(1, 0).subtract(p.multiply(p))
+      const insideLog = p.add(new FsComplex(0, 1).multiply(insideSqrt.sqrt()))
+      return new FsComplex(0, 1).multiply(insideLog.log()).multiply(new FsReal(-1))
     } else {
       throw new FsNotANumberException(p)
+    }
+  }
+}
+
+export class FspAsin extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const p = list.at(0)
+    if (canBeTreatedAsReal(p)) {
+      return new FsReal(Math.asin(p.value))
+    } else if (p instanceof FsComplex) {
+      const insideSqrt = new FsComplex(1, 0).subtract(p.multiply(p))
+      const insideLog = new FsComplex(0, 1).multiply(p).add(insideSqrt.sqrt())
+      return new FsComplex(0, 1).multiply(insideLog.log()).multiply(new FsReal(-1))
+    } else {
+      throw new FsNotANumberException(p)
+    }
+  }
+}
+
+export class FspAtan extends FsSExp {
+  static calcComplex (p) {
+    const insideSqrt = new FsReal(1.0).devide(new FsComplex(1, 0).add(p.multiply(p)))
+    const insideLog = new FsReal(1.0).add(new FsComplex(0, 1).multiply(p)).multiply(insideSqrt.sqrt())
+    return new FsComplex(0, 1).multiply(insideLog.log()).multiply(new FsReal(-1))
+  }
+
+  static proc (list) {
+    if (list.length === 1) {
+      const p = list.at(0)
+      if (canBeTreatedAsReal(p)) {
+        return new FsReal(Math.atan(p.value))
+      } else if (p instanceof FsComplex) {
+        return FspAtan.calcComplex(p)
+      } else {
+        throw new FsNotANumberException(p)
+      }
+    } else if (list.length === 2) {
+      return FspAtan.calcComplex(new FsComplex(list.at(0).value, list.at(1).value))
+    } else {
+      throw new FsException('Syntax error: atan requires 1 or 2 args but got ' + list.length)
     }
   }
 }
@@ -517,15 +559,7 @@ export class FspSqrt extends FsSExp {
     } else if (canBeTreatedAsReal(p)) {
       return new FsReal(Math.sqrt(p.value))
     } else if (p instanceof FsComplex) {
-      const a = p.real
-      const b = p.imaginary
-      const r = Math.sqrt((a + Math.sqrt((a * a + b * b))) / 2)
-      const im = Math.sqrt((-1.0 * a + Math.sqrt((a * a + b * b))) / 2)
-      if (b >= 0) {
-        return new FsComplex(r, im)
-      } else {
-        return new FsComplex(r, -1.0 * im)
-      }
+      return p.sqrt()
     } else {
       throw new FsNotANumberException(p)
     }

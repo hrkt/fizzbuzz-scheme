@@ -7,7 +7,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsNumber, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
-import { FslpAbs, FspCeiling, FspCos, FspDenominator, FspDivide, FspExactToInexact, FspExp, FspFloor, FspGcd, FspGt, FspGte, FspInexactToExact, FspLcm, FspLog, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumberToString, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspReminder, FspRound, FspSin, FspSqrt, FspTan, FspTruncate } from './math-operations.js'
+import { FslpAbs, FspAcos, FspAsin, FspAtan, FspCeiling, FspCos, FspDenominator, FspDivide, FspExactToInexact, FspExp, FspFloor, FspGcd, FspGt, FspGte, FspInexactToExact, FspLcm, FspLog, FspLt, FspLte, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumberToString, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspReminder, FspRound, FspSin, FspSqrt, FspTan, FspTruncate } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
 import { FsPredicateBoolean, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
 import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
@@ -50,6 +50,9 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('and'), FslsAnd.proc)
   env.set(new FsSymbol('append'), FslpAppend.proc)
   env.set(new FsSymbol('abs'), FslpAbs.proc)
+  env.set(new FsSymbol('acos'), FspAcos.proc)
+  env.set(new FsSymbol('asin'), FspAsin.proc)
+  env.set(new FsSymbol('atan'), FspAtan.proc)
   env.set(new FsSymbol('boolean?'), FsPredicateBoolean.proc)
   env.set(new FsSymbol('call-with-current-continuation'), FspCallCc.proc)
   env.set(new FsSymbol('call/cc'), FspCallCc.proc)
