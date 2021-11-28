@@ -38,9 +38,9 @@ export function findRationalReps (realValue, epsilon = 0.0001, exact = true) {
     }
 
     if (realValue < mid) {
-      [c, d] = [a + c, b + d]
+      ;[c, d] = [a + c, b + d]
     } else {
-      [a, b] = [a + c, b + d]
+      ;[a, b] = [a + c, b + d]
     }
   }
   return new FsRational(numerator, denominator, exact)
@@ -131,7 +131,9 @@ export class FspAcos extends FsSExp {
     } else if (p instanceof FsComplex) {
       const insideSqrt = new FsComplex(1, 0).subtract(p.multiply(p))
       const insideLog = p.add(new FsComplex(0, 1).multiply(insideSqrt.sqrt()))
-      return new FsComplex(0, 1).multiply(insideLog.log()).multiply(new FsReal(-1))
+      return new FsComplex(0, 1)
+        .multiply(insideLog.log())
+        .multiply(new FsReal(-1))
     } else {
       throw new FsNotANumberException(p)
     }
@@ -147,7 +149,9 @@ export class FspAsin extends FsSExp {
     } else if (p instanceof FsComplex) {
       const insideSqrt = new FsComplex(1, 0).subtract(p.multiply(p))
       const insideLog = new FsComplex(0, 1).multiply(p).add(insideSqrt.sqrt())
-      return new FsComplex(0, 1).multiply(insideLog.log()).multiply(new FsReal(-1))
+      return new FsComplex(0, 1)
+        .multiply(insideLog.log())
+        .multiply(new FsReal(-1))
     } else {
       throw new FsNotANumberException(p)
     }
@@ -156,9 +160,15 @@ export class FspAsin extends FsSExp {
 
 export class FspAtan extends FsSExp {
   static calcComplex (p) {
-    const insideSqrt = new FsReal(1.0).devide(new FsComplex(1, 0).add(p.multiply(p)))
-    const insideLog = new FsReal(1.0).add(new FsComplex(0, 1).multiply(p)).multiply(insideSqrt.sqrt())
-    return new FsComplex(0, 1).multiply(insideLog.log()).multiply(new FsReal(-1))
+    const insideSqrt = new FsReal(1.0).devide(
+      new FsComplex(1, 0).add(p.multiply(p))
+    )
+    const insideLog = new FsReal(1.0)
+      .add(new FsComplex(0, 1).multiply(p))
+      .multiply(insideSqrt.sqrt())
+    return new FsComplex(0, 1)
+      .multiply(insideLog.log())
+      .multiply(new FsReal(-1))
   }
 
   static proc (list) {
@@ -172,9 +182,13 @@ export class FspAtan extends FsSExp {
         throw new FsNotANumberException(p)
       }
     } else if (list.length === 2) {
-      return FspAtan.calcComplex(new FsComplex(list.at(0).value, list.at(1).value))
+      return FspAtan.calcComplex(
+        new FsComplex(list.at(0).value, list.at(1).value)
+      )
     } else {
-      throw new FsException('Syntax error: atan requires 1 or 2 args but got ' + list.length)
+      throw new FsException(
+        'Syntax error: atan requires 1 or 2 args but got ' + list.length
+      )
     }
   }
 }
@@ -344,9 +358,31 @@ export class FspLog extends FsSExp {
   }
 }
 
+export class FspMakePolar extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    if (!canBeTreatedAsReal(list.at(0))) {
+      throw new FsException('real number is expected but got ' + list.at(0))
+    }
+    if (!canBeTreatedAsReal(list.at(1))) {
+      throw new FsException('real number is expected but got ' + list.at(1))
+    }
+    const exp = FspExp.proc(
+      new FsList([new FsComplex(0, 1).multiply(list.at(1))])
+    )
+    return exp.multiply(list.at(0))
+  }
+}
+
 export class FspMakeRectangular extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
+    if (!canBeTreatedAsReal(list.at(0))) {
+      throw new FsException('real number is expected but got ' + list.at(0))
+    }
+    if (!canBeTreatedAsReal(list.at(1))) {
+      throw new FsException('real number is expected but got ' + list.at(1))
+    }
     return new FsComplex(list.at(0).value, list.at(1).value)
   }
 }
