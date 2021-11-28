@@ -344,6 +344,13 @@ export class FspLog extends FsSExp {
   }
 }
 
+export class FspMakeRectangular extends FsSExp {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    return new FsComplex(list.at(0).value, list.at(1).value)
+  }
+}
+
 export class FspMinus extends FsSExp {
   static proc (list) {
     if (list.length === 2) {
