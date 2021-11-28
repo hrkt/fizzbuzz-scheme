@@ -1,6 +1,7 @@
 import { FsException } from './common.js'
 import {
   canBeTreatedAsComplex,
+  canBeTreatedAsRational,
   canBeTreatedAsReal,
   FsBoolean,
   FsComplex,
@@ -140,6 +141,19 @@ export class FspAcos extends FsSExp {
   }
 }
 
+export class FspAngle extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const p = list.at(0)
+    if (canBeTreatedAsReal(p)) {
+      return new FsReal(0)
+    } else if (p instanceof FsComplex) {
+      return p.arg()
+    } else {
+      throw new FsNotANumberException(list.at(0))
+    }
+  }
+}
 export class FspAsin extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
@@ -258,7 +272,7 @@ export class FspExactToInexact extends FsSExp {
     } else if (t instanceof FsRational) {
       return t.asReal()
     } else {
-      throw new FsException('not supported yet.')
+      throw new FsException('sorry, exact complex number is not supported')
     }
   }
 }
@@ -316,6 +330,22 @@ export class FspGcd extends FsSExp {
   }
 }
 
+export class FspImagPart extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const p = list.at(0)
+    if (canBeTreatedAsRational(p)) {
+      return new FsInteger(0)
+    } else if (p instanceof FsReal) {
+      return new FsReal(0.0)
+    } else if (p instanceof FsComplex) {
+      return new FsReal(p.imaginary)
+    } else {
+      throw new FsNotANumberException(list.at(0))
+    }
+  }
+}
+
 export class FspInexactToExact extends FsSExp {
   static proc (list) {
     ensureListContainsOne(list)
@@ -327,7 +357,7 @@ export class FspInexactToExact extends FsSExp {
     } else if (t instanceof FsRational) {
       return new FsRational(t.numerator, t.denominator, true)
     } else {
-      throw new FsException('not supported yet.')
+      throw new FsException('sorry, exact complex number is not supported')
     }
   }
 }
@@ -358,6 +388,17 @@ export class FspLog extends FsSExp {
   }
 }
 
+export class FspMagnitude extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const p = list.at(0)
+    if (canBeTreatedAsComplex(p)) {
+      return p.abs()
+    } else {
+      throw new FsNotANumberException(list.at(0))
+    }
+  }
+}
 export class FspMakePolar extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
@@ -534,6 +575,19 @@ export class FspPow extends FsSExp {
   }
 }
 
+export class FspRealPart extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    const p = list.at(0)
+    if (canBeTreatedAsReal(p)) {
+      return p.clone()
+    } else if (p instanceof FsComplex) {
+      return new FsReal(p.real)
+    } else {
+      throw new FsNotANumberException(list.at(0))
+    }
+  }
+}
 export class FspQuotient extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)

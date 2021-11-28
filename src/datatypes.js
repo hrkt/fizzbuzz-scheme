@@ -12,6 +12,10 @@ export function canBeTreatedAsReal (t) {
   return t !== null && (t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal)
 }
 
+export function canBeTreatedAsRational (t) {
+  return t !== null && (t instanceof FsInteger || t instanceof FsRational)
+}
+
 export class FsNotANumberException extends FsException {
   constructor (n) {
     super('number is expected but got ' + n)
@@ -311,7 +315,7 @@ export class FsComplex {
   // math +-*/
 
   abs () {
-    return Math.sqrt(this.#real * this.#real + this.#imaginary * this.#imaginary)
+    return new FsReal(Math.sqrt(this.#real * this.#real + this.#imaginary * this.#imaginary))
   }
 
   add (c) {
@@ -351,10 +355,32 @@ export class FsComplex {
     return new FsComplex(this.#real / zz, -1.0 * this.#imaginary / zz, false)
   }
 
+  // https://en.wikipedia.org/wiki/Argument_(complex_analysis)
+  arg () {
+    if (this.#real === 0 && this.#imaginary === 0) {
+      // indeterminate
+      return new FsReal(0)
+    } else if (this.#real === 0) {
+      if (this.#imaginary > 0) {
+        return new FsReal(Math.PI / 2)
+      } else {
+        return new FsReal(-Math.PI / 2)
+      }
+    } else if (this.#real > 0) {
+      return new FsReal(Math.atan(this.#imaginary / this.#real))
+    } else {
+      if (this.#imaginary >= 0) {
+        return new FsReal(Math.atan(this.#imaginary / this.#real) + Math.PI)
+      } else {
+        return new FsReal(Math.atan(this.#imaginary / this.#real) - Math.PI)
+      }
+    }
+  }
+
   log () {
     const pr = this.#real
     const pi = this.#imaginary
-    return new FsComplex(Math.log(this.abs()), Math.atan(pi / pr))
+    return new FsComplex(Math.log(this.abs().value), Math.atan(pi / pr))
   }
 
   sqrt () {
@@ -461,6 +487,10 @@ export class FsReal {
     } else {
       throw new FsNotANumberException(n)
     }
+  }
+
+  abs () {
+    return new FsReal(Math.abs(this.#value))
   }
 
   additiveInverse () {
@@ -632,6 +662,10 @@ export class FsRational {
       this.denominator * that.numerator).canonicalForm()
   }
 
+  abs () {
+    return new FsRational(Math.abs(this.#numerator), this.#denominator, this.#exact)
+  }
+
   additiveInverse (that) {
     return new FsRational(
       -1 * this.numerator,
@@ -781,6 +815,10 @@ export class FsInteger {
     } else if (canBeTreatedAsComplex(n)) {
       return this.multiply(n.multiplicativeInverse())
     }
+  }
+
+  abs () {
+    return new FsInteger(Math.abs(this.#value))
   }
 
   additiveInverse () {
