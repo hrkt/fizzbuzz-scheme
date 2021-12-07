@@ -43,9 +43,70 @@ export class FsBoolean extends FsSExp {
       }
     }
 
+    equals (that) {
+      return that !== null && that !== undefined &&
+      that instanceof FsBoolean && that.value === this.value
+    }
+
     toString () {
       return this.value ? '#t' : '#f'
     }
+}
+
+export class FsChar {
+  #value
+  constructor (v) {
+    this.#value = v
+  }
+
+  get value () {
+    return this.#value
+  }
+
+  static isFsChar (s) {
+    return (s.charAt(0) === '#' && s.charAt(1) === '\\' && s.length === 3)
+  }
+
+  static fromString (s) {
+    // s is "#\a" and previously checked its format.
+    return new FsChar(s.charAt(2))
+  }
+
+  equals (that) {
+    return that !== null && that !== undefined &&
+    that instanceof FsChar && this.#value === that.value
+  }
+
+  gt (that) {
+    return that !== null && that !== undefined &&
+    that instanceof FsChar && this.#value > that.value
+  }
+
+  gte (that) {
+    return that !== null && that !== undefined &&
+    that instanceof FsChar && this.#value >= that.value
+  }
+
+  lt (that) {
+    return that !== null && that !== undefined &&
+    that instanceof FsChar && this.#value < that.value
+  }
+
+  lte (that) {
+    return that !== null && that !== undefined &&
+    that instanceof FsChar && this.#value <= that.value
+  }
+
+  toString () {
+    switch (this.#value) {
+      case ' ':
+        return '#\\space'
+      case '\n':
+        return '#\\newline'
+      default:
+        return '#\\' + this.#value
+    }
+  }
 }
 
 export class FsNumber {
@@ -71,26 +132,14 @@ export class FsNumber {
   }
 }
 
-export class FsChar extends FsSExp {
-  static isFsChar (s) {
-    return (s.charAt(0) === '#' && s.charAt(1) === '\\' && s.length === 3)
-  }
-
-  static fromString (s) {
-    // s is "#\a" and previously checked its format.
-    return new FsChar(s.charAt(2))
-  }
-
-  toString () {
-    return this.value
-  }
-
-  equals (target) {
-    return this.value === target.value
-  }
-}
-
 export class FsString extends FsSExp {
+  equals (that) {
+    if (that === null || that === undefined || !(that instanceof FsString)) {
+      return false
+    }
+    return this.value.equals(that.value)
+  }
+
   toString () {
     return '"' + this.value + '"'
   }

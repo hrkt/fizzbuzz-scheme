@@ -3,7 +3,7 @@
 import { canBeTreatedAsComplex, FsBoolean, FsChar, FsInteger, FsList, FsNumber, FsPair, FsString, FsVector } from './datatypes.js'
 import { FssDefinedProcedure } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
-import { ensureListContainsTwo } from './sexputils.js'
+import { ensureListContainsOne, ensureListContainsOnlyTypeOf, ensureListContainsTwo, ensureListLengthAtLeast, isTrueForAllPaisInOrder } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
 
 export class FsPredicateNull extends FsSExp {
@@ -15,6 +15,37 @@ export class FsPredicateNull extends FsSExp {
 export class FsPredicateBoolean extends FsSExp {
   static proc (list) {
     return list.at(0) instanceof FsBoolean ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateChar extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    return list.at(0) instanceof FsChar ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateCharEquals extends FsSExp {
+  static proc (list, env) {
+    ensureListLengthAtLeast(list, 2)
+    ensureListContainsOnlyTypeOf(list, FsChar)
+    return list.value.filter(t => list.at(0).equals(t)).length === list.length ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateCharGreaterThan extends FsSExp {
+  static proc (list, env) {
+    ensureListLengthAtLeast(list, 2)
+    ensureListContainsOnlyTypeOf(list, FsChar)
+    return isTrueForAllPaisInOrder(list, 'gt') ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateCharLessThan extends FsSExp {
+  static proc (list, env) {
+    ensureListLengthAtLeast(list, 2)
+    ensureListContainsOnlyTypeOf(list, FsChar)
+    return isTrueForAllPaisInOrder(list, 'lt') ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
@@ -32,8 +63,11 @@ export class FsPredicateNumber extends FsSExp {
 
 export class FsPredicateStringEquals extends FsSExp {
   static proc (list, env) {
-    ensureListContainsTwo(list)
-    return (list.at(0) instanceof FsString && list.at(0).equals(list.at(1)))
+    ensureListLengthAtLeast(2)
+    if (!(list.at(0) instanceof FsString)) {
+      return false
+    }
+    return list.value.filter(t => list.at(0).equals(t)).length === list.length
   }
 }
 
@@ -109,8 +143,7 @@ export class FsPredicateEqv extends FsSExp {
     const lhs = list.at(0)
     const rhs = list.at(1)
 
-    if ((lhs === FsBoolean.TRUE && rhs === FsBoolean.TRUE) ||
-      (lhs === FsBoolean.FALSE && rhs === FsBoolean.FALSE)) {
+    if (lhs instanceof FsBoolean && lhs.equals(rhs)) {
       return FsBoolean.TRUE
     } else if (lhs instanceof FsSymbol && rhs instanceof FsSymbol &&
       lhs.value === rhs.value) {

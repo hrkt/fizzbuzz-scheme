@@ -1,9 +1,13 @@
 'use strict'
 
-import { FsException } from './common.js'
+import { FsError, FsException } from './common.js'
 import { FsList } from './datatypes.js'
 
 export function ensureListLengthAtLeast (list, length) {
+  if (list === undefined || length === undefined) {
+    throw new FsError('system error. list or length is undefined.')
+  }
+
   if (!(list instanceof FsList) || list.length < length) {
     throw new FsException('this procedure must take at least ' + length + ' argument(s) as list')
   }
@@ -21,6 +25,26 @@ export function ensureListContainsTwo (list) {
 
 export function ensureListContainsOne (list) {
   ensureListContains(list, 1)
+}
+
+export function ensureListContainsOnlyTypeOf (list, type) {
+  if (!(list instanceof FsList)) {
+    throw new FsError('sytem error. 1st arg is not a FsList')
+  }
+  for (let i = 0; i < list.length; i++) {
+    if (!(list.at(i) instanceof type)) {
+      throw new FsException('arg should be ' + type.name + ' but got ' + list.at(i))
+    }
+  }
+}
+
+export function isTrueForAllPaisInOrder (list, funcName) {
+  for (let i = 0; i < list.length - 1; i++) {
+    if (!(list.at(i)[funcName]((list.at(i + 1))))) {
+      return false
+    }
+  }
+  return true
 }
 
 // e.g.
