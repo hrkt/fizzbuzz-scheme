@@ -128,12 +128,19 @@ test('✅4.1.6', () => {
   expect(fbs.eval('(+ x 1)').toString()).toBe('5')
 })
 
-test('🚧4.2.1', () => {
+test('🚧4.2.1_1', () => {
   const fbs = new FBS()
   fbs.eval('(define x 2)')
   expect(fbs.eval('(+ x 1)').toString()).toBe('3')
   fbs.eval('(set! x 4)') // unspecified
   expect(fbs.eval('(+ x 1)').toString()).toBe('5')
+})
+
+test('🚧4.2.1_2', () => {
+  expect(new FBS().eval('(or (= 2 2) (< 2 1))').toString()).toBe('#t')
+  expect(new FBS().eval('(or (= 2 2) (< 2 1))').toString()).toBe('#t')
+  expect(new FBS().eval('(or #f #f #f)').toString()).toBe('#f')
+  // expect(new FBS().eval('(or (memq \'b \'(a b c)) (/ 3 0))').toString()).toBe('(b c)')
 })
 
 // all cleared 😊

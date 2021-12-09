@@ -5,12 +5,12 @@
 import log from 'loglevel'
 
 import { FsException } from './common.js'
-import { FsNumber, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
+import { FsNumber, FspCharToInteger, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
 import { FslpAbs, FspAcos, FspAngle, FspAsin, FspAtan, FspCeiling, FspCos, FspDenominator, FspDivide, FspExactToInexact, FspExp, FspExpt, FspFloor, FspGcd, FspGt, FspGte, FspImagPart, FspInexactToExact, FspLcm, FspLog, FspLt, FspLte, FspMagnitude, FspMakePolar, FspMakeRectangular, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumberToString, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspRealPart, FspReminder, FspRound, FspSin, FspSqrt, FspStringToNumber, FspTan, FspTruncate } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
-import { FsPredicateBoolean, FsPredicateChar, FsPredicateCharEquals, FsPredicateCharGreaterThan, FsPredicateCharLessThan, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateStringEquals, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
+import { FsPredicateBoolean, FsPredicateChar, FsPredicateCharEquals, FsPredicateCharGreaterThan, FsPredicateCharGreaterThanOrEqualsTo, FsPredicateCharLessThan, FsPredicateCharLessThanOrEqualsTo, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateStringEquals, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
+import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslsAnd, FslsDo, FslsLet, FslsOr, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 import { FspMakeVector, FspVector, FspVectorRef, FspVectorSet } from './vector-operations.js'
 
@@ -60,9 +60,12 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('car'), FspCar.proc)
   env.set(new FsSymbol('cdr'), FspCdr.proc)
   env.set(new FsSymbol('ceiling'), FspCeiling.proc)
+  env.set(new FsSymbol('char->integer'), FspCharToInteger.proc)
   env.set(new FsSymbol('char<?'), FsPredicateCharLessThan.proc)
+  env.set(new FsSymbol('char<=?'), FsPredicateCharLessThanOrEqualsTo.proc)
   env.set(new FsSymbol('char=?'), FsPredicateCharEquals.proc)
   env.set(new FsSymbol('char>?'), FsPredicateCharGreaterThan.proc)
+  env.set(new FsSymbol('char>=?'), FsPredicateCharGreaterThanOrEqualsTo.proc)
   env.set(new FsSymbol('char?'), FsPredicateChar.proc)
   env.set(new FsSymbol('close-input-port'), FspCloseInputPort.proc)
   env.set(new FsSymbol('close-output-port'), FspCloseOutputPort.proc)
@@ -107,6 +110,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('number->string'), FspNumberToString.proc)
   env.set(new FsSymbol('number?'), FsPredicateNumber.proc)
   env.set(new FsSymbol('numerator'), FspNumerator.proc)
+  env.set(new FsSymbol('or'), FslsOr.proc)
   env.set(new FsSymbol('open-input-file'), FspOpenInputFile.proc)
   env.set(new FsSymbol('open-output-file'), FspOpenOutputFile.proc)
   env.set(new FsSymbol('pair?'), FsPredicatePair.proc)

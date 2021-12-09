@@ -41,11 +41,27 @@ export class FsPredicateCharGreaterThan extends FsSExp {
   }
 }
 
+export class FsPredicateCharGreaterThanOrEqualsTo extends FsSExp {
+  static proc (list, env) {
+    ensureListLengthAtLeast(list, 2)
+    ensureListContainsOnlyTypeOf(list, FsChar)
+    return isTrueForAllPaisInOrder(list, 'gte') ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
 export class FsPredicateCharLessThan extends FsSExp {
   static proc (list, env) {
     ensureListLengthAtLeast(list, 2)
     ensureListContainsOnlyTypeOf(list, FsChar)
     return isTrueForAllPaisInOrder(list, 'lt') ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+export class FsPredicateCharLessThanOrEqualsTo extends FsSExp {
+  static proc (list, env) {
+    ensureListLengthAtLeast(list, 2)
+    ensureListContainsOnlyTypeOf(list, FsChar)
+    return isTrueForAllPaisInOrder(list, 'lte') ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
@@ -63,11 +79,11 @@ export class FsPredicateNumber extends FsSExp {
 
 export class FsPredicateStringEquals extends FsSExp {
   static proc (list, env) {
-    ensureListLengthAtLeast(2)
+    ensureListLengthAtLeast(list, 2)
     if (!(list.at(0) instanceof FsString)) {
       return false
     }
-    return list.value.filter(t => list.at(0).equals(t)).length === list.length
+    return list.value.filter(t => list.at(0).equals(t)).length === list.length ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
