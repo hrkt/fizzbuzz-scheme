@@ -43,7 +43,17 @@
                 (<= (char->integer x) 57))
             #t #f)))
 
+(define char-upcase
+    (lambda (x)
+        (if (char-lower-case? x)
+            (integer->char (- (char->integer x) 32))
+            x)))
 
+(define char-downcase
+    (lambda (x)
+        (if (char-upper-case? x)
+            (integer->char (+ (char->integer x) 32))
+            x)))
 
 ; (define char-ci=?
 ;     (lambda (char1 char2)

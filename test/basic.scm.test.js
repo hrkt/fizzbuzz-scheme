@@ -1,6 +1,6 @@
 'use strict'
 
-import { FsBoolean } from '../src/datatypes.js'
+import { FsBoolean, FsChar } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 
 // char-upper-case
@@ -45,4 +45,24 @@ test('evaluating (char-alphabetic? #\\a) yields #t', () => {
 
 test('evaluating (char-alphabetic? #\\1) yields #f', () => {
   expect(new FBS().eval('(char-alphabetic? #\\1)')).toBe(FsBoolean.FALSE)
+})
+
+// char-upcase
+
+test('evaluating (char-upcase #\\a) yields #\\A', () => {
+  expect(new FBS().eval('(char-upcase #\\a)')).toStrictEqual(new FsChar('A'))
+})
+
+test('evaluating (char-upcase? #\\A) yields #\\A', () => {
+  expect(new FBS().eval('(char-upcase #\\A)')).toStrictEqual(new FsChar('A'))
+})
+
+// char-downcase
+
+test('evaluating (char-downcase #\\a) yields #\\a', () => {
+  expect(new FBS().eval('(char-upcase #\\a)')).toStrictEqual(new FsChar('a'))
+})
+
+test('evaluating (char-downcase #\\A) yields #\\a', () => {
+  expect(new FBS().eval('(char-upcase #\\A)')).toStrictEqual(new FsChar('a'))
 })
