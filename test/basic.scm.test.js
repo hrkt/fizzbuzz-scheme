@@ -66,3 +66,35 @@ test('evaluating (char-downcase #\\a) yields #\\a', () => {
 test('evaluating (char-downcase #\\A) yields #\\a', () => {
   expect(new FBS().eval('(char-upcase #\\A)')).toStrictEqual(new FsChar('a'))
 })
+
+// char-ci=?
+
+test('evaluating (char-ci=? #\\a #\\A) yields #t', () => {
+  expect(new FBS().eval('(char-ci=? #\\a #\\A)')).toBe(FsBoolean.TRUE)
+})
+
+test('evaluating (char-ci=? #\\a #\\a) yields #f', () => {
+  expect(new FBS().eval('(char-ci=? #\\a #\\a)')).toBe(FsBoolean.TRUE)
+})
+
+test('evaluating (char-ci=? #\\a #\\b) yields #f', () => {
+  expect(new FBS().eval('(char-ci=? #\\a #\\b)')).toBe(FsBoolean.FALSE)
+})
+
+// char-ci*
+
+test('evaluating (char-ci<? #\\a #\\B) yields #t', () => {
+  expect(new FBS().eval('(char-ci<? #\\a #\\B)')).toBe(FsBoolean.TRUE)
+})
+
+test('evaluating (char-ci<=? #\\a #\\A) yields #t', () => {
+  expect(new FBS().eval('(char-ci<=? #\\a #\\A)')).toBe(FsBoolean.TRUE)
+})
+
+test('evaluating (char-ci>? #\\B #\\a) yields #t', () => {
+  expect(new FBS().eval('(char-ci>? #\\B #\\a)')).toBe(FsBoolean.TRUE)
+})
+
+test('evaluating (char-ci>=? #\\A #\\a) yields #t', () => {
+  expect(new FBS().eval('(char-ci>=? #\\A #\\a)')).toBe(FsBoolean.TRUE)
+})
