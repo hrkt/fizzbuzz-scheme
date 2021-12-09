@@ -3,7 +3,7 @@ import log from 'loglevel'
 
 import { FsException } from './common.js'
 import { FsSExp } from './sexpbase.js'
-import { ensureListContainsOnlyTypeOf } from './sexputils.js'
+import { ensureListContainsOne, ensureListContainsOnlyTypeOf } from './sexputils.js'
 
 export function canBeTreatedAsComplex (t) {
   return t !== null && (t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal || t instanceof FsComplex)
@@ -990,8 +990,18 @@ export class FspChar {
 
 export class FspCharToInteger {
   static proc (list) {
+    ensureListContainsOne(list)
     ensureListContainsOnlyTypeOf(list, FsChar)
     const t = list.at(0)
     return new FsInteger(t.value.charCodeAt(0))
+  }
+}
+
+export class FspIntegerToChar {
+  static proc (list) {
+    ensureListContainsOne(list)
+    ensureListContainsOnlyTypeOf(list, FsInteger)
+    const t = list.at(0)
+    return new FsChar(String.fromCharCode(t.value))
   }
 }
