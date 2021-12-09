@@ -5,7 +5,7 @@
 import log from 'loglevel'
 
 import { FsException } from './common.js'
-import { FsNumber, FspCharToInteger, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
+import { FsNumber, FspCharToInteger, FspIntegerToChar, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
 import { FslpAbs, FspAcos, FspAngle, FspAsin, FspAtan, FspCeiling, FspCos, FspDenominator, FspDivide, FspExactToInexact, FspExp, FspExpt, FspFloor, FspGcd, FspGt, FspGte, FspImagPart, FspInexactToExact, FspLcm, FspLog, FspLt, FspLte, FspMagnitude, FspMakePolar, FspMakeRectangular, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumberToString, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspRealPart, FspReminder, FspRound, FspSin, FspSqrt, FspStringToNumber, FspTan, FspTruncate } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
@@ -88,6 +88,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('gensym'), FspGensym.proc)
   env.set(new FsSymbol('imag-part'), FspImagPart.proc)
   env.set(new FsSymbol('inexact->exact'), FspInexactToExact.proc)
+  env.set(new FsSymbol('integer->char'), FspIntegerToChar.proc)
   env.set(new FsSymbol('integer?'), FsPredicateInteger.proc)
   env.set(new FsSymbol('last-pair'), FspLastPair.proc)
   env.set(new FsSymbol('lcm'), FspLcm.proc)
