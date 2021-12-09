@@ -491,6 +491,12 @@ test('🚧6.3.3', () => {
   expect(new FBS().eval('(symbol? #f)').toString()).toBe('#f')
 })
 
+// all cleared 😊
+test('✅6.3.4', () => {
+  expect(new FBS().eval('(<= (char->integer #\\a) (char->integer #\\b))').toString()).toBe('#t')
+  expect(new FBS().eval('(char<=? (integer->char 97) (integer->char 98))').toString()).toBe('#t')
+})
+
 test('🚧6.3.6', () => {
   expect(new FBS().eval('#(0 (2 2 2 2) "Anna")').toString()).toBe('#(0 (2 2 2 2) "Anna")')
   expect(new FBS().eval('(vector \'a \'b \'c)').toString()).toBe('#(a b c)')
