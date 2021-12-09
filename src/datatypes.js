@@ -3,6 +3,7 @@ import log from 'loglevel'
 
 import { FsException } from './common.js'
 import { FsSExp } from './sexpbase.js'
+import { ensureListContainsOnlyTypeOf } from './sexputils.js'
 
 export function canBeTreatedAsComplex (t) {
   return t !== null && (t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal || t instanceof FsComplex)
@@ -64,12 +65,29 @@ export class FsChar {
   }
 
   static isFsChar (s) {
-    return (s.charAt(0) === '#' && s.charAt(1) === '\\' && s.length === 3)
+    return (s.charAt(0) === '#' && s.charAt(1) === '\\' &&
+    (s.length === 3 || s === '#\\space' || s === '#\\newline'))
   }
 
   static fromString (s) {
-    // s is "#\a" and previously checked its format.
-    return new FsChar(s.charAt(2))
+    // s is previously checked its format.
+    switch (s) {
+      case '#\\space':
+        return new FsChar(' ')
+      case '#\\newline':
+        return new FsChar('\\n')
+      default:
+        // single character
+        return new FsChar(s.charAt(2))
+    }
+  }
+
+  toLower () {
+    return new FsChar(this.#value.toLower())
+  }
+
+  toUpper () {
+    return new FsChar(this.#value.toUpper())
   }
 
   equals (that) {
@@ -132,12 +150,21 @@ export class FsNumber {
   }
 }
 
-export class FsString extends FsSExp {
+export class FsString {
+  #value
+  constructor (value) {
+    this.#value = value
+  }
+
+  get value () {
+    return this.#value
+  }
+
   equals (that) {
     if (that === null || that === undefined || !(that instanceof FsString)) {
       return false
     }
-    return this.value.equals(that.value)
+    return this.#value === that.value
   }
 
   toString () {
@@ -948,5 +975,23 @@ export class FsPredicateRational {
   static proc (list) {
     const t = list.at(0)
     return (t instanceof FsRational || t instanceof FsInteger) ? FsBoolean.TRUE : FsBoolean.FALSE
+  }
+}
+
+// char
+
+export class FspChar {
+  static proc (list) {
+    ensureListContainsOnlyTypeOf(list, FsChar)
+    const t = list.at(0)
+    return new FsInteger(t.value.charCodeAt(0))
+  }
+}
+
+export class FspCharToInteger {
+  static proc (list) {
+    ensureListContainsOnlyTypeOf(list, FsChar)
+    const t = list.at(0)
+    return new FsInteger(t.value.charCodeAt(0))
   }
 }

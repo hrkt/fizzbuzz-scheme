@@ -340,11 +340,30 @@ export class FslsAnd extends FsSExp {
       return list.at(0)
     } else {
       for (let i = 0; i < list.length; i++) {
-        if (list.at(0) !== list.at(i)) {
+        if (list.at(i) !== FsBoolean.TRUE) {
           return FsBoolean.FALSE
         }
       }
       return FsBoolean.TRUE
+    }
+  }
+}
+
+export class FslsOr extends FsSExp {
+  static proc (list) {
+    if (list.length === 2) {
+      const lhs = list.at(0)
+      const rhs = list.at(1)
+      return lhs === FsBoolean.TRUE || rhs === FsBoolean.TRUE ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else if (list.length === 1) {
+      return list.at(0)
+    } else {
+      for (let i = 0; i < list.length; i++) {
+        if (list.at(i) === FsBoolean.TRUE) {
+          return FsBoolean.TRUE
+        }
+      }
+      return FsBoolean.FALSE
     }
   }
 }
