@@ -153,6 +153,7 @@ export class FsPredicateEq extends FsSExp {
   }
 }
 
+// see "6.1  Equivalence predicates"
 export class FsPredicateEqv extends FsSExp {
   static proc (list) {
     ensureListContainsTwo(list)
@@ -167,6 +168,19 @@ export class FsPredicateEqv extends FsSExp {
     } else if (canBeTreatedAsComplex(lhs) && canBeTreatedAsComplex(rhs) &&
       lhs.equals(rhs)) {
       return FsBoolean.TRUE
+    } else if (lhs instanceof FsPair && rhs instanceof FsPair) {
+      return lhs.id === rhs.id ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else if (lhs instanceof FsVector && rhs instanceof FsVector) {
+      return lhs.id === rhs.id ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else if (lhs instanceof FsString && rhs instanceof FsString) {
+      return lhs.id === rhs.id ? FsBoolean.TRUE : FsBoolean.FALSE
+    } else if (lhs instanceof FsList && rhs instanceof FsList && lhs.length === 0 && rhs.length === 0) {
+      // changed order
+      // currentry FsPair is a subclass of FsList, so prevent calling lists-case for pairs,
+      // changed their mutual order
+      return FsBoolean.TRUE
+    } else if (lhs instanceof FssDefinedProcedure && rhs instanceof FssDefinedProcedure) {
+      return lhs.id === rhs.id ? FsBoolean.TRUE : FsBoolean.FALSE
     } else {
       return FsBoolean.FALSE
     }

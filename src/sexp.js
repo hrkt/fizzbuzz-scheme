@@ -37,11 +37,14 @@ export class FssLambda extends FsSExp {
 }
 
 export class FssDefinedProcedure extends FsSExp {
+  static definedProcedureId = 0
+  #id
   constructor (params, body, env) {
     super()
     this.params = params
     this.body = body
     this.env = env
+    this.#id = FssDefinedProcedure.definedProcedureId++
 
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('ctor. FssDefinedProcedure with params:' + params + ',body:' + body)
@@ -72,6 +75,10 @@ export class FssDefinedProcedure extends FsSExp {
 
   get type () {
     return 'FssDefinedprocedure'
+  }
+
+  get id () {
+    return this.#id
   }
 }
 

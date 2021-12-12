@@ -152,8 +152,15 @@ export class FsNumber {
 
 export class FsString {
   #value
+  static stringId = 0
+  #id
   constructor (value) {
     this.#value = value
+    this.#id = FsString.stringId++
+  }
+
+  get id () {
+    return this.#id
   }
 
   get value () {
@@ -258,6 +265,8 @@ export class FsList extends FsSExp {
 }
 
 export class FsVector extends FsSExp {
+  static vectorId = 0
+  #id
   /**
      *
      * @param {*} arg Array
@@ -266,10 +275,15 @@ export class FsVector extends FsSExp {
     super()
     this.value = arg
     this.mutable = mutable
+    this.#id = FsVector.vectorId++
   }
 
   at (index) {
     return this.value[index]
+  }
+
+  get id () {
+    return this.#id
   }
 
   get length () {
@@ -286,10 +300,17 @@ export class FsVector extends FsSExp {
 }
 
 export class FsPair extends FsList {
+  static pairId = 0
+  #id
   constructor (car, cdr) {
     super()
     this.car = car
     this.cdr = cdr
+    this.#id = FsPair.pairId++
+  }
+
+  get id () {
+    return this.#id
   }
 
   get type () {
