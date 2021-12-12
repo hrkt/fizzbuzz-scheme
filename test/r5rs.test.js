@@ -268,30 +268,64 @@ test('🚧4.3.2', () => {
 
 // 6. Standard procedures
 
-test('🚧6.1_1', () => {
-  expect(new FBS().eval('(eqv? #t #t').toString()).toBe('#t')
+test('✅6.1_1', () => {
+  expect(new FBS().eval('(eqv? \'a \'a)').toString()).toBe('#t')
+  expect(new FBS().eval('(eqv? \'a \'b) ').toString()).toBe('#f')
+  expect(new FBS().eval('(eqv? 2 2)').toString()).toBe('#t')
+  expect(new FBS().eval('(eqv? \'() \'())').toString()).toBe('#t')
+  expect(new FBS().eval('(eqv? 100000000 100000000)').toString()).toBe('#t')
+  expect(new FBS().eval('(eqv? (cons 1 2) (cons 1 2))').toString()).toBe('#f')
+  expect(new FBS().eval('(eqv? (lambda () 1) (lambda () 2))').toString()).toBe('#f')
+  expect(new FBS().eval('(eqv? #f \'nil)').toString()).toBe('#f')
+  expect(new FBS().eval('(let ((p (lambda (x) x))) (eqv? p p))').toString()).toBe('#t')
+
+  expect(new FBS().eval('(eqv? "" "")').toString()).toBe('#f') // unspecified
+  expect(new FBS().eval('(eqv? \'#() \'#())').toString()).toBe('#f') // unspecified
+  expect(new FBS().eval('(eqv? (lambda (x) x) (lambda (x) x))').toString()).toBe('#f') // unspecified
+  expect(new FBS().eval('(eqv? (lambda (x) x) (lambda (y) y))').toString()).toBe('#f') // unspecified
+
+  {
+    const fbs = new FBS()
+    fbs.eval(`(define gen-counter
+      (lambda ()
+        (let ((n 0))
+          (lambda () (set! n (+ n 1)) n))))`)
+    expect(fbs.eval('(let ((g (gen-counter))) (eqv? g g))').toString()).toBe('#t')
+    expect(fbs.eval('(eqv? (gen-counter) (gen-counter))').toString()).toBe('#f')
+  }
+
+  {
+    const fbs = new FBS()
+    fbs.eval(`(define gen-loser
+      (lambda ()
+        (let ((n 0))
+          (lambda () (set! n (+ n 1)) 27))))`)
+    expect(fbs.eval('(let ((g (gen-loser))) (eqv? g g))').toString()).toBe('#t')
+    expect(fbs.eval('(eqv? (gen-loser) (gen-loser))').toString()).toBe('#f')
+  }
+
+  expect(new FBS().eval(`(letrec ((f (lambda () (if (eqv? f g) 'both 'f)))
+    (g (lambda () (if (eqv? f g) 'both 'g))))
+(eqv? f g))`).toString()).toBe('#f') // unspecified
+
+  expect(new FBS().eval(`(letrec ((f (lambda () (if (eqv? f g) 'f 'both)))
+  (g (lambda () (if (eqv? f g) 'g 'both))))
+  (eqv? f g))`).toString()).toBe('#f')
+
+  expect(new FBS().eval('(eqv? \'(a) \'(a))').toString()).toBe('#f') // unspecified
+  expect(new FBS().eval('(eqv? "a" "a")').toString()).toBe('#f') // unspecified
+  expect(new FBS().eval('(eqv? \'(b) (cdr \'(a b)))').toString()).toBe('#f') // unspecified
+  expect(new FBS().eval('(let ((x \'(a))) (eqv? x x))').toString()).toBe('#f')
+
+  expect(new FBS().eval('(eqv? #t #t)').toString()).toBe('#t')
 
   // eq? checks 2 objects point the same point of memory
-  expect(new FBS().eval('(eqv? #t #t').toString()).toBe('#t')
-  expect(new FBS().eval('(eqv? #f #f').toString()).toBe('#t')
+  expect(new FBS().eval('(eqv? #t #t)').toString()).toBe('#t')
+  expect(new FBS().eval('(eqv? #f #f)').toString()).toBe('#t')
 
   expect(new FBS().eval('(eqv? \'a \'a)').toString()).toBe('#t')
   expect(new FBS().eval('(eqv? \'a \'b)').toString()).toBe('#f')
 })
-
-// (eq? "" "")                             ===>  unspecified
-// (eq? '() '())                           ===>  #t
-// (eq? 2 2)                               ===>  unspecified
-// (eq? #\A #\A)         ===>  unspecified
-// (eq? car car)                           ===>  #t
-// (let ((n (+ 2 3)))
-//   (eq? n n))              ===>  unspecified
-// (let ((x '(a)))
-//   (eq? x x))              ===>  #t
-// (let ((x '#()))
-//   (eq? x x))              ===>  #t
-// (let ((p (lambda (x) x)))
-//   (eq? p p))              ===>  #t
 
 // procedure (eq? block
 // all cleared 😊
