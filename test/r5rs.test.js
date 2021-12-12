@@ -346,14 +346,14 @@ test('✅6.1_2', () => {
   expect(new FBS().eval('(let ((p (lambda (x) x))) (eq? p p))').toString()).toBe('#t')
 })
 
-test('🚧6.1_3', () => {
+// all cleared 😊
+test('✅6.1_3', () => {
   expect(new FBS().eval('(equal? \'a \'a) ').toString()).toBe('#t')
   expect(new FBS().eval('(equal? \'(a) \'(a)) ').toString()).toBe('#t')
   expect(new FBS().eval('(equal? \'(a (b) c) \'(a (b) c))').toString()).toBe('#t')
   expect(new FBS().eval('(equal? "abc" "abc")').toString()).toBe('#t')
   expect(new FBS().eval('(equal? 2 2)').toString()).toBe('#t')
-  // TODO: after adding make-vector
-  // expect(new FBS().eval('(equal? (make-vector 5 \'a) (make-vector 5 \'a))').toString()).toBe('#t')
+  expect(new FBS().eval('(equal? (make-vector 5 \'a) (make-vector 5 \'a))').toString()).toBe('#t')
   expect(new FBS().eval('(equal? (lambda (x) x) (lambda (y) y))').toString()).toBe('#f') // unspecified
 })
 
