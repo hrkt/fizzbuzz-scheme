@@ -255,6 +255,8 @@ export class FssDefine extends FsSExp {
     if (!(car instanceof FsList)) {
       // e.g.
       // (define x1 (lambda (x) (* x 2)))
+      // (define x (list 'a 'b 'c))
+      // (define y x)
       const cdr = list.at(1)
       env.set(car, FsEvaluator.eval(cdr, env))
       if (log.getLevel() <= log.levels.DEBUG) {
@@ -489,11 +491,26 @@ export class FspSetCdr extends FsSExp {
   static proc (list, env) {
     const evaledCurrent = FsEvaluator.eval(list.at(0), env)
     if (evaledCurrent instanceof FsPair) {
-      const np = new FsPair(evaledCurrent.car, list.at(1))
-      env.set(list.at(0), np)
+      // const np = new FsPair(evaledCurrent.car, list.at(1))
+      // env.set(list.at(0), np)
+      evaledCurrent.cdr = list.at(1)
     } else if (evaledCurrent instanceof FsList) {
-      const np = new FsPair(evaledCurrent.at(0), list.at(1))
-      env.set(list.at(0), np)
+      // const np = new FsPair(evaledCurrent.at(0), list.at(1))
+      // env.set(list.at(0), np)
+      const newCar = evaledCurrent.at(0)
+      const newCdr = list.at(1)
+      const newPair = new FsPair(newCar, newCdr)
+      // Though Object.setPrototypeOf is not recommended to use,
+      // we use it here to change instance type from FsList -> FsPair
+      // in case of
+      //
+      // (define x (list 'a 'b 'c))
+      // (define y x)
+      // (set-cdr! x 4)
+      //
+      // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
+      Object.setPrototypeOf(evaledCurrent, FsPair.prototype)
+      Object.assign(evaledCurrent, newPair)
     }
     // const target = list.at(0)
     // const newCdr = list.at(1)

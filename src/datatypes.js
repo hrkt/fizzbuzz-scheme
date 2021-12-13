@@ -153,14 +153,8 @@ export class FsNumber {
 export class FsString {
   #value
   static stringId = 0
-  #id
   constructor (value) {
     this.#value = value
-    this.#id = FsString.stringId++
-  }
-
-  get id () {
-    return this.#id
   }
 
   get value () {
@@ -180,6 +174,7 @@ export class FsString {
 }
 
 export class FsList extends FsSExp {
+    static listId = 0
     static EMPTY = Object.freeze(new FsList([]))
     constructor (value = []) {
       super()
@@ -300,17 +295,13 @@ export class FsVector extends FsSExp {
 }
 
 export class FsPair extends FsList {
-  static pairId = 0
-  #id
+  // we do not use private field in this class
+  // for the case of dynamically changing list->pair.
+  // see FspSetCdr
   constructor (car, cdr) {
     super()
     this.car = car
     this.cdr = cdr
-    this.#id = FsPair.pairId++
-  }
-
-  get id () {
-    return this.#id
   }
 
   get type () {
