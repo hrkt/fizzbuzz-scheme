@@ -6,7 +6,7 @@ import { jest } from '@jest/globals'
 
 import { FsException } from '../src/common.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FssDefinedProcedure } from '../src/sexp.js'
+import { FssDefinedProcedure, FsUndefined } from '../src/sexp.js'
 
 // 1. Overview of scheme
 // all cleared 😊
@@ -472,7 +472,7 @@ test('✅6.3.1', () => {
   expect(new FBS().eval('(boolean? \'())').toString()).toBe('#f')
 })
 
-test('🚧6.3.2_1', () => {
+test('✅6.3.2_1', () => {
   const fbs = new FBS()
   fbs.eval('(define x (list \'a \'b \'c))')
   fbs.eval('(define y x)')
@@ -481,7 +481,11 @@ test('🚧6.3.2_1', () => {
   expect(fbs.eval('(list? y)').toString()).toBe('#t')
   fbs.eval('(set-cdr! x 4)') // unspecified
   expect(fbs.eval('x').toString()).toBe('(a . 4)')
-  // expect(fbs.eval('(eqv? x y)').toString()).toBe('#t') // TODO: after (eqv?)
+  expect(fbs.eval('(eqv? x y)').toString()).toBe('#t')
+  expect(fbs.eval('y').toString()).toBe('(a . 4)')
+  expect(fbs.eval('(list? y)').toString()).toBe('#f')
+  expect(fbs.eval('(set-cdr! x x)').toString()).toBe(FsUndefined.UNDEFINED.toString())
+  expect(fbs.eval('(list? x)').toString()).toBe('#f')
 })
 
 test('✅6.3.2_2', () => {
@@ -497,7 +501,7 @@ test('✅6.3.2_2', () => {
   expect(new FBS().eval('(cons \'(a b) \'c)').toString()).toBe('((a b) . c)')
 })
 
-test('🚧6.3.2_3', () => {
+test('✅6.3.2_3', () => {
   expect(new FBS().eval('(cons \'a \'())').toString()).toBe('(a)')
   expect(new FBS().eval('(cons \'(a) \'(b c d))').toString()).toBe('((a) b c d)')
   expect(new FBS().eval('(cons "a" \'(b c))').toString()).toBe('("a" b c)')
@@ -508,9 +512,35 @@ test('🚧6.3.2_3', () => {
   expect(new FBS().eval('(car \'((a) b c d))').toString()).toBe('(a)')
   expect(new FBS().eval('(car \'(1 . 2))').toString()).toBe('1')
   expect(() => { new FBS().eval('car \'())') }).toThrow(FsException)
+
+  expect(new FBS().eval('(cdr \'((a) b c d)) ').toString()).toBe('(b c d)')
+  expect(new FBS().eval('(cdr \'(1 . 2)) ').toString()).toBe('2')
+  expect(() => { new FBS().eval('cdr \'())') }).toThrow(FsException)
 })
 
-test('🚧6.3.2_4', () => {
+test('✅6.3.2_4', () => {
+  expect(new FBS().eval('(caar \'((1 . 2) . 3))').toString()).toBe('1')
+  expect(new FBS().eval('(cadr \'((1 . 2) . (3 . 4)))').toString()).toBe('3')
+})
+
+test('✅6.3.2_5', () => {
+  expect(new FBS().eval('(null? ())').toString()).toBe('#t')
+  expect(new FBS().eval('(null? \'(1 2))').toString()).toBe('#f')
+
+  expect(new FBS().eval('(list? \'(a b c))').toString()).toBe('#t')
+  expect(new FBS().eval('(list? \'())').toString()).toBe('#t')
+  expect(new FBS().eval('(list? \'(a . b))').toString()).toBe('#f')
+  expect(new FBS().eval('(let ((x (list \'a))) (set-cdr! x x) (list? x))').toString()).toBe('#f')
+
+  expect(new FBS().eval('(list \'a (+ 3 4) \'c)').toString()).toBe('(a 7 c)')
+  expect(new FBS().eval('(list)').toString()).toBe('()')
+
+  expect(new FBS().eval('(length \'(a b c))').toString()).toBe('3')
+  expect(new FBS().eval('(length \'(a (b) (c d e)))').toString()).toBe('3')
+  expect(new FBS().eval('(length \'())').toString()).toBe('0')
+})
+
+test('🚧6.3.2_6', () => {
   expect(new FBS().eval('(append \'(x) \'(y))').toString()).toBe('(x y)')
   expect(new FBS().eval('(append \'(a) \'(b c d))').toString()).toBe('(a b c d)')
   expect(new FBS().eval('(append \'(a (b)) \'((c)))').toString()).toBe('(a (b) (c))')
