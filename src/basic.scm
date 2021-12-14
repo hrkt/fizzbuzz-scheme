@@ -1,3 +1,7 @@
+; basic procedures
+;
+; some procedures are brought from r5rs directly (see comments).
+
 (define first car)
 (define negative? (lambda (x) (if (< x 0) #t #f)))
 (define zero? (lambda (x) (if (= x 0) #t #f)))
@@ -116,8 +120,39 @@
 (define cdddar (lambda (x) (cdr (cdr (cdr (car x))))))
 (define cddddr (lambda (x) (cdr (cdr (cdr (cdr x))))))
 
+; from r5rs
 (define list-tail
   (lambda (x k)
     (if (zero? k)
         x
         (list-tail (cdr x) (- k 1)))))
+
+(define list-ref
+  (lambda (x k)
+    (if (zero? k)
+        (car x)
+        (list-ref (cdr x) (- k 1)))))
+
+(define memq
+  (lambda (key x)
+    (if (null? x)
+        #f
+        (if (eq? key (car x))
+            x
+            (memq key (cdr x))))))
+
+(define memv
+  (lambda (key x)
+    (if (null? x)
+        #f
+        (if (eqv? key (car x))
+            x
+            (memv key (cdr x))))))
+
+(define member
+  (lambda (key x)
+    (if (null? x)
+        #f
+        (if (equal? key (car x))
+            x
+            (member key (cdr x))))))
