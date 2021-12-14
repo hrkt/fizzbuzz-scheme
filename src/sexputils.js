@@ -13,6 +13,16 @@ export function ensureListLengthAtLeast (list, length) {
   }
 }
 
+export function ensureListLengthAtMost (list, length) {
+  if (list === undefined || length === undefined) {
+    throw new FsError('system error. list or length is undefined.')
+  }
+
+  if (!(list instanceof FsList) || list.length > length) {
+    throw new FsException('this procedure must take at most ' + length + ' argument(s) as list')
+  }
+}
+
 function ensureListContains (list, length) {
   if (!(list instanceof FsList) || list.length !== length) {
     throw new FsException('this procedure must take ' + length + ' argument(s) as list')

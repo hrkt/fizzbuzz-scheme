@@ -8,7 +8,7 @@ import { FsBoolean, FsInteger, FsList, FsNumber, FsPair, FsString, FsVector, isP
 import { FsEnv } from './env.js'
 import { FsEvaluator } from './evaluator.js'
 import { FsSExp } from './sexpbase.js'
-import { ensureListContainsOne, ensureListContainsTwo } from './sexputils.js'
+import { ensureListContainsOne, ensureListContainsOnlyTypeOf, ensureListContainsTwo, ensureListLengthAtLeast } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
 
 export class FssIf extends FsSExp {
@@ -477,13 +477,49 @@ export class FslpMap extends FsSExp {
 
 export class FslpAppend extends FsSExp {
   static proc (list) {
+    ensureListLengthAtLeast(list, 2)
+    for (let i = 0; i < list.length - 1; i++) {
+      if (!isProperList(list.at(i))) {
+        throw new FsException('proper list is required but got ' + list.at(i))
+      }
+    }
     const newList = []
-    for (let j = 0; j < list.length; j++) {
+    for (let j = 0; j < list.length - 1; j++) {
       for (let i = 0; i < list.at(j).length; i++) {
         newList.push(list.at(j).at(i))
       }
     }
-    return new FsList(newList)
+    const last = list.at(list.length - 1)
+    if (!isProperList(last)) {
+      if (newList.length === 0) {
+        // (append '() '(a . b)) ===> (a . b)
+        return last
+      } else if (newList.length === 1) {
+        //  (append '(a) '(b . c)) ===> (a b . c) ; == (a . (b . c))
+        return new FsPair(newList[0], last)
+      } else {
+        // (append '(a b) '(c . d)) ===> (a b c . d) ; == (a . (b . (c . d)))
+        let pairBuf = new FsPair(newList[newList.length - 1], last)
+        for (let i = newList.length - 2; i >= 0; i--) {
+          const p = new FsPair(newList[i], pairBuf)
+          pairBuf = p
+        }
+        return pairBuf
+      }
+    } else {
+      for (let i = 0; i < last.length; i++) {
+        newList.push(last.at(i))
+      }
+      return new FsList(newList)
+    }
+  }
+}
+
+export class FslpReverse extends FsSExp {
+  static proc (list, env) {
+    ensureListContainsOne(list)
+    ensureListContainsOnlyTypeOf(list, FsList)
+    return new FsList(list.at(0).value.reverse())
   }
 }
 

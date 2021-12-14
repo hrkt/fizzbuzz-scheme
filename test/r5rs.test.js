@@ -1,5 +1,9 @@
 // https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-2.html#%_toc_start
 
+// 1. expected value is taken from R5RS.
+// 2. when returned value is "unspecivied" in R5RS, follow the rules below
+//    (a) returns same value from Gauche
+
 'use strict'
 
 import { jest } from '@jest/globals'
@@ -544,6 +548,22 @@ test('🚧6.3.2_6', () => {
   expect(new FBS().eval('(append \'(x) \'(y))').toString()).toBe('(x y)')
   expect(new FBS().eval('(append \'(a) \'(b c d))').toString()).toBe('(a b c d)')
   expect(new FBS().eval('(append \'(a (b)) \'((c)))').toString()).toBe('(a (b) (c))')
+
+  expect(new FBS().eval('(append \'(a b) \'(c . d))').toString()).toBe('(a . (b . (c . d)))') // === (a b c . d)
+  expect(new FBS().eval('(append \'() \'a)').toString()).toBe('a')
+
+  expect(new FBS().eval('(reverse \'(a b c))').toString()).toBe('(c b a)')
+  expect(new FBS().eval('(reverse \'(a (b c) d (e (f))))').toString()).toBe('((e (f)) d (b c) a)')
+  expect(new FBS().eval('(list-ref \'(a b c d) 2)').toString()).toBe('c')
+  expect(new FBS().eval('(list-ref \'(a b c d) (inexact->exact (round 1.8)))').toString()).toBe('c')
+  expect(new FBS().eval('(memq \'a \'(a b c))').toString()).toBe('(a b c)')
+  expect(new FBS().eval('(memq \'b \'(a b c))').toString()).toBe('(b c)')
+  expect(new FBS().eval('(memq \'a \'(b c d))').toString()).toBe('#f')
+  expect(new FBS().eval('(memq (list \'a) \'(b (a) c))').toString()).toBe('#f')
+  expect(new FBS().eval('(member (list \'a) \'(b (a) c))').toString()).toBe('((a) c)')
+  expect(new FBS().eval('(memq 101 \'(100 101 102))').toString()).toBe('(101 102)') // unspecified
+  expect(new FBS().eval('(memv 101 \'(100 101 102))').toString()).toBe('(101 102)')
+  // expect(new FBS().eval('').toString()).toBe('')
 })
 
 test('🚧6.3.3', () => {

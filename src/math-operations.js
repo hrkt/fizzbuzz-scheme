@@ -353,7 +353,11 @@ export class FspInexactToExact extends FsSExp {
     if (t instanceof FsInteger) {
       return new FsInteger(t.value)
     } else if (t instanceof FsReal) {
-      return new FsReal(t.value, true)
+      if (t.isInteger()) {
+        return new FsInteger(t.value, true)
+      } else {
+        return new FsReal(t.value, true)
+      }
     } else if (t instanceof FsRational) {
       return new FsRational(t.numerator, t.denominator, true)
     } else {
