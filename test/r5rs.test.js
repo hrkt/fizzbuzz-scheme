@@ -544,6 +544,13 @@ test('🚧6.3.2_6', () => {
   expect(new FBS().eval('(append \'(x) \'(y))').toString()).toBe('(x y)')
   expect(new FBS().eval('(append \'(a) \'(b c d))').toString()).toBe('(a b c d)')
   expect(new FBS().eval('(append \'(a (b)) \'((c)))').toString()).toBe('(a (b) (c))')
+
+  expect(new FBS().eval('(append \'(a b) \'(c . d))').toString()).toBe('(a . (b . (c . d)))') // === (a b c . d)
+  expect(new FBS().eval('(append \'() \'a)').toString()).toBe('a')
+
+  expect(new FBS().eval('(reverse \'(a b c))').toString()).toBe('(c b a)')
+  expect(new FBS().eval('(reverse \'(a (b c) d (e (f))))').toString()).toBe('((e (f)) d (b c) a)')
+  // expect(new FBS().eval('').toString()).toBe('')
 })
 
 test('🚧6.3.3', () => {
