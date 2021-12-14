@@ -116,3 +116,8 @@
 (define cdddar (lambda (x) (cdr (cdr (cdr (car x))))))
 (define cddddr (lambda (x) (cdr (cdr (cdr (cdr x))))))
 
+(define list-tail
+  (lambda (x k)
+    (if (zero? k)
+        x
+        (list-tail (cdr x) (- k 1)))))
