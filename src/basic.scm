@@ -156,3 +156,27 @@
         (if (equal? key (car x))
             x
             (member key (cdr x))))))
+
+(define assq
+  (lambda (key x)
+    (if (null? x)
+        #f
+        (if (eq? key (car (car x)))
+            (car x)
+            (assq key (cdr x))))))
+
+(define assv
+  (lambda (key x)
+    (if (null? x)
+        #f
+        (if (eqv? key (car (car x)))
+            (car x)
+            (assv key (cdr x))))))
+
+(define assoc
+  (lambda (key x)
+    (if (null? x)
+        #f
+        (if (equal? key (car (car x)))
+            (car x)
+            (assoc key (cdr x))))))

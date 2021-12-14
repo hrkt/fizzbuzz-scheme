@@ -476,6 +476,7 @@ test('✅6.3.1', () => {
   expect(new FBS().eval('(boolean? \'())').toString()).toBe('#f')
 })
 
+// all cleared 😊
 test('✅6.3.2_1', () => {
   const fbs = new FBS()
   fbs.eval('(define x (list \'a \'b \'c))')
@@ -544,7 +545,7 @@ test('✅6.3.2_5', () => {
   expect(new FBS().eval('(length \'())').toString()).toBe('0')
 })
 
-test('🚧6.3.2_6', () => {
+test('✅6.3.2_6', () => {
   expect(new FBS().eval('(append \'(x) \'(y))').toString()).toBe('(x y)')
   expect(new FBS().eval('(append \'(a) \'(b c d))').toString()).toBe('(a b c d)')
   expect(new FBS().eval('(append \'(a (b)) \'((c)))').toString()).toBe('(a (b) (c))')
@@ -563,6 +564,16 @@ test('🚧6.3.2_6', () => {
   expect(new FBS().eval('(member (list \'a) \'(b (a) c))').toString()).toBe('((a) c)')
   expect(new FBS().eval('(memq 101 \'(100 101 102))').toString()).toBe('(101 102)') // unspecified
   expect(new FBS().eval('(memv 101 \'(100 101 102))').toString()).toBe('(101 102)')
+
+  const fbs = new FBS()
+  fbs.eval('(define e \'((a 1) (b 2) (c 3)))')
+  expect(fbs.eval('(assq \'a e)').toString()).toBe('(a 1)')
+  expect(fbs.eval('(assq \'b e)').toString()).toBe('(b 2)')
+  expect(fbs.eval('(assq \'d e)').toString()).toBe('#f')
+  expect(fbs.eval('(assq (list \'a) \'(((a)) ((b)) ((c))))').toString()).toBe('#f')
+  expect(fbs.eval('(assoc (list \'a) \'(((a)) ((b)) ((c))))').toString()).toBe('((a))')
+  expect(fbs.eval('(assq 5 \'((2 3) (5 7) (11 13)))').toString()).toBe('(5 7)')
+  expect(fbs.eval('(assv 5 \'((2 3) (5 7) (11 13)))').toString()).toBe('(5 7)')
   // expect(new FBS().eval('').toString()).toBe('')
 })
 
