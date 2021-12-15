@@ -10,7 +10,7 @@ import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
 import { FslpAbs, FspAcos, FspAngle, FspAsin, FspAtan, FspCeiling, FspCos, FspDenominator, FspDivide, FspExactToInexact, FspExp, FspExpt, FspFloor, FspGcd, FspGt, FspGte, FspImagPart, FspInexactToExact, FspLcm, FspLog, FspLt, FspLte, FspMagnitude, FspMakePolar, FspMakeRectangular, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumberToString, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspRealPart, FspReminder, FspRound, FspSin, FspSqrt, FspStringToNumber, FspTan, FspTruncate } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
 import { FsPredicateBoolean, FsPredicateChar, FsPredicateCharEquals, FsPredicateCharGreaterThan, FsPredicateCharGreaterThanOrEqualsTo, FsPredicateCharLessThan, FsPredicateCharLessThanOrEqualsTo, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateStringEquals, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslpReverse, FslsAnd, FslsDo, FslsLet, FslsOr, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
+import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslpReverse, FslsAnd, FslsDo, FslsLet, FslsOr, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspStringToSymbol, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 import { FspMakeVector, FspVector, FspVectorRef, FspVectorSet } from './vector-operations.js'
 
@@ -131,6 +131,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('standard-input-port'), FspStandardInputPort.proc)
   env.set(new FsSymbol('standard-output-port'), FspStandardOutputPort.proc)
   env.set(new FsSymbol('string->number'), FspStringToNumber.proc)
+  env.set(new FsSymbol('string->symbol'), FspStringToSymbol.proc)
   env.set(new FsSymbol('string=?'), FsPredicateStringEquals.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
   env.set(new FsSymbol('symbol->string'), FspSymbolToString.proc)

@@ -577,13 +577,25 @@ test('✅6.3.2_6', () => {
   // expect(new FBS().eval('').toString()).toBe('')
 })
 
-test('🚧6.3.3', () => {
+// all cleared 😊
+test('✅6.3.3', () => {
   expect(new FBS().eval('(symbol? \'foo)').toString()).toBe('#t')
   expect(new FBS().eval('(symbol? (car \'(a b))) ').toString()).toBe('#t')
   expect(new FBS().eval('(symbol? "bar")').toString()).toBe('#f')
   expect(new FBS().eval('(symbol? \'nil)').toString()).toBe('#t')
   expect(new FBS().eval('(symbol? \'())').toString()).toBe('#f')
   expect(new FBS().eval('(symbol? #f)').toString()).toBe('#f')
+
+  expect(new FBS().eval('(symbol->string \'flying-fish)').toString()).toBe('"flying-fish"')
+  expect(new FBS().eval('(symbol->string \'Martin)').toString()).toBe('"Martin"') // implementation's preferrence
+  expect(new FBS().eval('(symbol->string (string->symbol "Malvina"))').toString()).toBe('"Malvina"')
+
+  // implementation's preferrence. same behavior as Gauche
+  expect(new FBS().eval('(eq? \'mISSISSIppi \'mississippi) ').toString()).toBe('#f')
+  expect(new FBS().eval('(string->symbol "mISSISSIppi")').toString()).toBe('mISSISSIppi')
+  expect(new FBS().eval('(eq? \'bitBlt (string->symbol "bitBlt"))').toString()).toBe('#t')
+  expect(new FBS().eval('(eq? \'JollyWog (string->symbol (symbol->string \'JollyWog)))').toString()).toBe('#t')
+  expect(new FBS().eval('(string=? "K. Harper, M.D." (symbol->string (string->symbol "K. Harper, M.D.")))').toString()).toBe('#t')
 })
 
 // all cleared 😊
