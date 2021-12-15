@@ -17,6 +17,7 @@ export class FizzBuzzScheme {
     this.debugMode = false
     this.expander = new FsExpander(this.env)
     FsopLoad.proc(new FsList([new FsString('src/basic.scm')]), this.env)
+    FsopLoad.proc(new FsList([new FsString('src/fs-original.scm')]), this.env)
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('=======================================================================-')
     }
