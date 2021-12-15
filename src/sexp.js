@@ -444,7 +444,17 @@ export class FslpNot extends FsSExp {
 
 export class FspSymbolToString extends FsSExp {
   static proc (list) {
+    ensureListContainsOne(list)
+    // inner string may not be cloned, we symply use it here.
+    // https://stackoverflow.com/questions/31712808/how-to-force-javascript-to-deep-copy-a-string
     return new FsString(list.at(0).value)
+  }
+}
+
+export class FspStringToSymbol extends FsSExp {
+  static proc (list) {
+    ensureListContainsOne(list)
+    return new FsSymbol(list.at(0).value)
   }
 }
 
