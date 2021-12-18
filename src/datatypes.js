@@ -1145,3 +1145,28 @@ export class FslpStringFill {
     return FsUndefined.UNDEFINED
   }
 }
+
+// vector
+
+export class FslpVectorToList {
+  static proc (list) {
+    return new FsList(list.at(0).value)
+  }
+}
+
+export class FslpListToVector {
+  static proc (list) {
+    return new FsVector(list.at(0).value)
+  }
+}
+
+export class FslpVectorFill_ {
+  static proc (list) {
+    const vector = list.at(0)
+    const fillWith = list.at(1)
+    for (let i = 0; i < vector.value.length; i++) {
+      vector.value[i] = fillWith
+    }
+    return FsUndefined.undefined
+  }
+}

@@ -5,7 +5,7 @@
 import log from 'loglevel'
 
 import { FsException } from './common.js'
-import { FslpListToString, FslpStringAppend, FslpStringCopy, FslpStringFill, FslpStringToList, FslpSubstring, FsNumber, FspCharToInteger, FspIntegerToChar, FspMakeString, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal, FspString, FspStringLength, FspStringRef, FspStringSet_ } from './datatypes.js'
+import { FslpListToString, FslpListToVector, FslpStringAppend, FslpStringCopy, FslpStringFill, FslpStringToList, FslpSubstring, FslpVectorFill_, FslpVectorToList, FsNumber, FspCharToInteger, FspIntegerToChar, FspMakeString, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal, FspString, FspStringLength, FspStringRef, FspStringSet_ } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
 import { FslpAbs, FspAcos, FspAngle, FspAsin, FspAtan, FspCeiling, FspCos, FspDenominator, FspDivide, FspExactToInexact, FspExp, FspExpt, FspFloor, FspGcd, FspGt, FspGte, FspImagPart, FspInexactToExact, FspLcm, FspLog, FspLt, FspLte, FspMagnitude, FspMakePolar, FspMakeRectangular, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumberToString, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspRealPart, FspReminder, FspRound, FspSin, FspSqrt, FspStringToNumber, FspTan, FspTruncate } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
@@ -96,6 +96,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('length'), FslpLength.proc)
   env.set(new FsSymbol('list'), FslpList.proc)
   env.set(new FsSymbol('list->string'), FslpListToString.proc)
+  env.set(new FsSymbol('list->vector'), FslpListToVector.proc)
   env.set(new FsSymbol('list?'), FsPredicateList.proc)
   env.set(new FsSymbol('load'), FsopLoad.proc)
   env.set(new FsSymbol('log'), FspLog.proc)
@@ -152,6 +153,8 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('truncate'), FspTruncate.proc)
   // env.set(new FsSymbol('unquote'), FssUnquote.proc)
   env.set(new FsSymbol('vector'), FspVector.proc)
+  env.set(new FsSymbol('vector->list'), FslpVectorToList.proc)
+  env.set(new FsSymbol('vector-fill!'), FslpVectorFill_.proc)
   env.set(new FsSymbol('vector-ref'), FspVectorRef.proc)
   env.set(new FsSymbol('vector-set!'), FspVectorSet.proc)
   env.set(new FsSymbol('vector?'), FsPredicateVector.proc)

@@ -630,6 +630,9 @@ test('🚧6.3.6', () => {
   // gauche, mit-scheme does not seems to throw error, while r5rs spec throws error.
   // trying to follow spec.
   expect(() => { new FBS().eval('(vector-set! \'#(0 1 2) 1 "doe") ') }).toThrow(FsException)
+
+  expect(new FBS().eval('(vector->list \'#(dah dah didah))').toString()).toBe('(dah dah didah)')
+  expect(new FBS().eval('(list->vector \'(dididit dah))').toString()).toBe('#(dididit dah)')
 })
 
 // 6.4  Control features
