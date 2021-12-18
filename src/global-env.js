@@ -5,7 +5,7 @@
 import log from 'loglevel'
 
 import { FsException } from './common.js'
-import { FsNumber, FspCharToInteger, FspIntegerToChar, FspMakeString, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal, FspString, FspStringLength, FspStringRef, FspStringSet_ } from './datatypes.js'
+import { FslpListToString, FslpStringAppend, FslpStringCopy, FslpStringFill, FslpStringToList, FslpSubstring, FsNumber, FspCharToInteger, FspIntegerToChar, FspMakeString, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal, FspString, FspStringLength, FspStringRef, FspStringSet_ } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
 import { FslpAbs, FspAcos, FspAngle, FspAsin, FspAtan, FspCeiling, FspCos, FspDenominator, FspDivide, FspExactToInexact, FspExp, FspExpt, FspFloor, FspGcd, FspGt, FspGte, FspImagPart, FspInexactToExact, FspLcm, FspLog, FspLt, FspLte, FspMagnitude, FspMakePolar, FspMakeRectangular, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumberToString, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspRealPart, FspReminder, FspRound, FspSin, FspSqrt, FspStringToNumber, FspTan, FspTruncate } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
@@ -95,6 +95,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('lcm'), FspLcm.proc)
   env.set(new FsSymbol('length'), FslpLength.proc)
   env.set(new FsSymbol('list'), FslpList.proc)
+  env.set(new FsSymbol('list->string'), FslpListToString.proc)
   env.set(new FsSymbol('list?'), FsPredicateList.proc)
   env.set(new FsSymbol('load'), FsopLoad.proc)
   env.set(new FsSymbol('log'), FspLog.proc)
@@ -133,6 +134,10 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('standard-input-port'), FspStandardInputPort.proc)
   env.set(new FsSymbol('standard-output-port'), FspStandardOutputPort.proc)
   env.set(new FsSymbol('string'), FspString.proc)
+  env.set(new FsSymbol('string-append'), FslpStringAppend.proc)
+  env.set(new FsSymbol('string-copy'), FslpStringCopy.proc)
+  env.set(new FsSymbol('string-fill'), FslpStringFill.proc)
+  env.set(new FsSymbol('string->list'), FslpStringToList.proc)
   env.set(new FsSymbol('string->number'), FspStringToNumber.proc)
   env.set(new FsSymbol('string->symbol'), FspStringToSymbol.proc)
   env.set(new FsSymbol('string-length'), FspStringLength.proc)
@@ -140,6 +145,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('string-set!'), FspStringSet_.proc)
   // env.set(new FsSymbol('string=?'), FsPredicateStringEquals.proc)
   env.set(new FsSymbol('string?'), FsPredicateString.proc)
+  env.set(new FsSymbol('substring'), FslpSubstring.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
   env.set(new FsSymbol('symbol->string'), FspSymbolToString.proc)
   env.set(new FsSymbol('tan'), FspTan.proc)

@@ -333,4 +333,13 @@
             #f
             (string-ci>=? b (car c))))))
 
+; (define substring-inner (lambda (string start end buf i)
+;     (if (= i (- end start))
+;         buf
+;         (string-set! buf i (string-ref string (+ i start)))
+;         (substring-inner string start end buf (+ i 1)))
+;         buf)
 
+; (define substring2 (lambda (string start end)
+;     (let ((buf (make-string (- end start))))
+;         (substring-inner string start end buf 0))))

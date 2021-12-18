@@ -607,23 +607,14 @@ test('✅6.3.4', () => {
 })
 
 // 6.3.5  Strings
-test('🚧6.3.5', () => {
+test('✅6.3.5', () => {
   const fbs = new FBS()
   fbs.eval('(define (f) (make-string 3 #\\*))')
   fbs.eval('(define (g) "***")')
   expect(fbs.eval('(string-set! (f) 0 #\\?)').toString()).toBe('"?**"') // unspecified
   expect(() => { fbs.eval('(string-set! (g) 0 #\\?)') }).toThrow(FsException)
   expect(() => { fbs.eval('(string-set! (symbol->string \'immutable) 0 #\\?)') }).toThrow(FsException)
-
-  // expect(new FBS().eval('').toString()).toBe('')
-  // expect(new FBS().eval('').toString()).toBe('')
-  // expect(new FBS().eval('').toString()).toBe('')
-  // expect(new FBS().eval('').toString()).toBe('')
-  // expect(new FBS().eval('').toString()).toBe('')
-  // expect(new FBS().eval('').toString()).toBe('')
-  // expect(new FBS().eval('').toString()).toBe('')
 })
-
 test('🚧6.3.6', () => {
   expect(new FBS().eval('#(0 (2 2 2 2) "Anna")').toString()).toBe('#(0 (2 2 2 2) "Anna")')
   expect(new FBS().eval('(vector \'a \'b \'c)').toString()).toBe('#(a b c)')

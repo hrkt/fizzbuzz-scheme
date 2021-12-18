@@ -2,6 +2,7 @@
 import log from 'loglevel'
 
 import { FsException } from './common.js'
+import { FsUndefined } from './sexp.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsOnlyTypeOf, ensureListContainsThree, ensureListContainsTwo, ensureValueIsTypeOf } from './sexputils.js'
 
@@ -163,6 +164,10 @@ export class FsString {
     return this.#value
   }
 
+  set value (v) {
+    this.#value = v
+  }
+
   get length () {
     return this.#value.length
   }
@@ -182,6 +187,10 @@ export class FsString {
       throw new FsException('arg is out of range:' + i)
     }
     this.#value = this.#value.substring(0, i - 1) + c + this.#value.substring(i + 1)
+  }
+
+  clone () {
+    return new FsString('' + this.#value)
   }
 
   equals (that) {
@@ -1081,5 +1090,58 @@ export class FspStringSet_ {
     ensureValueIsTypeOf(list.at(2), FsChar)
     list.at(0).set(list.at(1).value, list.at(2).value)
     return list.at(0)
+  }
+}
+
+export class FslpSubstring {
+  static proc (list) {
+    ensureListContainsThree(list, 3)
+    ensureValueIsTypeOf(list.at(0), FsString)
+    ensureValueIsTypeOf(list.at(1), FsInteger)
+    ensureValueIsTypeOf(list.at(2), FsInteger)
+    return new FsString(list.at(0).value.substring(list.at(1).value, list.at(2).value))
+  }
+}
+
+export class FslpStringAppend {
+  static proc (list) {
+    return new FsString(list.value.map(v => v.value).join(''))
+  }
+}
+
+export class FslpStringToList {
+  static proc (list) {
+    const ret = []
+    const str = list.at(0).value
+    for (let i = 0; i < list.at(0).value.length; i++) {
+      ret[i] = new FsChar(str.charAt(i))
+    }
+    return new FsList(ret)
+  }
+}
+
+export class FslpListToString {
+  static proc (list) {
+    let buf = ''
+    for (let i = 0; i < list.length; i++) {
+      buf += list.at(i).value
+    }
+    return new FsString(buf)
+  }
+}
+
+export class FslpStringCopy {
+  static proc (list) {
+    return list.at(0).clone()
+  }
+}
+
+export class FslpStringFill {
+  static proc (list) {
+    const orgStr = list.at(0).value
+    const c = list.at(1)
+    const newStr = orgStr.replace(c)
+    list.at(0).value = newStr
+    return FsUndefined.UNDEFINED
   }
 }
