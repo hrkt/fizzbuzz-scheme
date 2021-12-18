@@ -29,12 +29,21 @@ function ensureListContains (list, length) {
   }
 }
 
+export function ensureListContainsOne (list) {
+  ensureListContains(list, 1)
+}
 export function ensureListContainsTwo (list) {
   ensureListContains(list, 2)
 }
 
-export function ensureListContainsOne (list) {
-  ensureListContains(list, 1)
+export function ensureListContainsThree (list) {
+  ensureListContains(list, 3)
+}
+
+export function ensureValueIsTypeOf (value, type) {
+  if (!(value instanceof type)) {
+    throw new FsException('arg should be ' + type.name + ' but got ' + value)
+  }
 }
 
 export function ensureListContainsOnlyTypeOf (list, type) {

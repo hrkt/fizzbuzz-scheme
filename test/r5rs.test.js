@@ -578,6 +578,7 @@ test('✅6.3.2_6', () => {
 })
 
 // all cleared 😊
+// 6.3.3  Symbols
 test('✅6.3.3', () => {
   expect(new FBS().eval('(symbol? \'foo)').toString()).toBe('#t')
   expect(new FBS().eval('(symbol? (car \'(a b))) ').toString()).toBe('#t')
@@ -599,9 +600,28 @@ test('✅6.3.3', () => {
 })
 
 // all cleared 😊
+// 6.3.4  Characters
 test('✅6.3.4', () => {
   expect(new FBS().eval('(<= (char->integer #\\a) (char->integer #\\b))').toString()).toBe('#t')
   expect(new FBS().eval('(char<=? (integer->char 97) (integer->char 98))').toString()).toBe('#t')
+})
+
+// 6.3.5  Strings
+test('🚧6.3.5', () => {
+  const fbs = new FBS()
+  fbs.eval('(define (f) (make-string 3 #\\*))')
+  fbs.eval('(define (g) "***")')
+  expect(fbs.eval('(string-set! (f) 0 #\\?)').toString()).toBe('"?**"') // unspecified
+  expect(() => { fbs.eval('(string-set! (g) 0 #\\?)') }).toThrow(FsException)
+  expect(() => { fbs.eval('(string-set! (symbol->string \'immutable) 0 #\\?)') }).toThrow(FsException)
+
+  // expect(new FBS().eval('').toString()).toBe('')
+  // expect(new FBS().eval('').toString()).toBe('')
+  // expect(new FBS().eval('').toString()).toBe('')
+  // expect(new FBS().eval('').toString()).toBe('')
+  // expect(new FBS().eval('').toString()).toBe('')
+  // expect(new FBS().eval('').toString()).toBe('')
+  // expect(new FBS().eval('').toString()).toBe('')
 })
 
 test('🚧6.3.6', () => {
@@ -619,6 +639,11 @@ test('🚧6.3.6', () => {
   // gauche, mit-scheme does not seems to throw error, while r5rs spec throws error.
   // trying to follow spec.
   expect(() => { new FBS().eval('(vector-set! \'#(0 1 2) 1 "doe") ') }).toThrow(FsException)
+})
+
+// 6.4  Control features
+test('🚧6.4', () => {
+  expect(new FBS().eval('(apply + (list 3 4))').toString()).toBe('7')
 })
 
 // 7. Format Syntax and semantics

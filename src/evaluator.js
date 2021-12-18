@@ -3,9 +3,9 @@
 import log from 'loglevel'
 
 import { FsException } from './common.js'
-import { FsList } from './datatypes.js'
+import { FsList, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
-import { FslsCond, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
+import { FslsCond, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FslsOr, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Evaluator
@@ -70,6 +70,8 @@ export class FsEvaluator {
           return FslsLetAsterisk.proc(sexp.slice(1), env)
         } else if (FsSymbol.LETREC === firstSymbol || FsSymbol.LETREC_ASTERISK === firstSymbol) {
           return FslsLetRecAsterisk.proc(sexp.slice(1), env)
+        } else if (FsSymbol.OR === firstSymbol) {
+          return FslsOr.proc(sexp.slice(1), env)
         } else {
         // for the readability, use this line
         // const args = sexp.slice(1).map(s => this.eval(s, env))
@@ -104,20 +106,27 @@ export class FsEvaluator {
               if (p.params.type === 'fspair') {
                 const paramAsList = []
                 const currentPair = p.params
+                const isProper = isProperList(currentPair)
                 let nextPair = currentPair.cdr
                 paramAsList.push(currentPair.car)
+                let argCount = 1
                 let hasNext = true
                 while (hasNext) {
                   if (nextPair.cdr !== undefined && nextPair.cdr.type !== 'fspair') {
                     paramAsList.push(nextPair.car)
                     paramAsList.push(nextPair.cdr)
                     hasNext = false
+                    argCount += 2
                   } else {
                     paramAsList.push(currentPair.car)
                     nextPair = currentPair.cdr
+                    argCount++
                   }
                 }
-                if (givenParams.length < paramAsList.length) {
+                if (isProper && (givenParams.length < paramAsList.length)) {
+                  throw new FsException('this function requires at least ' + (paramAsList.length - 1) + ' argument(s)')
+                } else if (!isProper && (givenParams.length <= argCount - 2)) {
+                  // check for lambda (a b . c) case
                   throw new FsException('this function requires at least ' + (paramAsList.length - 1) + ' argument(s)')
                 } else { // givenParams.length >== paramAsList.length - 1
                   const varNames = []
