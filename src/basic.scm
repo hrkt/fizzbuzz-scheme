@@ -180,3 +180,157 @@
         (if (equal? key (car (car x)))
             (car x)
             (assoc key (cdr x))))))
+
+; string=?
+; (define string=?-internal (lambda (x y i length)
+;     (if (= i length)
+;         #t
+;         (if (not (eq? (string-ref x i) (string-ref y i)))
+;             #f
+;             (string=?-internal x y (+ i 1) length)
+;     ))))
+
+; (define string=?-2arg (lambda (x y)
+;     (if (not (= (string-length x) (string-length y)))
+;         #f
+;         (string=?-internal x y 0 (string-length x))
+;     )))
+
+
+(define string-comp-internal (lambda (f x y i length)
+    (if (= i length)
+        #t
+        (if (not (apply f (list (string-ref x i) (string-ref y i))))
+            #f
+            (string-comp-internal f x y (+ i 1) length)
+    ))))
+
+(define string-comp-2arg (lambda (f x y)
+    (if (not (= (string-length x) (string-length y)))
+        #f
+        (string-comp-internal f x y 0 (string-length x))
+    )))
+
+(define string=? (lambda (a b . c)
+    (if (and
+        (string-comp-2arg char=? a b)
+        (null? c))
+        #t
+        (if (null? c)
+            #f
+            (string=? b (car c))))))
+
+(define string-ci=? (lambda (a b . c)
+    (if (and
+        (string-comp-2arg char-ci=? a b)
+        (null? c))
+        #t
+        (if (null? c)
+            #f
+            (string-ci=? b (car c))))))
+
+; string-compare-order
+
+(define string-comp-order-internal (lambda (f acceptEqual l<r x y lx ly i)
+        (if (or
+                (and (> i lx) (= lx ly) acceptEqual)
+                (and (> i lx) (< lx ly) l<r)
+                (and (> i ly) (> lx ly) (not l<r))
+                )
+            #t
+            (if (or
+                (and (> i lx) (not acceptEqual) l<r)
+                (and (> i lx) (not acceptEqual) (not l<r))
+                (and (> i lx) acceptEqual (not l<r))
+                )
+                    #f
+                    (if (eq? (string-ref x i) (string-ref y i))
+                        (string-comp-order-internal f acceptEqual l<r x y lx ly (+ i 1))
+                        (if (apply f (list (string-ref x i) (string-ref y i)))
+                            #t
+                            #f))))))
+
+(define string-comp-order-2arg (lambda (f acceptEqual l<r x y)
+        (string-comp-order-internal
+            f acceptEqual l<r x y (- (string-length x) 1) (- (string-length y) 1) 0)
+    ))
+
+; string order
+
+(define string<? (lambda (a b . c)
+    (if (and
+        (string-comp-order-2arg char<? #f #t a b)
+        (null? c))
+        #t
+        (if (null? c)
+            #f
+            (string<? b (car c))))))
+
+
+(define string<=? (lambda (a b . c)
+    (if (and
+        (string-comp-order-2arg char<=? #t #t a b)
+        (null? c))
+        #t
+        (if (null? c)
+            #f
+            (string<=? b (car c))))))
+
+(define string>? (lambda (a b . c)
+    (if (and
+        (string-comp-order-2arg char>? #f #f a b)
+        (null? c))
+        #t
+        (if (null? c)
+            #f
+            (string>? b (car c))))))
+
+(define string>=? (lambda (a b . c)
+    (if (and
+        (string-comp-order-2arg char>=? #t #f a b)
+        (null? c))
+        #t
+        (if (null? c)
+            #f
+            (string>=? b (car c))))))
+
+; string-ci order
+
+(define string-ci<? (lambda (a b . c)
+    (if (and
+        (string-comp-order-2arg char-ci<? #f #t a b)
+        (null? c))
+        #t
+        (if (null? c)
+            #f
+            (string-ci<? b (car c))))))
+
+
+(define string-ci<=? (lambda (a b . c)
+    (if (and
+        (string-comp-order-2arg char-ci<=? #t #t a b)
+        (null? c))
+        #t
+        (if (null? c)
+            #f
+            (string-ci<=? b (car c))))))
+
+(define string-ci>? (lambda (a b . c)
+    (if (and
+        (string-comp-order-2arg char-ci>? #f #f a b)
+        (null? c))
+        #t
+        (if (null? c)
+            #f
+            (string-ci>? b (car c))))))
+
+(define string-ci>=? (lambda (a b . c)
+    (if (and
+        (string-comp-order-2arg char-ci>=? #t #f a b)
+        (null? c))
+        #t
+        (if (null? c)
+            #f
+            (string-ci>=? b (car c))))))
+
+

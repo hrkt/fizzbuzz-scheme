@@ -20,6 +20,7 @@ export class FsSymbol extends FsSExp {
   static LET_ASTERISK = Object.freeze(new FsSymbol('let*'))
   static LETREC = Object.freeze(new FsSymbol('letrec'))
   static LETREC_ASTERISK = Object.freeze(new FsSymbol('letrec*'))
+  static OR = Object.freeze(new FsSymbol('or'))
   static QUASIQUOTE = Object.freeze(new FsSymbol('quasiquote'))
   static QUOTE = Object.freeze(new FsSymbol('quote'))
   static SINGLE_QUOTE = Object.freeze(new FsSymbol('\''))

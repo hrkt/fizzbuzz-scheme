@@ -596,6 +596,14 @@ export class FsPeekMemoryUsage extends FsSExp {
   }
 }
 
+export class FspApply extends FsSExp {
+  static proc (list, env) {
+    ensureListContainsTwo(list)
+    const f = list.at(0)
+    const args = list.at(1)
+    return f(args, env)
+  }
+}
 export class FspCar extends FsSExp {
   static proc (arg) {
     const target = arg.at(0)

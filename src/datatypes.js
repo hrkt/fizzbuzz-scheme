@@ -3,7 +3,7 @@ import log from 'loglevel'
 
 import { FsException } from './common.js'
 import { FsSExp } from './sexpbase.js'
-import { ensureListContainsOne, ensureListContainsOnlyTypeOf } from './sexputils.js'
+import { ensureListContainsOne, ensureListContainsOnlyTypeOf, ensureListContainsThree, ensureListContainsTwo, ensureValueIsTypeOf } from './sexputils.js'
 
 export function canBeTreatedAsComplex (t) {
   return t !== null && (t instanceof FsInteger || t instanceof FsRational || t instanceof FsReal || t instanceof FsComplex)
@@ -152,13 +152,36 @@ export class FsNumber {
 
 export class FsString {
   #value
+  #mutable
   static stringId = 0
-  constructor (value) {
+  constructor (value, mutable = false) {
     this.#value = value
+    this.#mutable = mutable
   }
 
   get value () {
     return this.#value
+  }
+
+  get length () {
+    return this.#value.length
+  }
+
+  charAt (i) {
+    if (i >= this.#value.length) {
+      throw new FsException('arg is out of range:' + i)
+    }
+    return this.#value.charAt(i)
+  }
+
+  set (i, c) {
+    if (!this.#mutable) {
+      throw new FsException('this string is not mutable')
+    }
+    if (i >= this.#value.length) {
+      throw new FsException('arg is out of range:' + i)
+    }
+    this.#value = this.#value.substring(0, i - 1) + c + this.#value.substring(i + 1)
   }
 
   equals (that) {
@@ -1015,5 +1038,48 @@ export class FspIntegerToChar {
     ensureListContainsOnlyTypeOf(list, FsInteger)
     const t = list.at(0)
     return new FsChar(String.fromCharCode(t.value))
+  }
+}
+
+// string
+
+export class FspMakeString {
+  static proc (list) {
+    const c = list.length > 1 ? list.at(1).value : ' '
+    const l = list.at(0).value
+    return new FsString(c.repeat(l), true)
+  }
+}
+
+export class FspString {
+  static proc (list) {
+    return new FsString(list.value.map(c => c.value).join(''), true)
+  }
+}
+
+export class FspStringLength {
+  static proc (list) {
+    ensureListContainsOnlyTypeOf(list, FsString)
+    return new FsInteger(list.at(0).length)
+  }
+}
+
+export class FspStringRef {
+  static proc (list) {
+    ensureListContainsTwo(list)
+    ensureValueIsTypeOf(list.at(0), FsString)
+    ensureValueIsTypeOf(list.at(1), FsInteger)
+    return new FsChar(list.at(0).charAt(list.at(1).value))
+  }
+}
+
+export class FspStringSet_ {
+  static proc (list) {
+    ensureListContainsThree(list, 3)
+    ensureValueIsTypeOf(list.at(0), FsString)
+    ensureValueIsTypeOf(list.at(1), FsInteger)
+    ensureValueIsTypeOf(list.at(2), FsChar)
+    list.at(0).set(list.at(1).value, list.at(2).value)
+    return list.at(0)
   }
 }

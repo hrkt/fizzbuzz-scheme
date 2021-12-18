@@ -5,12 +5,12 @@
 import log from 'loglevel'
 
 import { FsException } from './common.js'
-import { FsNumber, FspCharToInteger, FspIntegerToChar, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal } from './datatypes.js'
+import { FsNumber, FspCharToInteger, FspIntegerToChar, FspMakeString, FsPredicateComplex, FsPredicateInteger, FsPredicateRational, FsPredicateReal, FspString, FspStringLength, FspStringRef, FspStringSet_ } from './datatypes.js'
 import { FBS_QUASIQUOTE_LEVEL, FBS_UNQUOTE_LEVEL, FsEnv } from './env.js'
 import { FslpAbs, FspAcos, FspAngle, FspAsin, FspAtan, FspCeiling, FspCos, FspDenominator, FspDivide, FspExactToInexact, FspExp, FspExpt, FspFloor, FspGcd, FspGt, FspGte, FspImagPart, FspInexactToExact, FspLcm, FspLog, FspLt, FspLte, FspMagnitude, FspMakePolar, FspMakeRectangular, FspMax, FspMin, FspMinus, FspMod, FspModulo, FspMultiply, FspNumberEquals, FspNumberToString, FspNumerator, FspPlus, FspPow, FspQuotient, FspRationalize, FspRealPart, FspReminder, FspRound, FspSin, FspSqrt, FspStringToNumber, FspTan, FspTruncate } from './math-operations.js'
 import { FslpDisplay, FslpNewline, FslpWrite, FsopLoad, FspCloseInputPort, FspCloseOutputPort, FspConsoleInputPort, FspConsoleOutputPort, FspCurrentInputPort, FspCurrentOutputPort, FspOpenInputFile, FspOpenOutputFile, FspReadChar, FspStandardInputPort, FspStandardOutputPort } from './port.js'
-import { FsPredicateBoolean, FsPredicateChar, FsPredicateCharEquals, FsPredicateCharGreaterThan, FsPredicateCharGreaterThanOrEqualsTo, FsPredicateCharLessThan, FsPredicateCharLessThanOrEqualsTo, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateStringEquals, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
-import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslpReverse, FslsAnd, FslsDo, FslsLet, FslsOr, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspStringToSymbol, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
+import { FsPredicateBoolean, FsPredicateChar, FsPredicateCharEquals, FsPredicateCharGreaterThan, FsPredicateCharGreaterThanOrEqualsTo, FsPredicateCharLessThan, FsPredicateCharLessThanOrEqualsTo, FsPredicateEq, FsPredicateEqual, FsPredicateEqv, FsPredicateList, FsPredicateNull, FsPredicateNumber, FsPredicatePair, FsPredicateProcedure, FsPredicateString, FsPredicateSymbol, FsPredicateVector } from './predicates.js'
+import { FslpAppend, FslpLength, FslpList, FslpMap, FslpNot, FslpReverse, FslsAnd, FslsDo, FslsLet, FslsOr, FspApply, FspCallCc, FspCar, FspCdr, FspCons, FsPeekMemoryUsage, FspGensym, FspLastPair, FspSetCdr, FspStringToSymbol, FspSymbolToString, FssBegin, FssDefine, FssIf, FssLambda, FssSet, FssUnquote, FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 import { FspMakeVector, FspVector, FspVectorRef, FspVectorSet } from './vector-operations.js'
 
@@ -50,6 +50,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('and'), FslsAnd.proc)
   env.set(new FsSymbol('angle'), FspAngle.proc)
   env.set(new FsSymbol('append'), FslpAppend.proc)
+  env.set(new FsSymbol('apply'), FspApply.proc)
   env.set(new FsSymbol('abs'), FslpAbs.proc)
   env.set(new FsSymbol('acos'), FspAcos.proc)
   env.set(new FsSymbol('asin'), FspAsin.proc)
@@ -100,6 +101,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('magnitude'), FspMagnitude.proc)
   env.set(new FsSymbol('make-polar'), FspMakePolar.proc)
   env.set(new FsSymbol('make-rectangular'), FspMakeRectangular.proc)
+  env.set(new FsSymbol('make-string'), FspMakeString.proc)
   env.set(new FsSymbol('make-vector'), FspMakeVector.proc)
   env.set(new FsSymbol('map'), FslpMap.proc)
   env.set(new FsSymbol('max'), FspMax.proc)
@@ -130,9 +132,14 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('sqrt'), FspSqrt.proc)
   env.set(new FsSymbol('standard-input-port'), FspStandardInputPort.proc)
   env.set(new FsSymbol('standard-output-port'), FspStandardOutputPort.proc)
+  env.set(new FsSymbol('string'), FspString.proc)
   env.set(new FsSymbol('string->number'), FspStringToNumber.proc)
   env.set(new FsSymbol('string->symbol'), FspStringToSymbol.proc)
-  env.set(new FsSymbol('string=?'), FsPredicateStringEquals.proc)
+  env.set(new FsSymbol('string-length'), FspStringLength.proc)
+  env.set(new FsSymbol('string-ref'), FspStringRef.proc)
+  env.set(new FsSymbol('string-set!'), FspStringSet_.proc)
+  // env.set(new FsSymbol('string=?'), FsPredicateStringEquals.proc)
+  env.set(new FsSymbol('string?'), FsPredicateString.proc)
   env.set(new FsSymbol('symbol?'), FsPredicateSymbol.proc)
   env.set(new FsSymbol('symbol->string'), FspSymbolToString.proc)
   env.set(new FsSymbol('tan'), FspTan.proc)

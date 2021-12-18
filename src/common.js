@@ -6,6 +6,7 @@ export class FsException {
     this.message = message
     this.name = 'FsException'
     this.innerException = innerException
+    this.stack = (new Error()).stack
   }
 
   toString () {
@@ -19,6 +20,7 @@ export class FsError extends Error {
     super(message)
     this.name = 'FsError'
     this.innerException = innerException
+    this.stack = (new Error()).stack
   }
 
   toString () {

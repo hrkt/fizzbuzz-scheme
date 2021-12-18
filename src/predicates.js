@@ -110,6 +110,14 @@ export class FsPredicatePair extends FsSExp {
   }
 }
 
+export class FsPredicateString extends FsSExp {
+  static proc (list) {
+    return list.at(0) instanceof FsString
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
+  }
+}
+
 export class FsPredicateVector extends FsSExp {
   static proc (list) {
     return list.at(0) instanceof FsVector
