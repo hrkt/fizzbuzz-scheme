@@ -241,6 +241,10 @@ export class FsList extends FsSExp {
       return (arg instanceof FsList) && arg.length === 0
     }
 
+    entries () {
+      return this.value
+    }
+
     toString () {
       if (log.getLevel() <= log.levels.DEBUG) {
         log.debug('FsList.toString() called. this.value:' + JSON.stringify(this.value, null, 2))
@@ -347,7 +351,7 @@ export class FsPair extends FsList {
       return len
     }
 
-    while (this.cdr instanceof FsPair) {
+    while (next.cdr instanceof FsPair) {
       next = next.cdr
       len++
       if (next.cdr === FsList.EMPTY) {
@@ -355,6 +359,27 @@ export class FsPair extends FsList {
       }
     }
     throw new FsException('can not measure length of an improper pair')
+  }
+
+  // return entries if this pair is not a proper list
+  entries () {
+    const ret = []
+    let currentPair = this
+    while (true) {
+      if (currentPair.cdr === FsList.EMPTY) {
+        if (currentPair.car !== FsList.EMPTY) {
+          ret.push(currentPair.car)
+        }
+        return ret
+      } else if (currentPair.cdr instanceof FsPair) {
+        ret.push(currentPair.car)
+        currentPair = currentPair.cdr
+      } else {
+        ret.push(currentPair.car)
+        ret.push(currentPair.cdr)
+        return ret
+      }
+    }
   }
 
   toString () {
@@ -1143,5 +1168,30 @@ export class FslpStringFill {
     const newStr = orgStr.replace(c)
     list.at(0).value = newStr
     return FsUndefined.UNDEFINED
+  }
+}
+
+// vector
+
+export class FslpVectorToList {
+  static proc (list) {
+    return new FsList(list.at(0).value)
+  }
+}
+
+export class FslpListToVector {
+  static proc (list) {
+    return new FsVector(list.at(0).value)
+  }
+}
+
+export class FslpVectorFill_ {
+  static proc (list) {
+    const vector = list.at(0)
+    const fillWith = list.at(1)
+    for (let i = 0; i < vector.value.length; i++) {
+      vector.value[i] = fillWith
+    }
+    return FsUndefined.undefined
   }
 }
