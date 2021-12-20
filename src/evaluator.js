@@ -72,7 +72,7 @@ export class FsEvaluator {
           return FslsLetRecAsterisk.proc(sexp.slice(1), env)
         } else if (FsSymbol.OR === firstSymbol) {
           return FslsOr.proc(sexp.slice(1), env)
-        } else if (FsSymbol.MAP === firstSymbol) {
+        } else if (FsSymbol.MAP === firstSymbol || FsSymbol.FOR_EACH === firstSymbol) {
           return FslpMap.proc(sexp.slice(1), env)
         } else {
         // for the readability, use this line

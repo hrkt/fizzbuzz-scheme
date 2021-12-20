@@ -14,6 +14,7 @@ export class FsSymbol extends FsSExp {
   static DEFINE_MACRO = Object.freeze(new FsSymbol('define-macro'))
   static ELSE = Object.freeze(new FsSymbol('else'))
   static EOF_OBJECT = Object.freeze(new FsSymbol('eof-object'))
+  static FOR_EACH = Object.freeze(new FsSymbol('for-each'))
   static IF = Object.freeze(new FsSymbol('if'))
   static LAMBDA = Object.freeze(new FsSymbol('lambda'))
   static LET = Object.freeze(new FsSymbol('let'))
@@ -55,6 +56,8 @@ export class FsSymbol extends FsSExp {
         return this.DO
       case 'else':
         return this.ELSE
+      case 'for-each':
+        return this.FOR_EACH
       case 'if':
         return this.IF
       case 'lambda':

@@ -85,6 +85,7 @@ export function getGlobalEnv () {
   env.set(new FsSymbol('exp'), FspExp.proc)
   env.set(new FsSymbol('expt'), FspExpt.proc)
   env.set(new FsSymbol('floor'), FspFloor.proc)
+  env.set(new FsSymbol('for-each'), FslpMap.proc)
   env.set(new FsSymbol('gcd'), FspGcd.proc)
   env.set(new FsSymbol('gensym'), FspGensym.proc)
   env.set(new FsSymbol('imag-part'), FspImagPart.proc)

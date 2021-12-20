@@ -656,7 +656,7 @@ test('✅6.4_1', () => {
   expect(fbs.eval('((compose sqrt *) 12 75)').toString()).toBe('30')
 })
 
-test('🚧6.4_2', () => {
+test('✅6.4_2', () => {
   expect(new FBS().eval('(map cadr \'((a b) (d e) (g h)))').toString()).toBe('(b e h)')
   expect(new FBS().eval('(map (lambda (n) (expt n n)) \'(1 2 3 4 5))').toString()).toBe('(1 4 27 256 3125)')
   expect(new FBS().eval('(map + \'(1 2 3) \'(4 5 6))').toString()).toBe('(5 7 9)')
@@ -668,6 +668,15 @@ test('🚧6.4_2', () => {
          count)
        '(a b)))`
   expect(new FBS().eval(code).toString()).toBe('(1 2)') // order is unspecified. (2 1) is also OK.
+})
+
+test('🚧6.4_3', () => {
+  const code = `(let ((v (make-vector 5)))
+  (for-each (lambda (i)
+              (vector-set! v i (* i i)))
+            '(0 1 2 3 4))
+  v)`
+  expect(new FBS().eval(code).toString()).toBe('#(0 1 4 9 16)')
 })
 
 // 7. Format Syntax and semantics
