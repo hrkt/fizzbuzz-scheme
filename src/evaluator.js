@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsList, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
-import { FslsCond, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FslsOr, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
+import { FslpMap, FslsCond, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FslsOr, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Evaluator
@@ -72,6 +72,8 @@ export class FsEvaluator {
           return FslsLetRecAsterisk.proc(sexp.slice(1), env)
         } else if (FsSymbol.OR === firstSymbol) {
           return FslsOr.proc(sexp.slice(1), env)
+        } else if (FsSymbol.MAP === firstSymbol) {
+          return FslpMap.proc(sexp.slice(1), env)
         } else {
         // for the readability, use this line
         // const args = sexp.slice(1).map(s => this.eval(s, env))

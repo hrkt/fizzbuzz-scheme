@@ -97,7 +97,10 @@ export class FsPredicateSymbol extends FsSExp {
 
 export class FsPredicateProcedure extends FsSExp {
   static proc (list) {
-    return list.at(0) instanceof FssDefinedProcedure ? FsBoolean.TRUE : FsBoolean.FALSE
+    return list.at(0) instanceof FssDefinedProcedure ||
+    typeof list.at(0) === 'function'
+      ? FsBoolean.TRUE
+      : FsBoolean.FALSE
   }
 }
 

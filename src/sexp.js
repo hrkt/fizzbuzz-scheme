@@ -475,13 +475,48 @@ export class FslpLength extends FsSExp {
 
 export class FslpMap extends FsSExp {
   static proc (list, env) {
-    const p = list.at(0)
-    const body = list.at(1)
-    const ret = []
-    for (let i = 0; i < body.length; i++) {
-      ret.push(FsEvaluator.eval(new FsList([p, body.at(i)]), env))
+    const bodies = list.slice(1)
+    const proc = list.at(0)
+
+    // check length
+    const multipleEntries = []
+    const isSymbolFlags = []
+    for (let i = 0; i < bodies.length; i++) {
+      isSymbolFlags[i] = bodies.at(i).at(0) && (bodies.at(i).at(0).value === '\'')
+      const targetList = FsEvaluator.eval(bodies.at(i), env)
+      multipleEntries.push(targetList.entries())
     }
-    return new FsList(ret)
+    if (bodies.length > 1 && !multipleEntries.every(v => v.length === multipleEntries[0].length)) {
+      throw new FsException('syntax error: map take bodies of same length but got ' + multipleEntries.map(v => v.length))
+    }
+
+    if (bodies.length === 1) {
+      const ret = []
+      for (let j = 0; j < multipleEntries[0].length; j++) {
+        const s = isSymbolFlags[0] ? new FsList([FsSymbol.QUOTE, (multipleEntries[0])[j]]) : (multipleEntries[0])[j]
+        ret.push(FsEvaluator.eval(new FsList([proc, s]), env))
+      }
+      return new FsList(ret)
+    } else {
+      // multiple bodies
+      const argsList = [] // array of firstList.length x bodies.length
+      for (let k = 0; k < multipleEntries[0].length; k++) {
+        argsList[k] = []
+      }
+      for (let k = 0; k < multipleEntries[0].length; k++) {
+        for (let i = 0; i < bodies.length; i++) {
+          argsList[k].push((multipleEntries[i])[k])
+        }
+      }
+
+      const ret = []
+      for (let i = 0; i < multipleEntries[0].length; i++) {
+        argsList[i].unshift(proc)
+        const tmp = new FsList(argsList[i])
+        ret.push(FsEvaluator.eval(tmp, env))
+      }
+      return new FsList(ret)
+    }
   }
 }
 

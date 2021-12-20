@@ -615,7 +615,9 @@ test('✅6.3.5', () => {
   expect(() => { fbs.eval('(string-set! (g) 0 #\\?)') }).toThrow(FsException)
   expect(() => { fbs.eval('(string-set! (symbol->string \'immutable) 0 #\\?)') }).toThrow(FsException)
 })
-test('🚧6.3.6', () => {
+
+// 6.3.6  Vectors
+test('✅6.3.6', () => {
   expect(new FBS().eval('#(0 (2 2 2 2) "Anna")').toString()).toBe('#(0 (2 2 2 2) "Anna")')
   expect(new FBS().eval('(vector \'a \'b \'c)').toString()).toBe('#(a b c)')
   expect(new FBS().eval('(vector? (vector \'a \'b \'c))').toString()).toBe('#t') // additional: from its definition
@@ -636,8 +638,36 @@ test('🚧6.3.6', () => {
 })
 
 // 6.4  Control features
-test('🚧6.4', () => {
+test('✅6.4_1', () => {
+  expect(new FBS().eval('(procedure? car)').toString()).toBe('#t')
+  expect(new FBS().eval('(procedure? \'car)').toString()).toBe('#f')
+  expect(new FBS().eval('(procedure? (lambda (x) (* x x)))').toString()).toBe('#t')
+  expect(new FBS().eval('(procedure? \'(lambda (x) (* x x)))').toString()).toBe('#f')
+  expect(new FBS().eval('(call-with-current-continuation procedure?)').toString()).toBe('#t')
+
   expect(new FBS().eval('(apply + (list 3 4))').toString()).toBe('7')
+
+  const code = `(define compose
+    (lambda (f g)
+      (lambda args
+        (f (apply g args)))))`
+  const fbs = new FBS()
+  fbs.eval(code)
+  expect(fbs.eval('((compose sqrt *) 12 75)').toString()).toBe('30')
+})
+
+test('🚧6.4_2', () => {
+  expect(new FBS().eval('(map cadr \'((a b) (d e) (g h)))').toString()).toBe('(b e h)')
+  expect(new FBS().eval('(map (lambda (n) (expt n n)) \'(1 2 3 4 5))').toString()).toBe('(1 4 27 256 3125)')
+  expect(new FBS().eval('(map + \'(1 2 3) \'(4 5 6))').toString()).toBe('(5 7 9)')
+
+  const code = `
+  (let ((count 0))
+  (map (lambda (ignored)
+         (set! count (+ count 1))
+         count)
+       '(a b)))`
+  expect(new FBS().eval(code).toString()).toBe('(1 2)') // order is unspecified. (2 1) is also OK.
 })
 
 // 7. Format Syntax and semantics

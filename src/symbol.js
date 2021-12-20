@@ -20,6 +20,7 @@ export class FsSymbol extends FsSExp {
   static LET_ASTERISK = Object.freeze(new FsSymbol('let*'))
   static LETREC = Object.freeze(new FsSymbol('letrec'))
   static LETREC_ASTERISK = Object.freeze(new FsSymbol('letrec*'))
+  static MAP = Object.freeze(new FsSymbol('map'))
   static OR = Object.freeze(new FsSymbol('or'))
   static QUASIQUOTE = Object.freeze(new FsSymbol('quasiquote'))
   static QUOTE = Object.freeze(new FsSymbol('quote'))
@@ -66,6 +67,8 @@ export class FsSymbol extends FsSExp {
         return this.LETREC
       case 'letrec*':
         return this.LETREC_ASTERISK
+      case 'map':
+        return this.MAP
       case 'quasiquote':
         return this.QUASIQUOTE
       case 'quote':
