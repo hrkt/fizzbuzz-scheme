@@ -10,7 +10,7 @@ import { jest } from '@jest/globals'
 
 import { FsException } from '../src/common.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
-import { FssDefinedProcedure, FsUndefined } from '../src/sexp.js'
+import { FsPromise, FssDefinedProcedure, FsUndefined } from '../src/sexp.js'
 
 // 1. Overview of scheme
 // all cleared 😊
@@ -670,13 +670,46 @@ test('✅6.4_2', () => {
   expect(new FBS().eval(code).toString()).toBe('(1 2)') // order is unspecified. (2 1) is also OK.
 })
 
-test('🚧6.4_3', () => {
+test('✅6.4_3', () => {
   const code = `(let ((v (make-vector 5)))
   (for-each (lambda (i)
               (vector-set! v i (* i i)))
             '(0 1 2 3 4))
   v)`
   expect(new FBS().eval(code).toString()).toBe('#(0 1 4 9 16)')
+})
+
+test('✅6.4_4', () => {
+  expect(new FBS().eval('(force (delay (+ 1 2)))').toString()).toBe('3')
+  expect(new FBS().eval('(let ((p (delay (+ 1 2)))) (list (force p) (force p)))').toString()).toBe('(3 3)')
+  const code = `
+  (define a-stream
+    (letrec ((next
+              (lambda (n)
+                (cons n (delay (next (+ n 1)))))))
+      (next 0)))
+  (define head car)
+  (define tail
+    (lambda (stream) (force (cdr stream))))
+
+  (head (tail (tail a-stream)))`
+  expect(new FBS().eval(code).toString()).toBe('2')
+})
+
+test('✅6.4_5', () => {
+  const code = `(define count 0)
+  (define p
+    (delay (begin (set! count (+ count 1))
+                  (if (> count x)
+                      count
+                      (force p)))))
+  (define x 5)`
+  const fbs = new FBS()
+  fbs.eval(code)
+  expect(fbs.eval('p') instanceof FsPromise).toBe(true)
+  expect(fbs.eval('(force p)').toString()).toBe('6')
+  expect(fbs.eval('p') instanceof FsPromise).toBe(true)
+  expect(fbs.eval('(begin (set! x 10) (force p))').toString()).toBe('6')
 })
 
 // 7. Format Syntax and semantics

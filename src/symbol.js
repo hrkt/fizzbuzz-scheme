@@ -8,6 +8,7 @@ export class FsSymbol extends FsSExp {
   static COMMA = Object.freeze(new FsSymbol(','))
   static COMMA_FOLLOWED_BY_AT = Object.freeze(new FsSymbol(',@'))
   static COND = Object.freeze(new FsSymbol('cond'))
+  static DELAY = Object.freeze(new FsSymbol('delay'))
   static DO = Object.freeze(new FsSymbol('do'))
   static DOT = Object.freeze(new FsSymbol('.'))
   static DEFINE = Object.freeze(new FsSymbol('define'))
@@ -48,6 +49,8 @@ export class FsSymbol extends FsSExp {
         return this.BEGIN
       case 'cond':
         return this.COND
+      case 'delay':
+        return this.DELAY
       case 'define':
         return this.DEFINE
       case 'define-macro':
