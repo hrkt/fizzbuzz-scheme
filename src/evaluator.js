@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsList, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
-import { FslpMap, FslsCond, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FslsOr, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
+import { FslpMap, FslsCond, FslsDelay, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FslsOr, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Evaluator
@@ -72,8 +72,10 @@ export class FsEvaluator {
           return FslsLetRecAsterisk.proc(sexp.slice(1), env)
         } else if (FsSymbol.OR === firstSymbol) {
           return FslsOr.proc(sexp.slice(1), env)
-        } else if (FsSymbol.MAP === firstSymbol) {
+        } else if (FsSymbol.MAP === firstSymbol || FsSymbol.FOR_EACH === firstSymbol) {
           return FslpMap.proc(sexp.slice(1), env)
+        } else if (FsSymbol.DELAY === firstSymbol) {
+          return FslsDelay.proc(sexp.slice(1), env)
         } else {
         // for the readability, use this line
         // const args = sexp.slice(1).map(s => this.eval(s, env))
@@ -98,7 +100,7 @@ export class FsEvaluator {
               for (let i = 1; i < sexp.length; i++) {
                 evaled.push(FsEvaluator.eval(sexp.at(i), env))
               }
-              innerEnv.set(p.params, new FsList(evaled))
+              innerEnv.set(p.params, new FsList(evaled), true) // override var name
               sexp = p.body.at(0) // TODO: multiplue bodies
               env = innerEnv
             } else {
@@ -140,12 +142,12 @@ export class FsEvaluator {
                     tmpEnv.clearSelfVars() // reuse
                   }
                   for (let i = 0; i < varNames.length; i++) {
-                    innerEnv.set(varNames[i], results[i])
+                    innerEnv.set(varNames[i], results[i], true)
                   }
                   const rest = givenParams.slice(paramAsList.length - 1)
                   // innerEnv.set(paramAsList[paramAsList.length - 1], FsEvaluator.eval(rest, env))
                   const restEvaled = rest.value.map(s => FsEvaluator.eval(s, env))
-                  innerEnv.set(paramAsList[paramAsList.length - 1], new FsList(restEvaled))
+                  innerEnv.set(paramAsList[paramAsList.length - 1], new FsList(restEvaled), true) // override var name
                 }
                 sexp = p.body.at(0) // TODO: multiplue bodies
                 env = innerEnv
@@ -160,7 +162,7 @@ export class FsEvaluator {
                   tmpEnv.clearSelfVars() // reuse
                 }
                 for (let i = 0; i < varNames.length; i++) {
-                  innerEnv.set(varNames[i], results[i])
+                  innerEnv.set(varNames[i], results[i], true) // override var name
                 }
 
                 sexp = p.body.at(0) // TODO: multiplue bodies

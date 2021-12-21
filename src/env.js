@@ -65,6 +65,10 @@ export class FsEnv {
       log.debug('---------------------------------')
     }
 
+    if (this.vars[key]) {
+      this.vars[key] = value
+      return
+    }
     if (!override && this.outer !== null) {
       let nextOuter = this.outer
       while (nextOuter !== null) {
@@ -77,7 +81,11 @@ export class FsEnv {
       }
     }
 
-    this.vars[key] = value
+    if (!override) {
+      throw new FsException('can not set value that is not defined previously.')
+    } else {
+      this.vars[key] = value
+    }
   }
 
   find (symbol) {

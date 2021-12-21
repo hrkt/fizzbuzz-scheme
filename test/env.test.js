@@ -14,13 +14,13 @@ test('define env success', () => {
 
 test('get a symbol from the env success', () => {
   const env = new FsEnv(null)
-  env.set(new FsSymbol('A'), new FsInteger(1))
+  env.set(new FsSymbol('A'), new FsInteger(1), true)
   expect(env.find(new FsSymbol('A'))).toStrictEqual(new FsInteger(1))
 })
 
 test('define env success with outer env success', () => {
   const outerEnv = new FsEnv(null)
-  outerEnv.set(new FsSymbol('A'), new FsInteger(1))
+  outerEnv.set(new FsSymbol('A'), new FsInteger(1), true)
   const env = new FsEnv(outerEnv)
   expect(env.find(new FsSymbol('A'))).toStrictEqual(new FsInteger(1))
 })

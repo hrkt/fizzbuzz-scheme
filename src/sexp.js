@@ -65,7 +65,7 @@ export class FssDefinedProcedure extends FsSExp {
     // These lines are used to expand macro in expand().
     // TODO: try to unify this and logic in eval()
     const newEnv = new FsEnv(this.env)
-    newEnv.set(this.params, execParams)
+    newEnv.set(this.params, execParams, true) // override var name
     return FsEvaluator.eval(this.body.at(0), newEnv)
   }
 
@@ -144,7 +144,7 @@ export class FslsNamedLet extends FsSExp {
     paramList.push(...vars)
 
     const procedure = new FssDefinedProcedure(new FsList(paramList), new FsList([body]), innerEnv)
-    innerEnv.set(procName, procedure)
+    innerEnv.set(procName, procedure, true) // override var name
 
     return FsEvaluator.eval(body, innerEnv)
   }
@@ -172,7 +172,7 @@ export class FslsLet extends FsSExp {
 
     const innerEnv = new FsEnv(env)
     for (let i = 0; i < vars.length; i++) {
-      innerEnv.set(vars[i], varMap.get(vars[i]))
+      innerEnv.set(vars[i], varMap.get(vars[i]), true) // override var name
     }
 
     let ret = null
@@ -200,7 +200,7 @@ export class FslsLetAsterisk extends FsSExp {
 
     const innerEnv = new FsEnv(env)
     for (let i = 0; i < varDefs.length; i++) {
-      innerEnv.set(varDefs.at(i).at(0), FsEvaluator.eval(varDefs.at(i).at(1), env))
+      innerEnv.set(varDefs.at(i).at(0), FsEvaluator.eval(varDefs.at(i).at(1), innerEnv), true) // override var name
     }
 
     let ret = null
@@ -227,9 +227,8 @@ export class FslsLetRecAsterisk extends FsSExp {
     }
 
     const emptyEnv = new FsEnv(env)
-    emptyEnv.clearVars()
     for (let i = 0; i < varDefs.length; i++) {
-      emptyEnv.set(varDefs.at(i).at(0), FsEvaluator.eval(varDefs.at(i).at(1), emptyEnv))
+      emptyEnv.set(varDefs.at(i).at(0), FsEvaluator.eval(varDefs.at(i).at(1), emptyEnv), true) // override var name
     }
 
     let ret = null
@@ -258,7 +257,7 @@ export class FssDefine extends FsSExp {
       // (define x (list 'a 'b 'c))
       // (define y x)
       const cdr = list.at(1)
-      env.set(car, FsEvaluator.eval(cdr, env))
+      env.set(car, FsEvaluator.eval(cdr, env), true) // override var
       if (log.getLevel() <= log.levels.DEBUG) {
         log.debug('define symbol - symbol:' + car + ' value:' + cdr)
       }
@@ -377,6 +376,38 @@ export class FslsOr extends FsSExp {
   }
 }
 
+export class FsPromise {
+  static promiseId = 0
+  constructor (list, env) {
+    this.list = list
+    this.env = env
+    this.resolved = false
+    this.id = FsPromise.promiseId++
+  }
+
+  resolved () {
+    return this.resolved
+  }
+
+  resolve (env) {
+    if (this.resolved) {
+      return this.resolvedValue
+    }
+    this.resolvedValue = FsEvaluator.eval(this.list, this.env)
+    this.resolved = true
+    return this.resolvedValue
+  }
+
+  toString () {
+    return 'FsPromise #' + this.id
+  }
+}
+export class FslsDelay extends FsSExp {
+  static proc (list, env) {
+    ensureListContainsOne(list)
+    return new FsPromise(list.at(0), env)
+  }
+}
 export class FslsDo extends FsSExp {
   static proc (list, env) {
     const newEnv = new FsEnv(env)
@@ -390,7 +421,7 @@ export class FslsDo extends FsSExp {
       const init = FsEvaluator.eval(def.at(1), newEnv)
 
       const stepExp = def.length === 2 ? def.at(0) : def.at(2)
-      newEnv.set(symbol, init)
+      newEnv.set(symbol, init, true) // override var name
       symbols[i] = symbol
       symbolToStepMap.set(symbol, stepExp)
     }
@@ -426,6 +457,18 @@ export class FslsDo extends FsSExp {
       return buf[0]
     } else {
       return new FsList(buf)
+    }
+  }
+}
+
+export class FslpForce extends FsSExp {
+  static proc (list, env) {
+    ensureListContainsOne(list)
+    const target = list.at(0)
+    if (target instanceof FsPromise) {
+      return target.resolve(env)
+    } else {
+      return FsEvaluator.eval(target, env)
     }
   }
 }
@@ -807,7 +850,7 @@ export class FspCallCc {
         throw ball
       }
       // s.proc = throwBack // do not need to set proc like this because it is lookuped from Symbol Table
-      newEnv.set(s, throwBack)
+      newEnv.set(s, throwBack, true) // override name
       const sexp = new FsList([arg.at(0), s])
       return FsEvaluator.eval(sexp, newEnv)
     } catch (e) {
@@ -828,7 +871,7 @@ export class FspGensym {
     FspGensym.id++
     const v = 'FSG_' + FspGensym.id
     const s = new FsSymbol(v)
-    env.set(s, null)
+    env.set(s, null, true)
     return s
   }
 }
