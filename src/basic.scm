@@ -347,4 +347,16 @@
 (define write-char (lambda (c . port)
     (if (null? port)
         (display (string c))
-        (display (string c) (first port))))
+        (display (string c) (first port)))))
+
+(define scheme-report-environment (lambda (version)
+    (if (not (eq? 5 version))
+        (raise "only 5 is permitted here.")
+        ()
+        )))
+
+(define null-environment (lambda (version)
+    (if (not (eq? 5 version))
+        (raise "only 5 is permitted here.")
+        ()
+        )))

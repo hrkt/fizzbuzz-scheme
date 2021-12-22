@@ -1,5 +1,6 @@
 'use strict'
 
+import { FsException } from '../src/common.js'
 import { FsBoolean, FsChar } from '../src/datatypes.js'
 import { FizzBuzzScheme as FBS } from '../src/index.js'
 
@@ -97,4 +98,22 @@ test('evaluating (char-ci>? #\\B #\\a) yields #t', () => {
 
 test('evaluating (char-ci>=? #\\A #\\a) yields #t', () => {
   expect(new FBS().eval('(char-ci>=? #\\A #\\a)')).toBe(FsBoolean.TRUE)
+})
+
+// scheme-report-environment version)
+test('evaluating (scheme-report-environment 5) do not throw an error', () => {
+  expect(new FBS().eval('(scheme-report-environment 5)')).not.toBeNull()
+})
+
+test('evaluating (scheme-report-environment 7) throws an exception', () => {
+  expect(() => { new FBS().eval('(scheme-report-environment 7)') }).toThrow(FsException)
+})
+
+// (null-environment version)
+test('evaluating (null-environment 5) do not throw an error', () => {
+  expect(new FBS().eval('(null-environment 5)')).not.toBeNull()
+})
+
+test('evaluating (null-environment 7) throws an exception', () => {
+  expect(() => { new FBS().eval('(null-environment 7)') }).toThrow(FsException)
 })
