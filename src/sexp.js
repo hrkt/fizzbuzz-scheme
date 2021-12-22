@@ -7,6 +7,7 @@ import { FsError, FsException } from './common.js'
 import { FsBoolean, FsInteger, FsList, FsNumber, FsPair, FsString, FsVector, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
 import { FsEvaluator } from './evaluator.js'
+import { getGlobalEnv } from './global-env.js'
 import { FsSExp } from './sexpbase.js'
 import { ensureListContainsOne, ensureListContainsOnlyTypeOf, ensureListContainsTwo, ensureListLengthAtLeast } from './sexputils.js'
 import { FsSymbol } from './symbol.js'
@@ -610,7 +611,12 @@ export class FslpReverse extends FsSExp {
     return new FsList(list.at(0).value.reverse())
   }
 }
-
+export class FspEval extends FsSExp {
+  static proc (list, env) {
+    ensureListContainsTwo(list)
+    return FsEvaluator.eval(list.at(0), getGlobalEnv()) // TODO: avoid bi-directional reference to global-env.js
+  }
+}
 export class FspSetCdr extends FsSExp {
   static proc (list, env) {
     const evaledCurrent = FsEvaluator.eval(list.at(0), env)
