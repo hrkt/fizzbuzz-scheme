@@ -106,6 +106,11 @@ export class FsFileOutputPort extends FsOutputPort {
     const portManager = new PortManager()
     portManager.writeToFile(this.#fd, '' + obj)
   }
+
+  writeln (obj) {
+    const portManager = new PortManager()
+    portManager.writeToFile(this.#fd, '' + obj + os.EOL)
+  }
 }
 
 export class FspConsoleInputPort extends FsOutputPort {
