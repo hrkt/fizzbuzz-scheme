@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsList, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
-import { FslpMap, FslsCond, FslsDelay, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FslsOr, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet } from './sexp.js'
+import { FslpMap, FslsCond, FslsDelay, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FslsOr, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet, FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Evaluator
@@ -42,7 +42,18 @@ export class FsEvaluator {
         const firstSymbol = sexp.at(0)
 
         if (FsSymbol.IF === firstSymbol) {
-          FsEvaluator.eval(sexp.at(1), env).value ? sexp = sexp.at(2) : sexp = sexp.at(3)
+          const condition = FsEvaluator.eval(sexp.at(1), env).value
+          if (condition) {
+            sexp = sexp.at(2)
+          } else {
+            if (sexp.at(3) !== undefined) {
+              // (if test consequent alternative) case
+              sexp = sexp.at(3)
+            } else {
+              // (if test consequent) case
+              return FsUndefined.UNDEFINED
+            }
+          }
         } else if (FsSymbol.QUOTE === firstSymbol || FsSymbol.SINGLE_QUOTE === firstSymbol) {
           return sexp.at(1)
         } else if (FsSymbol.QUASIQUOTE === firstSymbol || FsSymbol.BACK_QUOTE === firstSymbol) {

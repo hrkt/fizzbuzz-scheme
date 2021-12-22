@@ -720,6 +720,33 @@ test('✅6.4_5', () => {
   // (+ (delay (* 3 7)) 13) is error on gauche and mit-scheme, so ignore it.
 })
 
+test('6.4_6', () => {
+  const code = `(call-with-current-continuation
+    (lambda (exit)
+      (for-each (lambda (x)
+                  (if (negative? x)
+                      (exit x)))
+                '(54 0 37 -3 245 19))
+      #t))`
+  expect(new FBS().eval(code).toString()).toBe('-3')
+
+  const code2 = `(define list-length
+    (lambda (obj)
+      (call-with-current-continuation
+        (lambda (return)
+          (letrec ((r
+                    (lambda (obj)
+                      (cond ((null? obj) 0)
+                            ((pair? obj)
+                             (+ (r (cdr obj)) 1))
+                            (else (return #f))))))
+            (r obj))))))`
+  const fbs = new FBS()
+  fbs.eval(code2)
+  expect(fbs.eval('(list-length \'(1 2 3 4))').toString()).toBe('4')
+  expect(fbs.eval('(list-length \'(a b . c))').toString()).toBe('#f')
+})
+
 // 6.5  Eval
 // all cleared 😊
 test('✅6.5', () => {

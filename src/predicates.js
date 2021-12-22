@@ -73,7 +73,12 @@ export class FsPredicateNumber extends FsSExp {
 
 export class FsPredicateNull extends FsSExp {
   static proc (list) {
-    return list.at(0) instanceof FsList && list.at(0).length === 0 ? FsBoolean.TRUE : FsBoolean.FALSE
+    // currently fspair is subclass of fslist, so this line does not work correctly.
+    //
+    // return list.at(0) instanceof FsList && list.at(0).length === 0 ? FsBoolean.TRUE : FsBoolean.FALSE
+    //
+    // we use 'type' original property here, same as in eval-loop
+    return list.at(0).type === 'fslist' && list.at(0).length === 0 ? FsBoolean.TRUE : FsBoolean.FALSE
   }
 }
 
