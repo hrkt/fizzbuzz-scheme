@@ -81,6 +81,10 @@ export class FsPort {
   isClosed () {
     return this.#closed
   }
+
+  toString () {
+    return 'FsPort'
+  }
 }
 
 export class FsInputPort extends FsPort {

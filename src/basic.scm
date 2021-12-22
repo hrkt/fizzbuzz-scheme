@@ -343,3 +343,8 @@
 ; (define substring2 (lambda (string start end)
 ;     (let ((buf (make-string (- end start))))
 ;         (substring-inner string start end buf 0))))
+
+(define write-char (lambda (c . port)
+    (if (null? port)
+        (display (string c))
+        (display (string c) (first port))))

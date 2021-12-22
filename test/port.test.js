@@ -42,7 +42,8 @@ test('open-output-file, write and close-output-port success', () => {
     ( (port (open-output-file "${filename}")) )
     (display "Hello" port)
     (newline port)
-    (display "world!" port)
+    (display "world" port)
+    (write-char #\\! port)
     (close-output-port port)
   )`
   const fbs = new FizzBuzzScheme()
