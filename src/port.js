@@ -81,6 +81,10 @@ export class FsPort {
   isClosed () {
     return this.#closed
   }
+
+  toString () {
+    return 'FsPort'
+  }
 }
 
 export class FsInputPort extends FsPort {
@@ -105,6 +109,11 @@ export class FsFileOutputPort extends FsOutputPort {
   write (obj) {
     const portManager = new PortManager()
     portManager.writeToFile(this.#fd, '' + obj)
+  }
+
+  writeln (obj) {
+    const portManager = new PortManager()
+    portManager.writeToFile(this.#fd, '' + obj + os.EOL)
   }
 }
 

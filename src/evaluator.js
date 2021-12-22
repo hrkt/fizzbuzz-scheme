@@ -114,17 +114,25 @@ export class FsEvaluator {
                 let nextPair = currentPair.cdr
                 paramAsList.push(currentPair.car)
                 let argCount = 1
-                let hasNext = true
-                while (hasNext) {
-                  if (nextPair.cdr !== undefined && nextPair.cdr.type !== 'fspair') {
-                    paramAsList.push(nextPair.car)
-                    paramAsList.push(nextPair.cdr)
-                    hasNext = false
-                    argCount += 2
-                  } else {
-                    paramAsList.push(currentPair.car)
-                    nextPair = currentPair.cdr
-                    argCount++
+                if (nextPair.type !== 'fspair') {
+                  // only (a . b) case
+                  paramAsList.push(currentPair.cdr)
+                  argCount++
+                } else {
+                  // (a (b .c)) or more case
+                  let hasNext = true
+                  while (hasNext) {
+                    if (nextPair.cdr !== undefined && nextPair.cdr.type !== 'fspair') {
+                      paramAsList.push(nextPair.car)
+                      paramAsList.push(nextPair.cdr)
+                      hasNext = false
+                      argCount += 2
+                    } else {
+                      // go to next pair
+                      paramAsList.push(currentPair.car)
+                      nextPair = currentPair.cdr
+                      argCount++
+                    }
                   }
                 }
                 if (isProper && (givenParams.length < paramAsList.length)) {

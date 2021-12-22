@@ -875,3 +875,10 @@ export class FspGensym {
     return s
   }
 }
+
+// Fsgp ... FS-oriGinal-Procedure series
+export class FsgpRaise {
+  static proc (arg, env) {
+    throw new FsException(arg.toString())
+  }
+}

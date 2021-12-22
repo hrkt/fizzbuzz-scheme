@@ -1,5 +1,6 @@
 'use strict'
 import FS from 'fs'
+import * as os from 'os'
 
 import { FsBoolean, FsList, FsString } from '../src/datatypes.js'
 import { FizzBuzzScheme } from '../src/index.js'
@@ -40,6 +41,9 @@ test('open-output-file, write and close-output-port success', () => {
   (let
     ( (port (open-output-file "${filename}")) )
     (display "Hello" port)
+    (newline port)
+    (display "world" port)
+    (write-char #\\! port)
     (close-output-port port)
   )`
   const fbs = new FizzBuzzScheme()
@@ -48,7 +52,7 @@ test('open-output-file, write and close-output-port success', () => {
   try {
     expect(FS.existsSync(filename)).toBe(true)
     const buf = FS.readFileSync(filename)
-    expect(buf.toString()).toBe('Hello')
+    expect(buf.toString()).toBe('Hello' + os.EOL + 'world!')
 
     FS.rmSync(filename)
   } catch (e) {
