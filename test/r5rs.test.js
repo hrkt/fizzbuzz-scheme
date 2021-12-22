@@ -710,7 +710,27 @@ test('✅6.4_5', () => {
   expect(fbs.eval('(force p)').toString()).toBe('6')
   expect(fbs.eval('p') instanceof FsPromise).toBe(true)
   expect(fbs.eval('(begin (set! x 10) (force p))').toString()).toBe('6')
+
+  // possible implementation of (force and (delay are ignored.
+  // (force and (delay are implemented in JS
+
+  expect(fbs.eval('(eqv? (delay 1) 1)').toString()).toBe('#f') // unspecified
+  expect(fbs.eval('(pair? (delay (cons 1 2)))').toString()).toBe('#f') // unspecified
+
+  // (+ (delay (* 3 7)) 13) is error on gauche and mit-scheme, so ignore it.
 })
+
+// 6.6.3  Output
+// (write obj, (write obj port -> port.test.js
+// (display obj, (display obj port -> port.test.js
+// (newline, (new line port -> port.test.js
+// (write-char, (write-char port -> port.test.js
+
+// 6.6.4  System interface
+// (load -> proc.load.test.js
+// optional procedure (transcript-on (transcript-off -> are not implemented at this time.
+// gauche aand mit-scheme also not seem to implement them.
+// gauche ... may use read-eval-print-loop http://practical-scheme.net/gauche/man/gauche-refj/eval-to-repl.html#index-read_002deval_002dprint_002dloop
 
 // 7. Format Syntax and semantics
 
