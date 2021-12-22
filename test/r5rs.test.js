@@ -720,6 +720,16 @@ test('✅6.4_5', () => {
   // (+ (delay (* 3 7)) 13) is error on gauche and mit-scheme, so ignore it.
 })
 
+// 6.5  Eval
+// all cleared 😊
+test('✅6.5', () => {
+  expect(new FBS().eval('(eval \'(* 7 3) (scheme-report-environment 5))').toString()).toBe('21')
+  const code = `(let ((f (eval '(lambda (f x) (f x x))
+  (null-environment 5))))
+  (f + 10))`
+  expect(new FBS().eval(code).toString()).toBe('20')
+})
+
 // 6.6.3  Output
 // (write obj, (write obj port -> port.test.js
 // (display obj, (display obj port -> port.test.js
