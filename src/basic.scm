@@ -360,3 +360,7 @@
         (raise "only 5 is permitted here.")
         ()
         )))
+
+(define (values . things)
+  (call-with-current-continuation 
+    (lambda (cont) (apply cont things))))
