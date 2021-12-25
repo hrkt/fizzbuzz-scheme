@@ -410,6 +410,19 @@ export function isProperList (arg) {
   }
 }
 
+//
+
+// used by FspValues to return multiple values, which may be used in call-with-values
+export class FsMultiValues {
+  constructor (values) {
+    this.values = values
+  }
+
+  toString () {
+    return 'FsMultiValues: ' + this.values.join(',')
+  }
+}
+
 // numeric
 
 export class FsComplex {
