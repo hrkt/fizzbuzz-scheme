@@ -119,18 +119,26 @@ export class FsEvaluator {
               // ex. (lambda (x) (+ 1 2))
               // fixed number "n" case or take "n or more" case
               if (p.params.type === 'fspair') {
+                let treatLastArgAsList = false
                 const paramAsList = []
                 const currentPair = p.params
                 const isProper = isProperList(currentPair)
                 let nextPair = currentPair.cdr
-                paramAsList.push(currentPair.car)
                 let argCount = 1
                 if (nextPair.type !== 'fspair') {
                   // only (a . b) case
+
+                  // last param is treated as list.
+                  treatLastArgAsList = true
+                  if (!(currentPair.car === FsList.EMPTY)) {
+                    // ignore null for only (. b) case, for var args
+                    paramAsList.push(currentPair.car)
+                    argCount++
+                  }
                   paramAsList.push(currentPair.cdr)
-                  argCount++
                 } else {
-                  // (a (b .c)) or more case
+                  // (a (b . c)) or more case
+                  paramAsList.push(currentPair.car)
                   let hasNext = true
                   while (hasNext) {
                     if (nextPair.cdr !== undefined && nextPair.cdr.type !== 'fspair') {
@@ -138,6 +146,7 @@ export class FsEvaluator {
                       paramAsList.push(nextPair.cdr)
                       hasNext = false
                       argCount += 2
+                      treatLastArgAsList = true
                     } else {
                       // go to next pair
                       paramAsList.push(currentPair.car)
@@ -146,6 +155,7 @@ export class FsEvaluator {
                     }
                   }
                 }
+                // check param is proper pair
                 if (isProper && (givenParams.length < paramAsList.length)) {
                   throw new FsException('this function requires at least ' + (paramAsList.length - 1) + ' argument(s)')
                 } else if (!isProper && (givenParams.length <= argCount - 2)) {
@@ -155,18 +165,29 @@ export class FsEvaluator {
                   const varNames = []
                   const results = []
                   const tmpEnv = new FsEnv(env)
-                  for (let i = 0; i < paramAsList.length - 1; i++) {
-                    varNames[i] = paramAsList[i]
-                    results[i] = FsEvaluator.eval(givenParams.at(i), tmpEnv)
-                    tmpEnv.clearSelfVars() // reuse
+                  if (!treatLastArgAsList) {
+                    for (let i = 0; i < paramAsList.length; i++) {
+                      varNames[i] = paramAsList[i]
+                      results[i] = FsEvaluator.eval(givenParams.at(i), tmpEnv)
+                      tmpEnv.clearSelfVars() // reuse
+                    }
+                  } else {
+                    for (let i = 0; i < paramAsList.length - 1; i++) {
+                      varNames[i] = paramAsList[i]
+                      results[i] = FsEvaluator.eval(givenParams.at(i), tmpEnv)
+                      tmpEnv.clearSelfVars() // reuse
+                    }
+                    const buf = []
+                    varNames[paramAsList.length - 1] = paramAsList[paramAsList.length - 1]
+                    for (let i = paramAsList.length - 1; i < givenParams.length; i++) {
+                      buf.push(FsEvaluator.eval(givenParams.at(i), tmpEnv))
+                      tmpEnv.clearSelfVars() // reuse
+                    }
+                    results[paramAsList.length - 1] = new FsList(buf)
                   }
                   for (let i = 0; i < varNames.length; i++) {
                     innerEnv.set(varNames[i], results[i], true)
                   }
-                  const rest = givenParams.slice(paramAsList.length - 1)
-                  // innerEnv.set(paramAsList[paramAsList.length - 1], FsEvaluator.eval(rest, env))
-                  const restEvaled = rest.value.map(s => FsEvaluator.eval(s, env))
-                  innerEnv.set(paramAsList[paramAsList.length - 1], new FsList(restEvaled), true) // override var name
                 }
                 sexp = p.body.at(0) // TODO: multiplue bodies
                 env = innerEnv
