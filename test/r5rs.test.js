@@ -747,6 +747,14 @@ test('6.4_6', () => {
   expect(fbs.eval('(list-length \'(a b . c))').toString()).toBe('#f')
 })
 
+test('6.4_7', () => {
+  const code = `(call-with-values (lambda () (values 4 5))
+  (lambda (a b) b))`
+  expect(new FBS().eval(code).toString()).toBe('5')
+
+  expect(new FBS().eval('(call-with-values * -)').toString()).toBe('-1')
+})
+
 // 6.5  Eval
 // all cleared 😊
 test('✅6.5', () => {

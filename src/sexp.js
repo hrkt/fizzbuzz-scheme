@@ -4,7 +4,7 @@
 import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
-import { FsBoolean, FsInteger, FsList, FsNumber, FsPair, FsString, FsVector, isProperList } from './datatypes.js'
+import { FsBoolean, FsInteger, FsList, FsMultiValues, FsNumber, FsPair, FsString, FsVector, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
 import { FsEvaluator } from './evaluator.js'
 import { getGlobalEnv } from './global-env.js'
@@ -866,6 +866,33 @@ export class FspCallCc {
       } else {
         // I don't care thrown error here. It may be FsExceptionForCallCc or not.
         throw e
+      }
+    }
+  }
+}
+
+export class FspValues {
+  static proc (arg, env) {
+    return new FsMultiValues(arg.value)
+  }
+}
+
+export class FspCallWithValues {
+  static proc (arg, env) {
+    const newEnvP = new FsEnv(env)
+    const producer = FsEvaluator.eval(arg.at(0), newEnvP)
+    const producerResult = FsEvaluator.eval(new FsList([producer, ...[]]), newEnvP)
+
+    const newEnvC = new FsEnv(env)
+    const consumer = FsEvaluator.eval(arg.at(1), newEnvC)
+    if (producerResult instanceof FsMultiValues) {
+      const argsForConsumer = new FsList(producerResult.values)
+      return FsEvaluator.eval(new FsList([consumer, ...argsForConsumer.value]), newEnvC)
+    } else {
+      if (producerResult instanceof FsList && !(producerResult instanceof FsPair)) {
+        return FsEvaluator.eval(new FsList([consumer, ...producerResult.value]), newEnvC)
+      } else {
+        return FsEvaluator.eval(new FsList([consumer, producerResult]), newEnvC)
       }
     }
   }

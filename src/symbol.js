@@ -7,6 +7,7 @@ export class FsSymbol extends FsSExp {
   static BEGIN = Object.freeze(new FsSymbol('begin'))
   static COMMA = Object.freeze(new FsSymbol(','))
   static COMMA_FOLLOWED_BY_AT = Object.freeze(new FsSymbol(',@'))
+  static CALL_WITH_VALUES = Object.freeze(new FsSymbol('call-with-values'))
   static COND = Object.freeze(new FsSymbol('cond'))
   static DELAY = Object.freeze(new FsSymbol('delay'))
   static DO = Object.freeze(new FsSymbol('do'))
@@ -47,6 +48,8 @@ export class FsSymbol extends FsSExp {
       //   return this.TEST_IS_TRUE_THEN
       case 'begin':
         return this.BEGIN
+      case 'call-with-values':
+        return this.CALL_WITH_VALUES
       case 'cond':
         return this.COND
       case 'delay':

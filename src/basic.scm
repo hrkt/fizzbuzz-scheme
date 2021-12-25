@@ -361,6 +361,6 @@
         ()
         )))
 
-(define (values . things)
-  (call-with-current-continuation 
-    (lambda (cont) (apply cont things))))
+; (define (values . things)
+;   (call-with-current-continuation 
+;     (lambda (cont) (apply cont things))))
