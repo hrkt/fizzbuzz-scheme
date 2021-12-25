@@ -347,7 +347,7 @@
 (define write-char (lambda (c . port)
     (if (null? port)
         (display (string c))
-        (display (string c) (first port)))))
+        (display (string c) (car port)))))
 
 (define scheme-report-environment (lambda (version)
     (if (not (eq? 5 version))
