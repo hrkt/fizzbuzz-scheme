@@ -2,7 +2,7 @@
 import log from 'loglevel'
 
 import { FsError, FsException } from './common.js'
-import { FsList } from './datatypes.js'
+import { FsList, FsPair } from './datatypes.js'
 import { FsEvaluator } from './evaluator.js'
 import { FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
@@ -110,8 +110,13 @@ export class FsExpander {
       } else {
         // e.g.
         // (define (x2 x) (* x 2))
-        const funcName = sexp.at(1).at(0)
-        const params = sexp.at(1).slice(1)
+        const funcName = sexp.at(1).type === 'fslist'
+          ? sexp.at(1).at(0)
+          : sexp.at(1).car
+        // check var arg case : e.g. (define (add . things))
+        const params = sexp.at(1).type === 'fslist'
+          ? sexp.at(1).slice(1)
+          : sexp.at(1).cdr instanceof FsPair ? sexp.at(1).cdr : new FsPair(FsList.EMPTY, sexp.at(1).cdr)
         const body = sexp.at(2) // TODO: multiple bodies
         const lambdaSExp = new FsList([FsSymbol.LAMBDA, params, body])
         const defineSExp = new FsList([FsSymbol.DEFINE, funcName, lambdaSExp])

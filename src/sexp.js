@@ -266,7 +266,7 @@ export class FssDefine extends FsSExp {
     } else {
       // e.g.
       // (define (x2 x) (* x 2))
-      // is expanded to (define x2 (lambda (x2) (* x 2))) in the expander.
+      // is expanded to (define x2 (lambda (x) (* x 2))) in the expander.
       throw new Error('System Error.')
     }
   }
