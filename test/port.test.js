@@ -53,9 +53,9 @@ test('open-output-file, write and close-output-port success', () => {
     expect(FS.existsSync(filename)).toBe(true)
     const buf = FS.readFileSync(filename)
     expect(buf.toString()).toBe('Hello' + os.EOL + 'world!')
-
-    FS.rmSync(filename)
   } catch (e) {
     console.error(e)
+  } finally {
+    FS.rmSync(filename, { force: true })
   }
 })
