@@ -860,11 +860,13 @@ export class FspCallCc {
       const sexp = new FsList([arg.at(0), s])
       return FsEvaluator.eval(sexp, newEnv)
     } catch (e) {
+      // console.log('** caught in call/cc')
       if (e instanceof FsExceptionForCallCc && e.forSymbol === s) {
         // Yes, I passed this ball to the procedure and it thrown back now.
         return e.retVal
       } else {
         // I don't care thrown error here. It may be FsExceptionForCallCc or not.
+        // console.log('** not cared in call/CC')
         throw e
       }
     }
@@ -895,6 +897,39 @@ export class FspCallWithValues {
         return FsEvaluator.eval(new FsList([consumer, producerResult]), newEnvC)
       }
     }
+  }
+}
+
+export class FspDynamicWind {
+  static proc (arg, env) {
+    const beforeSExp = arg.at(0)
+    const thunkSExp = arg.at(1)
+    const afterSExp = arg.at(2)
+
+    const newEnvB = new FsEnv(env)
+    const before = FsEvaluator.eval(beforeSExp, newEnvB)
+    FsEvaluator.eval(new FsList([before, ...[]]), newEnvB)
+
+    try {
+      const newEnvT = new FsEnv(env)
+      const thunk = FsEvaluator.eval(thunkSExp, newEnvT)
+      FsEvaluator.eval(new FsList([thunk, ...[]]), newEnvT)
+    } catch (e) {
+      console.log('caught in thunk try-catch:' + e)
+      // console.dir(e)
+    }
+
+    try {
+      const newEnvA = new FsEnv(env)
+      const after = FsEvaluator.eval(afterSExp, newEnvA)
+      FsEvaluator.eval(new FsList([after, ...[]]), newEnvA)
+    } catch (e) {
+      console.log('caught in after try-catch:' + e)
+      // console.dir(e)
+    }
+
+    return FsUndefined.UNDEFINED
+    // throw new FsError('sorry, not implemnted yet.')
   }
 }
 

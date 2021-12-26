@@ -1,6 +1,6 @@
 # FizzBuzz Scheme
 
-A tiny scheme subset interpreter that can evaluate fizz-buzz code.
+A tiny scheme subset interpreter that can evaluate fizz-buzz code and bit more.
 
 # capability
 
@@ -79,6 +79,7 @@ $ npm run majestic
 - ✅constants and quote[Literal expressions](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.2)
 - ✅define [Assignments](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.6)
 - ✅set! [Assignments](https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.3)
+- ✅numbers : Rational, Complex, Integer
 - ✅basic arithmetic operators (+,-,*,/,mod,exp,round) within basic accuracy of JavaScript.
 - ✅basic comparison operators (=,<,<=,>,>=)
 - ✅a basic operator for FizzBuzz (and)
@@ -99,7 +100,9 @@ Test cases for a few part of R5RS are in [r5rs.test.js](test/r5rs.test.js)
 
 _many_ feachers like ...
 
-- ❌numbers : Rational, Complex, Integer, and its extactness 
+- ❌dynamic-wind
+- ❌define-syntax
+
 
 ## Fizz-Buzz Scheme original procedures
 

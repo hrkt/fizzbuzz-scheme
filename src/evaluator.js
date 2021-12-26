@@ -5,7 +5,7 @@ import log from 'loglevel'
 import { FsException } from './common.js'
 import { FsList, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
-import { FslpMap, FslsCond, FslsDelay, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FslsOr, FspCallWithValues, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet, FsUndefined } from './sexp.js'
+import { FslpMap, FslsCond, FslsDelay, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FslsOr, FspCallCc, FspCallWithValues, FspDynamicWind, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet, FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
 
 // Evaluator
@@ -33,7 +33,7 @@ export class FsEvaluator {
       if (sexp.type === 'fssymbol') {
         return env.find(sexp)
       } else if (sexp.type !== 'fslist') {
-      // i.e. FsNumber, FsBoolean...
+        // i.e. FsNumber, FsBoolean...
         return sexp
         // after this case, "sexp" is a instance of FsList
       } else if (sexp.length === 0) {
@@ -87,11 +87,15 @@ export class FsEvaluator {
           return FslpMap.proc(sexp.slice(1), env)
         } else if (FsSymbol.DELAY === firstSymbol) {
           return FslsDelay.proc(sexp.slice(1), env)
+        } else if (FsSymbol.CALL_WITH_CURRENT_CONTINUATION === firstSymbol || FsSymbol.CALL_CC === firstSymbol) {
+          return FspCallCc.proc(sexp.slice(1), env)
         } else if (FsSymbol.CALL_WITH_VALUES === firstSymbol) {
           return FspCallWithValues.proc(sexp.slice(1), env)
+        } else if (FsSymbol.DYNAMIC_WIND === firstSymbol) {
+          return FspDynamicWind.proc(sexp.slice(1), env)
         } else {
-        // for the readability, use this line
-        // const args = sexp.slice(1).map(s => this.eval(s, env))
+          // for the readability, use this line
+          // const args = sexp.slice(1).map(s => this.eval(s, env))
 
           // for the performance, use lines below. it may be bit faster.
           // const evaled = []
@@ -214,7 +218,7 @@ export class FsEvaluator {
               }
             }
           } else {
-          // evaled.length = sexp.length - 1 // this line slows execution, so we do not do this.
+            // evaled.length = sexp.length - 1 // this line slows execution, so we do not do this.
             const evaled = new FsList()
             const tmpEnv = new FsEnv(env)
             for (let i = 1; i < sexp.length; i++) {
@@ -225,6 +229,6 @@ export class FsEvaluator {
           }
         } // user-defined-proc or pre-defined proc
       } // list-case
-    }
-  }
+    } // loop
+  } // eval
 }
