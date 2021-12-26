@@ -755,6 +755,26 @@ test('6.4_7', () => {
   expect(new FBS().eval('(call-with-values * -)').toString()).toBe('-1')
 })
 
+// TODO: enable after improvement of call/cc. currently it implemnets exits only.
+// test('6.4_8', () => {
+//   const code = `(let ((path '())
+//   (c #f))
+// (let ((add (lambda (s)
+//            (set! path (cons s path)))))
+// (dynamic-wind
+//   (lambda () (add 'connect))
+//   (lambda ()
+//     (add (call-with-current-continuation
+//            (lambda (c0)
+//              (set! c c0)
+//              'talk1))))
+//   (lambda () (add 'disconnect)))
+// (if (< (length path) 4)
+//     (c 'talk2)
+//     (reverse path))))`
+//   expect(new FBS().eval(code).toString()).toBe('(connect talk1 disconnect connect talk2 disconnect)')
+// })
+
 // 6.5  Eval
 // all cleared 😊
 test('✅6.5', () => {

@@ -7,6 +7,8 @@ export class FsSymbol extends FsSExp {
   static BEGIN = Object.freeze(new FsSymbol('begin'))
   static COMMA = Object.freeze(new FsSymbol(','))
   static COMMA_FOLLOWED_BY_AT = Object.freeze(new FsSymbol(',@'))
+  static CALL_CC = Object.freeze(new FsSymbol('call/cc'))
+  static CALL_WITH_CURRENT_CONTINUATION = Object.freeze(new FsSymbol('call-with-current-continuation'))
   static CALL_WITH_VALUES = Object.freeze(new FsSymbol('call-with-values'))
   static COND = Object.freeze(new FsSymbol('cond'))
   static DELAY = Object.freeze(new FsSymbol('delay'))
@@ -14,6 +16,7 @@ export class FsSymbol extends FsSExp {
   static DOT = Object.freeze(new FsSymbol('.'))
   static DEFINE = Object.freeze(new FsSymbol('define'))
   static DEFINE_MACRO = Object.freeze(new FsSymbol('define-macro'))
+  static DYNAMIC_WIND = Object.freeze(new FsSymbol('dynamic-wind'))
   static ELSE = Object.freeze(new FsSymbol('else'))
   static EOF_OBJECT = Object.freeze(new FsSymbol('eof-object'))
   static FOR_EACH = Object.freeze(new FsSymbol('for-each'))
@@ -48,6 +51,10 @@ export class FsSymbol extends FsSExp {
       //   return this.TEST_IS_TRUE_THEN
       case 'begin':
         return this.BEGIN
+      case 'call/cc':
+        return this.CALL_CC
+      case 'call-with-current-continuation':
+        return this.CALL_WITH_CURRENT_CONTINUATION
       case 'call-with-values':
         return this.CALL_WITH_VALUES
       case 'cond':
@@ -60,6 +67,8 @@ export class FsSymbol extends FsSExp {
         return this.DEFINE_MACRO
       case 'do':
         return this.DO
+      case 'dynamic-wind':
+        return this.DYNAMIC_WIND
       case 'else':
         return this.ELSE
       case 'for-each':
