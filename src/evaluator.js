@@ -7,10 +7,41 @@ import { FsList, isProperList } from './datatypes.js'
 import { FsEnv } from './env.js'
 import { FslpMap, FslsCond, FslsDelay, FslsDo, FslsLet, FslsLetAsterisk, FslsLetRecAsterisk, FslsOr, FspCallCc, FspCallWithValues, FspDynamicWind, FspSetCdr, FssDefine, FssLambda, FssQuasiQuote, FssSet, FsUndefined } from './sexp.js'
 import { FsSymbol } from './symbol.js'
-
+// Refactored code here
 // Evaluator
 export class FsEvaluator {
   static evalCounter = 0
+  // This is the JavaScript function to call when the current Scheme
+  // expression produces a value. It represents the part of the Scheme
+  // program that is still waiting for that value.
+  static currentContinuation = null
+  // When this is set, the current evaluation is inside dynamic-wind. A
+  // saved continuation must run this function before it re-enters the wind.
+  static currentWindBefore = null
+
+  static evalWithContinuation (sexp, env, continuation) {
+    // Evaluation is nested in many places in the old evaluator. Save the
+    // previous callback so an inner evaluation does not destroy the callback
+    // belonging to its caller.
+    const previousContinuation = FsEvaluator.currentContinuation
+    FsEvaluator.currentContinuation = continuation
+    try {
+      return FsEvaluator.eval(sexp, env)
+    } finally {
+      FsEvaluator.currentContinuation = previousContinuation
+    }
+  }
+
+  static captureContinuation (escape) {
+    // A call/cc outside dynamic-wind still needs an escape continuation. When
+    // dynamic-wind is active, currentContinuation includes the work that must
+    // happen after the captured call returns, so that is the continuation to
+    // preserve instead.
+    return FsEvaluator.currentWindBefore
+      ? FsEvaluator.currentContinuation
+      : escape
+  }
+
   static evalOuter (sexp, env) {
     if (log.getLevel() <= log.levels.DEBUG) {
       log.debug('----------------------------------------------------')
@@ -118,7 +149,7 @@ export class FsEvaluator {
                 evaled.push(FsEvaluator.eval(sexp.at(i), env))
               }
               innerEnv.set(p.params, new FsList(evaled), true) // override var name
-              sexp = p.body.at(0) // TODO: multiplue bodies
+              sexp = p.body.length === 1 ? p.body.at(0) : new FsList([FsSymbol.BEGIN, ...p.body.value])
               env = innerEnv
             } else {
               const givenParams = sexp.slice(1)
@@ -174,19 +205,37 @@ export class FsEvaluator {
                   if (!treatLastArgAsList) {
                     for (let i = 0; i < paramAsList.length; i++) {
                       varNames[i] = paramAsList[i]
-                      results[i] = FsEvaluator.eval(givenParams.at(i), tmpEnv)
+                      // If call/cc appears as an argument, the rest of this
+                      // procedure application is part of its continuation.
+                      // Rebuild the application when that argument is supplied
+                      // again by the saved continuation.
+                      const parentContinuation = FsEvaluator.currentContinuation
+                      const windBefore = FsEvaluator.currentWindBefore
+                      results[i] = FsEvaluator.evalWithContinuation(givenParams.at(i), tmpEnv, value => {
+                        results[i] = value
+                        if (windBefore) windBefore()
+                        for (let j = i + 1; j < paramAsList.length; j++) {
+                          results[j] = FsEvaluator.eval(givenParams.at(j), tmpEnv)
+                        }
+                        for (let j = 0; j < varNames.length; j++) {
+                          innerEnv.set(varNames[j], results[j], true)
+                        }
+                        const body = p.body.length === 1 ? p.body.at(0) : new FsList([FsSymbol.BEGIN, ...p.body.value])
+                        const result = FsEvaluator.eval(body, innerEnv)
+                        return parentContinuation ? parentContinuation(result) : result
+                      })
                       tmpEnv.clearSelfVars() // reuse
                     }
                   } else {
                     for (let i = 0; i < paramAsList.length - 1; i++) {
                       varNames[i] = paramAsList[i]
-                      results[i] = FsEvaluator.eval(givenParams.at(i), tmpEnv)
+                      results[i] = FsEvaluator.evalWithContinuation(givenParams.at(i), tmpEnv, FsEvaluator.currentContinuation)
                       tmpEnv.clearSelfVars() // reuse
                     }
                     const buf = []
                     varNames[paramAsList.length - 1] = paramAsList[paramAsList.length - 1]
                     for (let i = paramAsList.length - 1; i < givenParams.length; i++) {
-                      buf.push(FsEvaluator.eval(givenParams.at(i), tmpEnv))
+                      buf.push(FsEvaluator.evalWithContinuation(givenParams.at(i), tmpEnv, FsEvaluator.currentContinuation))
                       tmpEnv.clearSelfVars() // reuse
                     }
                     results[paramAsList.length - 1] = new FsList(buf)
@@ -195,7 +244,7 @@ export class FsEvaluator {
                     innerEnv.set(varNames[i], results[i], true)
                   }
                 }
-                sexp = p.body.at(0) // TODO: multiplue bodies
+                sexp = p.body.length === 1 ? p.body.at(0) : new FsList([FsSymbol.BEGIN, ...p.body.value])
                 env = innerEnv
               } else if (p.params.type === 'fslist') {
                 // values are evaled in separated env, results are not seen to other procs.
@@ -204,14 +253,31 @@ export class FsEvaluator {
                 const tmpEnv = new FsEnv(env)
                 for (let i = 0; i < p.params.length; i++) {
                   varNames[i] = p.params.at(i)
-                  results[i] = FsEvaluator.eval(givenParams.at(i), tmpEnv)
+                  // Keep the application frame alive while an argument is
+                  // being evaluated. This is what lets a continuation return
+                  // to the lambda call rather than only to the argument.
+                  const parentContinuation = FsEvaluator.currentContinuation
+                  const windBefore = FsEvaluator.currentWindBefore
+                  results[i] = FsEvaluator.evalWithContinuation(givenParams.at(i), tmpEnv, value => {
+                    results[i] = value
+                    if (windBefore) windBefore()
+                    for (let j = i + 1; j < p.params.length; j++) {
+                      results[j] = FsEvaluator.eval(givenParams.at(j), tmpEnv)
+                    }
+                    for (let j = 0; j < varNames.length; j++) {
+                      innerEnv.set(varNames[j], results[j], true)
+                    }
+                    const body = p.body.length === 1 ? p.body.at(0) : new FsList([FsSymbol.BEGIN, ...p.body.value])
+                    const result = FsEvaluator.eval(body, innerEnv)
+                    return parentContinuation ? parentContinuation(result) : result
+                  })
                   tmpEnv.clearSelfVars() // reuse
                 }
                 for (let i = 0; i < varNames.length; i++) {
                   innerEnv.set(varNames[i], results[i], true) // override var name
                 }
 
-                sexp = p.body.at(0) // TODO: multiplue bodies
+                sexp = p.body.length === 1 ? p.body.at(0) : new FsList([FsSymbol.BEGIN, ...p.body.value])
                 env = innerEnv
               } else {
                 throw new Error('not implemented')
@@ -222,7 +288,18 @@ export class FsEvaluator {
             const evaled = new FsList()
             const tmpEnv = new FsEnv(env)
             for (let i = 1; i < sexp.length; i++) {
-              evaled.set(i - 1, FsEvaluator.eval(sexp.at(i), tmpEnv))
+              const argumentIndex = i - 1
+              const parentContinuation = FsEvaluator.currentContinuation
+              const windBefore = FsEvaluator.currentWindBefore
+              // For a primitive procedure, the saved continuation resumes by
+              // putting the returned argument back into this argument list,
+              // then applying the procedure and continuing outward.
+              evaled.set(argumentIndex, FsEvaluator.evalWithContinuation(sexp.at(i), tmpEnv, value => {
+                evaled.set(argumentIndex, value)
+                if (windBefore) windBefore()
+                const result = FsEvaluator.eval(new FsList([p, ...evaled.value]), env)
+                return parentContinuation ? parentContinuation(result) : result
+              }))
               tmpEnv.clearSelfVars() // reuse
             }
             return p(evaled, env) // for testing map

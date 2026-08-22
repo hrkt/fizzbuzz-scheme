@@ -176,13 +176,17 @@ export class FslsLet extends FsSExp {
       innerEnv.set(vars[i], varMap.get(vars[i]), true) // override var name
     }
 
-    let ret = null
-    for (let i = 1; i < list.length; i++) {
-      const body = list.at(i)
-      ret = FsEvaluator.eval(body, innerEnv)
+    // A let body is a sequence, not just one expression. The callback is the
+    // continuation used when a nested call/cc jumps back into this sequence.
+    const evaluateBody = index => {
+      if (index >= list.length) {
+        return FsUndefined.UNDEFINED
+      }
+      const result = FsEvaluator.evalWithContinuation(list.at(index), innerEnv, () => evaluateBody(index + 1))
+      return index === list.length - 1 ? result : evaluateBody(index + 1)
     }
 
-    return ret
+    return evaluateBody(1)
   }
 
   toString () {
@@ -848,27 +852,30 @@ export class FspCallCc {
     const ball = new FsExceptionForCallCc()
     const newEnv = new FsEnv(env)
     const s = new FsSymbol(FspGensym.proc(null, newEnv))
+    // The fallback is the traditional call/cc escape: it returns from the
+    // current call/cc invocation when no resumable evaluator continuation is
+    // available. captureContinuation chooses the correct context for us.
+    const continuation = FsEvaluator.captureContinuation(value => {
+      ball.retVal = value
+      throw ball
+    })
+    const throwBack = (callArgs, callEnv) => {
+      const value = callArgs.at(0)
+      // A Scheme continuation is a procedure. Calling it does not return to
+      // the place where the procedure object was invoked; it resumes the
+      // saved continuation with this value.
+      return continuation(value)
+    }
     ball.forSymbol = s
+    newEnv.set(s, throwBack, true)
+    const sexp = new FsList([arg.at(0), s])
     try {
-      // a function that is invoked when the given symbol is used.
-      const throwBack = (arg, env) => {
-        ball.retVal = arg.at(0)
-        throw ball
-      }
-      // s.proc = throwBack // do not need to set proc like this because it is lookuped from Symbol Table
-      newEnv.set(s, throwBack, true) // override name
-      const sexp = new FsList([arg.at(0), s])
       return FsEvaluator.eval(sexp, newEnv)
-    } catch (e) {
-      // console.log('** caught in call/cc')
-      if (e instanceof FsExceptionForCallCc && e.forSymbol === s) {
-        // Yes, I passed this ball to the procedure and it thrown back now.
-        return e.retVal
-      } else {
-        // I don't care thrown error here. It may be FsExceptionForCallCc or not.
-        // console.log('** not cared in call/CC')
-        throw e
+    } catch (error) {
+      if (error instanceof FsExceptionForCallCc && error.forSymbol === s) {
+        return error.retVal
       }
+      throw error
     }
   }
 }
@@ -910,26 +917,47 @@ export class FspDynamicWind {
     const before = FsEvaluator.eval(beforeSExp, newEnvB)
     FsEvaluator.eval(new FsList([before, ...[]]), newEnvB)
 
-    try {
-      const newEnvT = new FsEnv(env)
-      const thunk = FsEvaluator.eval(thunkSExp, newEnvT)
-      FsEvaluator.eval(new FsList([thunk, ...[]]), newEnvT)
-    } catch (e) {
-      console.log('caught in thunk try-catch:' + e)
-      // console.dir(e)
-    }
-
-    try {
+    let result
+    let error
+    // after must run both on ordinary exit and whenever a saved continuation
+    // leaves this dynamic extent. It is deliberately a function so the
+    // continuation callback can invoke it again on a later re-entry.
+    const runAfter = () => {
       const newEnvA = new FsEnv(env)
       const after = FsEvaluator.eval(afterSExp, newEnvA)
       FsEvaluator.eval(new FsList([after, ...[]]), newEnvA)
+    }
+    try {
+      const newEnvT = new FsEnv(env)
+      const thunk = FsEvaluator.eval(thunkSExp, newEnvT)
+      // Keep the continuation that was active before entering the thunk. On
+      // re-entry, after is run first and then control continues outside this
+      // dynamic-wind expression.
+      const parentContinuation = FsEvaluator.currentContinuation
+      const previousWindBefore = FsEvaluator.currentWindBefore
+      // A continuation captured in the thunk must execute before again before
+      // evaluating the captured expression. The evaluator stores only one
+      // active wind callback, so restore the previous one after this thunk.
+      FsEvaluator.currentWindBefore = () => {
+        const newEnvB = new FsEnv(env)
+        const before = FsEvaluator.eval(beforeSExp, newEnvB)
+        FsEvaluator.eval(new FsList([before, ...[]]), newEnvB)
+      }
+      result = FsEvaluator.evalWithContinuation(new FsList([thunk, ...[]]), newEnvT, value => {
+        runAfter()
+        return parentContinuation ? parentContinuation(value) : value
+      })
+      FsEvaluator.currentWindBefore = previousWindBefore
     } catch (e) {
-      console.log('caught in after try-catch:' + e)
-      // console.dir(e)
+      error = e
+    } finally {
+      runAfter()
     }
 
-    return FsUndefined.UNDEFINED
-    // throw new FsError('sorry, not implemnted yet.')
+    if (error !== undefined) {
+      throw error
+    }
+    return result
   }
 }
 
