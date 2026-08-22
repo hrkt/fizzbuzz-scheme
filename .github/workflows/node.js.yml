@@ -31,10 +31,10 @@ jobs:
     - run: npm run lint
     - run: npm run coverage
     # - run: npm test
-    - name: Report LCOV
-      uses: zgosalvez/github-actions-report-lcov@v1.3.2
-      with:
-        coverage-files: coverage/lcov.info
-        minimum-coverage: 50
-#        artifact-name: coverage
-        artifact-name: ""
+#     - name: Report LCOV
+#       uses: zgosalvez/github-actions-report-lcov@v1.3.2
+#       with:
+#         coverage-files: coverage/lcov.info
+#         minimum-coverage: 50
+# #        artifact-name: coverage
+#         artifact-name: ""
