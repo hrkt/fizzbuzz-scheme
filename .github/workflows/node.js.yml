@@ -36,4 +36,5 @@ jobs:
       with:
         coverage-files: coverage/lcov.info
         minimum-coverage: 50
-        artifact-name: coverage
+#        artifact-name: coverage
+        artifact-name: ""
